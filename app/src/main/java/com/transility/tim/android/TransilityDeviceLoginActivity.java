@@ -1,16 +1,16 @@
-package com.app.transilityinventorymanagement;
+package com.transility.tim.android;
 
 
 import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 
-import com.app.tranilityinventorymanagement.R;
+import com.app.transilityinventorymanagement.R;
 
 import devicepolicymanager.MyDeviceAdminReciver;
 

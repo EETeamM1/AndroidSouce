@@ -1,4 +1,4 @@
-package com.example.ambeshkukreja.tranilityinventorymanagement;
+package com.transility.tim.android;
 
 import org.junit.Test;
 
