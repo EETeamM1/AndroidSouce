@@ -6,14 +6,14 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.pm.PackageManager;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.FragmentActivity;
+
 
 import android.os.AsyncTask;
 
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.WindowManager;
@@ -68,50 +68,30 @@ public class LoginActivity extends FragmentActivity {
         winManager = ((WindowManager)getApplicationContext().getSystemService(WINDOW_SERVICE));
 
         wrapperView = new RelativeLayout(this);
-        wrapperView.setBackgroundColor(this.getResources().getColor(com.app.transilityinventorymanagement.R.color.backWhite));
-        View activityView= View.inflate(this, com.app.transilityinventorymanagement.R.layout.activity_login, this.wrapperView);
+        wrapperView.setBackgroundColor(this.getResources().getColor(R.color.backWhite));
+        View activityView= View.inflate(this, R.layout.activity_login, this.wrapperView);
 //        setContentView(activityView);
 
         this.winManager.addView(wrapperView, localLayoutParams);
 
 
-        mEmailSignInButton = (Button) activityView.findViewById(com.app.transilityinventorymanagement.R.id.email_sign_in_button);
+        mEmailSignInButton = (Button) activityView.findViewById(R.id.email_sign_in_button);
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 attemptLogin();
             }
         });
-        mPasswordView = (EditText)activityView.findViewById(com.app.transilityinventorymanagement.R.id.password);
+        mPasswordView = (EditText)activityView.findViewById(R.id.password);
 
-        mEmailView = (EditText) activityView.findViewById(com.app.transilityinventorymanagement.R.id.email);
-        mLoginFormView = activityView.findViewById(com.app.transilityinventorymanagement.R.id.login_form);
-        mProgressView = activityView.findViewById(com.app.transilityinventorymanagement.R.id.login_progress);
+        mEmailView = (EditText) activityView.findViewById(R.id.email);
+        mLoginFormView = activityView.findViewById(R.id.login_form);
+        mProgressView = activityView.findViewById(R.id.login_progress);
 
     }
 
 
-    private boolean mayRequestContacts() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            return true;
-        }
-        if (checkSelfPermission(READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
-            return true;
-        }
-        if (shouldShowRequestPermissionRationale(READ_CONTACTS)) {
-            Snackbar.make(mEmailView, com.app.transilityinventorymanagement.R.string.permission_rationale, Snackbar.LENGTH_INDEFINITE)
-                    .setAction(android.R.string.ok, new View.OnClickListener() {
-                        @Override
-                        @TargetApi(Build.VERSION_CODES.M)
-                        public void onClick(View v) {
-                            requestPermissions(new String[]{READ_CONTACTS}, REQUEST_READ_CONTACTS);
-                        }
-                    });
-        } else {
-            requestPermissions(new String[]{READ_CONTACTS}, REQUEST_READ_CONTACTS);
-        }
-        return false;
-    }
+
 
 
 
@@ -154,7 +134,7 @@ public class LoginActivity extends FragmentActivity {
             super.onPreExecute();
             System.out.print("Inside On pre Execute>>");
 
-            progressDialog.show();
+
         }
 
 
@@ -171,7 +151,7 @@ public class LoginActivity extends FragmentActivity {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            progressDialog.dismiss();
+
             System.out.println("On Post Execute");
 
             finish();
@@ -296,7 +276,7 @@ public class LoginActivity extends FragmentActivity {
             if (success) {
                 finish();
             } else {
-                mPasswordView.setError(getString(com.app.transilityinventorymanagement.R.string.error_incorrect_password));
+                mPasswordView.setError(getString(R.string.error_incorrect_password));
                 mPasswordView.requestFocus();
             }
         }

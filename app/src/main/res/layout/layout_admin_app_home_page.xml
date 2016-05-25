@@ -14,14 +14,13 @@
         android:text="Please enable the Admin Application"
      />
 
-    <CheckBox
-        android:id="@+id/checkBox1"
+    <Switch
+        android:id="@+id/enableDeviceApp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/line"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="15dp"
-        android:text="Truiton Device Admin Enabled"
         android:textStyle="bold" />
 
 </LinearLayout>

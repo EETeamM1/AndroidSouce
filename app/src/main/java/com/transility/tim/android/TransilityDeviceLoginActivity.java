@@ -1,6 +1,8 @@
 package com.transility.tim.android;
 
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
 import android.content.Context;
@@ -9,8 +11,8 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.Switch;
 
-import com.app.transilityinventorymanagement.R;
 
 import devicepolicymanager.MyDeviceAdminReciver;
 
@@ -18,9 +20,10 @@ public class TransilityDeviceLoginActivity extends AppCompatActivity {
     private final static String LOG_TAG = "DevicePolicyAdmin";
     DevicePolicyManager truitonDevicePolicyManager;
     ComponentName truitonDevicePolicyAdmin;
-    private CheckBox truitonAdminEnabledCheckbox;
+    private Switch enableDeviceApp;
     protected static final int REQUEST_ENABLE = 1;
     protected static final int SET_PASSWORD = 2;
+    private AlarmManager alarmMgr;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,18 +34,29 @@ public class TransilityDeviceLoginActivity extends AppCompatActivity {
     truitonDevicePolicyAdmin = new ComponentName(this,
                                                  MyDeviceAdminReciver.class);
 
-    truitonAdminEnabledCheckbox = (CheckBox) findViewById(R.id.checkBox1);
+        enableDeviceApp = (Switch) findViewById(R.id.enableDeviceApp);
+        enableTheAlarm();
 }
+
+    private void enableTheAlarm() {
+        alarmMgr = (AlarmManager)this.getSystemService(Context.ALARM_SERVICE);
+        Intent intent=new Intent(TransilityDeviceLoginActivity.this,MyDeviceAdminReciver.class);
+        intent.setAction(MyDeviceAdminReciver.MAHEVENT);
+        alarmMgr.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
+                2 * 60 * 1000,
+                2 * 60 * 1000, PendingIntent.getBroadcast(TransilityDeviceLoginActivity.this,0,intent,0));
+        System.out.println("");
+    }
 
     @Override
     protected void onResume() {
         super.onResume();
         if (isMyDevicePolicyReceiverActive()) {
-            truitonAdminEnabledCheckbox.setChecked(true);
+            enableDeviceApp.setChecked(true);
         } else {
-            truitonAdminEnabledCheckbox.setChecked(false);
+            enableDeviceApp.setChecked(false);
         }
-        truitonAdminEnabledCheckbox
+        enableDeviceApp
                 .setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 
                     @Override
@@ -67,6 +81,8 @@ public class TransilityDeviceLoginActivity extends AppCompatActivity {
     }
 
 
+    
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -81,20 +97,12 @@ public class TransilityDeviceLoginActivity extends AppCompatActivity {
                     truitonDevicePolicyManager.setPasswordQuality(
                             truitonDevicePolicyAdmin,
                             DevicePolicyManager.PASSWORD_QUALITY_COMPLEX);
-                    truitonDevicePolicyManager.setCameraDisabled(
-                            truitonDevicePolicyAdmin, true);
-                    boolean isSufficient = truitonDevicePolicyManager
-                            .isActivePasswordSufficient();
-                    if (isSufficient) {
-                        truitonDevicePolicyManager.lockNow();
-                    } else {
-                        Intent setPasswordIntent = new Intent(
-                                DevicePolicyManager.ACTION_SET_NEW_PASSWORD);
-                        startActivityForResult(setPasswordIntent, SET_PASSWORD);
-                        truitonDevicePolicyManager.setPasswordExpirationTimeout(
-                                truitonDevicePolicyAdmin, 10000L);
-                    }
-                    break;
+
+
+                    Intent intent=new Intent(TransilityDeviceLoginActivity.this,LoginActivity.class);
+                    startActivity(intent);
+                    finish();
+
             }
         }
     }

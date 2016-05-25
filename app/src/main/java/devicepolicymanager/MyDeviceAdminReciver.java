@@ -5,9 +5,11 @@ import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.widget.Toast;
 
 public class MyDeviceAdminReciver extends DeviceAdminReceiver {
+    public static String MAHEVENT="action.com.app.tranisity.android";
     @Override
     public void onDisabled(Context context, Intent intent) {
         Toast.makeText(context, "Truiton's Device Admin Disabled",
@@ -79,5 +81,6 @@ public class MyDeviceAdminReciver extends DeviceAdminReceiver {
     public void onReceive(Context context, Intent intent) {
 
         super.onReceive(context, intent);
+        Log.i(MyDeviceAdminReciver.class.getSimpleName(),intent.getAction()+"");
     }
 }
