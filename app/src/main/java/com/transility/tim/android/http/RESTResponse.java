@@ -83,9 +83,8 @@ public class RESTResponse {
 
     public Bundle userData;
     public RESTRequest.MediaType contentType;
-    byte[] header = new byte[32];
 
-    public RESTResponse(Status status, InputStream value, RESTRequest originatingRequest) {
+    public RESTResponse(Status status,InputStream value, RESTRequest originatingRequest) {
         this.status = status;
         this.value = value;
         this.originatingRequest = originatingRequest;
@@ -106,7 +105,6 @@ public class RESTResponse {
             }
         }
     }
-
 
     public String getText() {
         StringBuilder sb = new StringBuilder();

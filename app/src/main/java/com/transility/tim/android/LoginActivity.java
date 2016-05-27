@@ -7,13 +7,14 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 
 
-
+import android.content.Context;
 import android.os.AsyncTask;
 
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.WindowManager;
@@ -23,6 +24,15 @@ import android.widget.EditText;
 import android.widget.RelativeLayout;
 
 
+import com.transility.tim.android.http.RESTRequest;
+import com.transility.tim.android.http.RESTRequestFactory;
+import com.transility.tim.android.http.RESTResponse;
+import com.transility.tim.android.http.RESTResponseHandler;
+import com.transility.tim.android.http.ResponseFetcher;
+import com.transility.tim.android.http.RESTRequest.Method;
+
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 import static android.Manifest.permission.READ_CONTACTS;
@@ -70,7 +80,7 @@ public class LoginActivity extends FragmentActivity {
         wrapperView = new RelativeLayout(this);
         wrapperView.setBackgroundColor(this.getResources().getColor(R.color.backWhite));
         View activityView= View.inflate(this, R.layout.activity_login, this.wrapperView);
-//        setContentView(activityView);
+        setContentView(activityView);
 
         this.winManager.addView(wrapperView, localLayoutParams);
 
@@ -88,13 +98,32 @@ public class LoginActivity extends FragmentActivity {
         mLoginFormView = activityView.findViewById(R.id.login_form);
         mProgressView = activityView.findViewById(R.id.login_progress);
 
+//        List<RESTResponseHandler> handlers = Arrays.asList( okhandler);
+//        RESTRequestFactory.dispatch(this,Method.POST, "http://impetus8.int.kronos.com/wfc/bridge/rest/logon", "<Logon username=\"mgr\" password=\"kronites\" appversion=\"1.0\"></Logon>", null, null,handlers ,null);
     }
 
-
-
-
-
-
+//  RESTResponseHandler okhandler =  new RESTResponseHandler() {
+//      @Override
+//      public void handleResponseInBackground(Context context, Class<? extends Context> forContextType, RESTResponse response) {
+//          Log.i("ok handler", "handleResponseInBackground");
+//      }
+//
+//      @Override
+//      public void handleResponseInUI(Context context, Class<? extends Context> forContextType, RESTResponse response) {
+//          Log.i("ok handler  ", "handleResponseInUI");
+//      }
+//
+//      @Override
+//      public void handleCancelledRequest(Context context, Class<? extends Context> forContextType, RESTRequest request) {
+//
+//      }
+//
+//      @Override
+//      public boolean matchesExpectedStatus(RESTResponse.Status status) {
+//          return status.isSuccess();
+//      }
+//  };
+//
 
     MyTask myTask;
     /**

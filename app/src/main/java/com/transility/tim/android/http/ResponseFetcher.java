@@ -1,7 +1,5 @@
 package com.transility.tim.android.http;
 
-import android.app.Activity;
-import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -21,8 +19,7 @@ import java.util.Map;
 public class ResponseFetcher  extends AsyncTask<Void,RESTResponse,RESTResponse>
         /*implements JUnitHTTPResponseFetcher*/ {
     private static int ID_GENERATOR = 1;
-    private static Map<String,ResponseFetcher> activeFetchers = new HashMap<String,ResponseFetcher>();
-    private static Map<String,ResponseFetcher> fetchersWaitingForAuthorization = new HashMap<String,ResponseFetcher>();
+    private static Map<String, ResponseFetcher> activeFetchers = new HashMap<String, ResponseFetcher>();
 
     public static ResponseFetcher getActiveResponseFecther(String fetcherId) {
         return activeFetchers.get(fetcherId);
@@ -41,69 +38,46 @@ public class ResponseFetcher  extends AsyncTask<Void,RESTResponse,RESTResponse>
     public static void cancelAllRequests() {
         for (ResponseFetcher fetcher : activeFetchers.values()) {
             if (fetcher != null) {
-                Log.i(Constants.LOGTAG, "ResponseFetcher-"+fetcher.id+" received a cancellation.");
+                Log.i(Constants.LOGTAG, "ResponseFetcher-" + fetcher.id + " received a cancellation.");
                 fetcher.cancel(true);
             }
-        }
-    }
-
-    public static void setIsAuthorized(String fetcherId, boolean isAuthorized) {
-        ResponseFetcher fetcher = getResponseFetcherWaitingForAuthorization(fetcherId);
-        if (fetcher != null) {
-            fetcher.setIsAuthorized(isAuthorized);
-        }
-    }
-
-    public static void retryRequest(String fetcherId, boolean retry) {
-        ResponseFetcher fetcher = getResponseFetcherWaitingForAuthorization(fetcherId);
-        if (fetcher != null) {
-            fetcher.retryRequest(retry);
-        }
-    }
-
-    private static ResponseFetcher getResponseFetcherWaitingForAuthorization(String id) {
-        synchronized(fetchersWaitingForAuthorization) {
-            return fetchersWaitingForAuthorization.get(id);
         }
     }
 
     private final String id;
     private final String originalUri;
     private final Class<? extends Context> forContextType;
-    private final RESTRequest  request;
+    private final RESTRequest request;
 
     private Context appContext;
     private List<? extends RESTResponseHandler> responseHandler;
     private Bundle userData;
 
-    private boolean showLogonWhenUnAuthorized;
     private boolean waitForAuthorizedAnswer;
     private boolean tryRequestAgain;
     private com.transility.tim.android.http.RESTResponse.Status authStatus;
 
     ResponseFetcher(Context forContext, RESTRequest request, RESTResponseHandler httpRespHandler) {
-        this(forContext, request, Arrays.asList(httpRespHandler), null, false);
+        this(forContext, request, Arrays.asList(httpRespHandler), null);
     }
 
     ResponseFetcher(Context forContext, RESTRequest request, List<? extends RESTResponseHandler> handlers,
-                    Bundle userData, boolean dontHandleUnauthorized) {
-        this.id                 = Integer.toString(ID_GENERATOR++);
-        this.appContext         = forContext.getApplicationContext();
-        this.forContextType     = forContext.getClass();
-        this.originalUri        = request.uri;
-        this.request            = request;
-        this.responseHandler    = handlers;
-        this.userData           = userData;
+                    Bundle userData) {
+        this.id = Integer.toString(ID_GENERATOR++);
+        this.appContext = forContext.getApplicationContext();
+        this.forContextType = forContext.getClass();
+        this.originalUri = request.uri;
+        this.request = request;
+        this.responseHandler = handlers;
+        this.userData = userData;
 
-        this.showLogonWhenUnAuthorized = !dontHandleUnauthorized;
 //        this.request.uri = IntellicusMobilePreferences.checkUri(appContext, originalUri);;
-        this.request.checkForCookies = this.showLogonWhenUnAuthorized;
 
         activeFetchers.put(this.id, this);
-        Log.i(Constants.LOGTAG, "ResponseFetcher-"+id+" created for "+originalUri);
+        Log.i(Constants.LOGTAG, "ResponseFetcher-" + id + " created for " + originalUri);
     }
 
-    public void updateRequestURI(String serverURI){
+    public void updateRequestURI(String serverURI) {
 //        this.request.uri = IntellicusMobilePreferences.checkUri(appContext, serverURI, originalUri);;
     }
 
@@ -111,12 +85,8 @@ public class ResponseFetcher  extends AsyncTask<Void,RESTResponse,RESTResponse>
         return id;
     }
 
-    public void setIsAuthorized(boolean isAuthorized) {
-        setIsAuthorized(isAuthorized, null);
-    }
-
     public void retryRequest(boolean retry) {
-        synchronized(this) {
+        synchronized (this) {
             tryRequestAgain = retry;
             authStatus = retry ? null : RESTResponseHandler.STATUS_USER_CANCELLED_AUTH;
 
@@ -125,66 +95,42 @@ public class ResponseFetcher  extends AsyncTask<Void,RESTResponse,RESTResponse>
         }
     }
 
-    private void setIsAuthorized(boolean isAuthorized, com.transility.tim.android.http.RESTResponse.Status status) {
-        synchronized(this) {
-            tryRequestAgain = isAuthorized;
-            showLogonWhenUnAuthorized = false;
-            if (status == null){
-                authStatus = isAuthorized ? com.transility.tim.android.http.RESTResponse.Status.SUCCESS_OK : RESTResponseHandler.STATUS_USER_CANCELLED_AUTH;
-            }
-            else{
-                authStatus = status;
-            }
-
-            waitForAuthorizedAnswer = false;
-
-            this.notifyAll();
-        }
-    }
-
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
-        Log.i(Constants.LOGTAG, "ResponseFetcher-"+id+" about to start.");
+        Log.i(Constants.LOGTAG, "ResponseFetcher-" + id + " about to start.");
     }
 
     @Override
     protected RESTResponse doInBackground(Void... params) {
         Context context;
-        synchronized(this) {
+        synchronized (this) {
             context = appContext;
         }
 
-        Log.i(Constants.LOGTAG, "ResponseFetcher-"+id+" starts.");
+        Log.i(Constants.LOGTAG, "ResponseFetcher-" + id + " starts.");
         RESTResponse result = null;
-        do {
+
             if (result != null) {
                 result.release();
-                result = null;
             }
 
             if (!isCancelled()) {
                 final long start = System.currentTimeMillis();
                 try {
-                    result = request.dispatch(context);
+                    result = request.dispatch();
+                } catch (Throwable t) {
+                    result = new RESTResponse(com.transility.tim.android.http.RESTResponse.Status.CONNECTOR_ERROR_INTERNAL,null, request);
                 }
-                catch (Throwable t) {
-                    result = new RESTResponse(com.transility.tim.android.http.RESTResponse.Status.CONNECTOR_ERROR_INTERNAL, null, request);
-                }
-                Log.v(Constants.LOGTAG, "Server response took "+(System.currentTimeMillis()-start)+" millisecs.");
-            }
-            else {
+                Log.v(Constants.LOGTAG, "Server response took " + (System.currentTimeMillis() - start) + " millisecs.");
+            } else {
                 result = null;
-                break;
+
             }
-        } while (mustTryAgainForFailedAuthorization(result));
+
 
         if (result != null) {
             result.userData = this.userData;
-        }
-
-        synchronized(fetchersWaitingForAuthorization) {
-            fetchersWaitingForAuthorization.remove(id);
         }
 
         if (result != null && isCancelled()) {
@@ -194,7 +140,7 @@ public class ResponseFetcher  extends AsyncTask<Void,RESTResponse,RESTResponse>
         }
 
         List<? extends RESTResponseHandler> handlers;
-        synchronized(this) {
+        synchronized (this) {
             handlers = responseHandler;
         }
 
@@ -203,8 +149,7 @@ public class ResponseFetcher  extends AsyncTask<Void,RESTResponse,RESTResponse>
                 if (!result.isEmpty() && handler.matchesExpectedStatus(result.status)) {
                     try {
                         handler.handleResponseInBackground(context, forContextType, result);
-                    }
-                    catch (Exception e) {
+                    } catch (Exception e) {
                         Log.e(Constants.LOGTAG, "doInBackground at Async Task .", e);
                         result.release();
                         result.userData = null;
@@ -219,7 +164,7 @@ public class ResponseFetcher  extends AsyncTask<Void,RESTResponse,RESTResponse>
     @Override
     protected void onPostExecute(RESTResponse response) {
         super.onPostExecute(response);
-        if (appContext == null){
+        if (appContext == null) {
             return;
         }
 
@@ -229,35 +174,33 @@ public class ResponseFetcher  extends AsyncTask<Void,RESTResponse,RESTResponse>
                     if (!response.isEmpty() && handler.matchesExpectedStatus(response.status)) {
                         try {
                             handler.handleResponseInUI(appContext, forContextType, response);
-                        }
-                        catch (Exception e) {
+                        } catch (Exception e) {
                             Log.e(Constants.LOGTAG, "doInBackground at Async Task .", e);
                             return;
                         }
                     }
                 }
             }
-        }
-        finally {
-            synchronized(this) {
+        } finally {
+            synchronized (this) {
                 appContext = null;
             }
 
             if (response != null) {
-                if (responseHandler != null){
+                if (responseHandler != null) {
                     response.release();
                 }
 
                 response.userData = null;
             }
 
-            synchronized(this) {
+            synchronized (this) {
                 responseHandler = null;
                 activeFetchers.remove(id);
                 userData = null;
             }
 
-            Log.i(Constants.LOGTAG, "ResponseFetcher-"+id+" has finished.");
+            Log.i(Constants.LOGTAG, "ResponseFetcher-" + id + " has finished.");
         }
     }
 
@@ -269,7 +212,7 @@ public class ResponseFetcher  extends AsyncTask<Void,RESTResponse,RESTResponse>
     @Override
     protected void onCancelled() {
         super.onCancelled();
-        if (appContext == null){
+        if (appContext == null) {
             return;
         }
 
@@ -279,62 +222,14 @@ public class ResponseFetcher  extends AsyncTask<Void,RESTResponse,RESTResponse>
                     handler.handleCancelledRequest(appContext, forContextType, request);
                 }
             }
-        }
-        finally {
-            synchronized(this) {
+        } finally {
+            synchronized (this) {
                 appContext = null;
                 responseHandler = null;
                 activeFetchers.remove(id);
                 userData = null;
             }
-            Log.i(Constants.LOGTAG, "ResponseFetcher-"+id+" has been cancelled");
+            Log.i(Constants.LOGTAG, "ResponseFetcher-" + id + " has been cancelled");
         }
     }
-
-    private boolean mustTryAgainForFailedAuthorization(RESTResponse result) {
-        if (showLogonWhenUnAuthorized && result != null && result.status.isError()) {
-            Log.w(Constants.LOGTAG, "ResponseFetcher-"+id+" has a recoverable failure:\n  status="+result.status);
-
-            tryRequestAgain = false;
-            waitForAuthorizedAnswer = true;
-            authStatus = null;
-
-            synchronized(fetchersWaitingForAuthorization) {
-                fetchersWaitingForAuthorization.put(id, this);
-            }
-
-            publishProgress(result);
-
-            synchronized(this) {
-                try {
-                    while (waitForAuthorizedAnswer) {
-                        if (!isCancelled()){
-                            this.wait(500);
-                        }
-                    }
-                    if (authStatus != null){
-                        result.status = authStatus;
-                    }
-                } catch (InterruptedException e) {
-                    tryRequestAgain = false;
-                }
-
-                request.uri = originalUri;
-
-                synchronized(fetchersWaitingForAuthorization) {
-                    fetchersWaitingForAuthorization.remove(id);
-                }
-
-                Log.w(Constants.LOGTAG, "ResponseFetcher-"+id+" has recovered from failure: "+tryRequestAgain);
-                return tryRequestAgain;
-            }
-        }
-        else {
-            return false;
-        }
-    }
-
-//    @Override
-//    public void setJUnitListener(Listener listener) {
-//    }
 }

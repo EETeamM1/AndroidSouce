@@ -7,13 +7,7 @@ import com.transility.tim.android.http.RESTResponse.Status;
  * @author Himanshu Bapna
  */
 public interface RESTResponseHandler {
-    public static final String COM_KRONOS_ANDROID_ACTION_PREFIX  = "com.kronos.android.ACTION_";
-    public static final String COM_KRONOS_ANDROID_DEFAULT_ACTION = "DEFAULT";
-    public static final String REF = "ref";
-    public static final String URI = "uri";
-    public static final String METHOD = "method";
-    public static final String RESPONSE = "response";
-    public static final String STATUS = "status";
+
     public static final String NULL_URI = "/null";
     public static final Status STATUS_HOST_NOT_FOUND      = Status.CAN_NOT_FOUND_HOST;
     public static final Status STATUS_USER_CANCELLED_AUTH = Status.USER_CANCELLED_AUTH;
