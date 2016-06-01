@@ -4,77 +4,98 @@
     android:layout_height="match_parent"
     android:gravity="center_horizontal"
     android:orientation="vertical"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    android:background="@android:color/transparent"
-    tools:context="com.example.ambeshkukreja.tranilityinventorymanagement.LoginActivity">
-
-    <!-- Login progress -->
-    <ProgressBar
-        android:id="@+id/login_progress"
-        style="?android:attr/progressBarStyleLarge"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:visibility="gone" />
-
-    <ScrollView
+    android:background="@android:color/background_light"
+    android:padding="@dimen/metrics_15"
+ >
+ <ScrollView
         android:id="@+id/login_form"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
+
 
         <LinearLayout
             android:id="@+id/email_login_form"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/transility_logo"
+                android:layout_marginTop="@dimen/metrics_20"
+                android:layout_gravity="center_horizontal"
+                />
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
+                android:layout_marginTop="@dimen/metrics_20"
                 android:layout_height="wrap_content">
 
                 <EditText
                     android:id="@+id/email"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="@dimen/metrics_50"
                     android:hint="@string/prompt_email"
                     android:inputType="textEmailAddress"
                     android:textColor="@android:color/background_dark"
                     android:maxLines="1"
+                    style="?android:textAppearanceMedium"
+                    android:gravity="center_vertical"
+
                     android:singleLine="true" />
 
             </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
+                android:layout_marginTop="@dimen/metrics_20"
                 android:layout_height="wrap_content">
 
                 <EditText
                     android:id="@+id/password"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="@dimen/metrics_50"
                     android:hint="@string/prompt_password"
                     android:imeActionId="@+id/login"
                     android:imeActionLabel="@string/action_sign_in_short"
-                    android:imeOptions="actionUnspecified"
+                    android:imeOptions="actionDone"
                     android:textColor="@android:color/background_dark"
-
                     android:maxLines="1"
+                    android:gravity="center_vertical"
+                    style="?android:textAppearanceMedium"
+
                     android:singleLine="true" />
 
             </android.support.design.widget.TextInputLayout>
 
             <Button
                 android:id="@+id/email_sign_in_button"
-                style="?android:textAppearanceSmall"
+                style="?android:textAppearanceMedium"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_height="@dimen/metrics_50"
+                android:layout_marginTop="@dimen/metrics_20"
                 android:text="@string/action_sign_in"
-                android:textStyle="bold" />
+                android:textColor="@color/textColor"
+                android:background="@color/backMaroon"
+                 />
 
         </LinearLayout>
     </ScrollView>
+    <ProgressBar
+        android:id="@+id/login_progress"
+
+        android:layout_width="@dimen/metrics_45"
+        android:layout_marginTop="@dimen/metrics_20"
+        android:layout_height="@dimen/metrics_45"
+
+        />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="@color/textColor"
+        android:layout_marginTop="@dimen/metrics_20"
+        android:id="@+id/responseAndProgressMessageTv"
+
+         />
 </LinearLayout>
