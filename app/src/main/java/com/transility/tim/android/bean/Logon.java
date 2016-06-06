@@ -1,5 +1,6 @@
 package com.transility.tim.android.bean;
 
+import android.location.Location;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
@@ -51,7 +52,7 @@ public class Logon implements Parcelable{
         return  logon;
     }
 
-    public static String writeLogonJSON (String username, String password, long deviceId){
+    public static String writeLogonJSON (String username, String password, long deviceId, Location location){
 
         String logonJSON=null;
         try {
@@ -64,10 +65,8 @@ public class Logon implements Parcelable{
 
             //TODO add os version
 //            paramObject.put("osVersion", "osVersion");
-
-            //TODO add latiude and logitude
-            //paramObject.put("latitude", "latitude");
-            //paramObject.put("longitude", "longitude");
+            paramObject.put("latitude", location.getLatitude());
+            paramObject.put("longitude", location.getLongitude());
 
             jsonObject.put("parameters",paramObject);
 
