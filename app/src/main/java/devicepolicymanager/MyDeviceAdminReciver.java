@@ -19,6 +19,8 @@ import android.widget.Toast;
 
 import com.transility.tim.android.LoginActivity;
 import com.transility.tim.android.MasterPasswordScreen;
+import com.transility.tim.android.R;
+import com.transility.tim.android.Utilities.LoggerClass;
 
 public class MyDeviceAdminReciver extends DeviceAdminReceiver {
     public static String MAHEVENT="action.com.app.tranisity.android";
@@ -29,20 +31,20 @@ public class MyDeviceAdminReciver extends DeviceAdminReceiver {
     @Override
     public void onDisabled(Context context, Intent intent) {
 
-
+        LoggerClass.logError(MyDeviceAdminReciver.class.getSimpleName(),"onDisabled");
 
     }
 
     @Override
     public void onEnabled(Context context, Intent intent) {
-        Toast.makeText(context, "Truiton's Device Admin is now enabled",
-                Toast.LENGTH_SHORT).show();
+        LoggerClass.logError(MyDeviceAdminReciver.class.getSimpleName(),"onEnabled");
     }
 
 
 
     @Override
     public CharSequence onDisableRequested(Context context, Intent intent) {
+        LoggerClass.logError(MyDeviceAdminReciver.class.getSimpleName(),"onDisableRequested");
         if (windowManager==null){
             windowManager= (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         }
@@ -57,7 +59,7 @@ public class MyDeviceAdminReciver extends DeviceAdminReceiver {
 
 
 
-        return "You Are trying to unregister the admin app device will get locked ha ha ha ha ha ha ha ha ";
+        return context.getString(R.string.textDisableTheDevieAdminApp);
     }
 
 
@@ -69,8 +71,8 @@ private View.OnClickListener onClickListener=new View.OnClickListener() {
 };
     @Override
     public void onPasswordChanged(Context context, Intent intent) {
-        Toast.makeText(context, "Device password is now changed",
-                Toast.LENGTH_SHORT).show();
+        LoggerClass.logError(MyDeviceAdminReciver.class.getSimpleName(),"onPasswordChanged");
+
         DevicePolicyManager localDPM = (DevicePolicyManager) context
                 .getSystemService(Context.DEVICE_POLICY_SERVICE);
         ComponentName localComponent = new ComponentName(context,
@@ -82,10 +84,7 @@ private View.OnClickListener onClickListener=new View.OnClickListener() {
     @Override
     public void onPasswordExpiring(Context context, Intent intent) {
         // This would require API 11 an above
-        Toast.makeText(
-                context,
-                "Truiton's Device password is going to expire, please change to a new password",
-                Toast.LENGTH_LONG).show();
+        LoggerClass.logError(MyDeviceAdminReciver.class.getSimpleName(),"onPasswordExpiring");
 
         DevicePolicyManager localDPM = (DevicePolicyManager) context
                 .getSystemService(Context.DEVICE_POLICY_SERVICE);
@@ -105,23 +104,19 @@ private View.OnClickListener onClickListener=new View.OnClickListener() {
 
     @Override
     public void onPasswordFailed(Context context, Intent intent) {
-        Toast.makeText(context, "Password failed", Toast.LENGTH_SHORT)
-                .show();
+        LoggerClass.logError(MyDeviceAdminReciver.class.getSimpleName(),"onPasswordFailed");
     }
 
     @Override
     public void onPasswordSucceeded(Context context, Intent intent) {
-        Toast.makeText(context, "Access Granted", Toast.LENGTH_SHORT)
-                .show();
+        LoggerClass.logError(MyDeviceAdminReciver.class.getSimpleName(),"onPasswordSucceeded");
     }
 
     @Override
     public void onReceive(Context context, Intent intent) {
 
         super.onReceive(context, intent);
+        LoggerClass.logError(MyDeviceAdminReciver.class.getSimpleName(),"onReceive");
 
-        SharedPreferences sharedPreferences= PreferenceManager.getDefaultSharedPreferences(context);
-        
-        Log.i(MyDeviceAdminReciver.class.getSimpleName(),intent.getAction()+"");
     }
 }

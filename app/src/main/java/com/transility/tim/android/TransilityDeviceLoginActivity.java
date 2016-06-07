@@ -22,31 +22,21 @@ public class TransilityDeviceLoginActivity extends AppCompatActivity {
     ComponentName truitonDevicePolicyAdmin;
     private Switch enableDeviceApp;
     protected static final int REQUEST_ENABLE = 1;
-    protected static final int SET_PASSWORD = 2;
-    private AlarmManager alarmMgr;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_admin_app_home_page);
 
 
-    truitonDevicePolicyManager = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
-    truitonDevicePolicyAdmin = new ComponentName(this,
+     truitonDevicePolicyManager = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
+     truitonDevicePolicyAdmin = new ComponentName(this,
                                                  MyDeviceAdminReciver.class);
-
         enableDeviceApp = (Switch) findViewById(R.id.enableDeviceApp);
-        enableTheAlarm();
+
 }
 
-    private void enableTheAlarm() {
-        alarmMgr = (AlarmManager)this.getSystemService(Context.ALARM_SERVICE);
-        Intent intent=new Intent(TransilityDeviceLoginActivity.this,MyDeviceAdminReciver.class);
-        intent.setAction(MyDeviceAdminReciver.MAHEVENT);
-        alarmMgr.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
-                2 * 60 * 1000,
-                2 * 60 * 1000, PendingIntent.getBroadcast(TransilityDeviceLoginActivity.this,0,intent,0));
-        System.out.println("");
-    }
 
     @Override
     protected void onResume() {
@@ -70,7 +60,7 @@ public class TransilityDeviceLoginActivity extends AppCompatActivity {
                                     truitonDevicePolicyAdmin);
                             intent.putExtra(
                                     DevicePolicyManager.EXTRA_ADD_EXPLANATION,
-                                    "Tere mere beech mai kaisa hai bandhan anjana!!!!!!!");
+                                    "");
                             startActivityForResult(intent, REQUEST_ENABLE);
                         } else {
                             truitonDevicePolicyManager
@@ -107,6 +97,10 @@ public class TransilityDeviceLoginActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Check whther device admin is active
+     * @return is Device Admin active
+     */
     private boolean isMyDevicePolicyReceiverActive() {
         return truitonDevicePolicyManager
                 .isAdminActive(truitonDevicePolicyAdmin);

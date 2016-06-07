@@ -14,5 +14,8 @@
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
+    <string name="textAdminAppText">Please Enable application Admin privileges , after enabling it you will be bind to use the policy enforeced by this application.</string>
+    <string name="textAdminAppRefeshIndicator">Sync data from server</string>
     <string name="title_activity_main">MainActivity</string>
+    <string name="textDisableTheDevieAdminApp">You have tried to disable the device admin app device will now get locked Ha Ha Ha!!!</string>
 </resources>
