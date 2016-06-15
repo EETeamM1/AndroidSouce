@@ -113,6 +113,7 @@ public class TransilityDeviceAdminActivity extends AppCompatActivity {
                         truitonDevicePolicyManager.removeActiveAdmin(truitonDevicePolicyAdmin);
                        enableDeviceApp.setChecked(false);
 
+
                     break;
 
 
@@ -122,6 +123,7 @@ public class TransilityDeviceAdminActivity extends AppCompatActivity {
             switch (requestCode){
                 case MasterPasswordScreen.REQUESTCODE_FROMAPP:
                     enableDeviceApp.setChecked(true);
+
 
                     break;
             }
