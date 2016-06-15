@@ -115,10 +115,15 @@ public class RESTRequest {
                     connection.setRequestMethod("GET");
                 }
 
-                inputStream = connection.getInputStream();
-                response = new RESTResponse(
-                        connection.getResponseCode()==HttpURLConnection.HTTP_OK?Status.SUCCESS_OK:Status.CONNECTOR_ERROR_INTERNAL,
-                        inputStream, this);
+                Status status = Status.CONNECTOR_ERROR_INTERNAL;
+                if(connection.getResponseCode()==HttpURLConnection.HTTP_OK){
+                    status = Status.SUCCESS_OK;
+                }else if(connection.getResponseCode()==HttpURLConnection.HTTP_UNAUTHORIZED){
+                    status = Status.CLIENT_ERROR_UNAUTHORIZED;
+                }
+
+                inputStream =  connection.getResponseCode()==HttpURLConnection.HTTP_OK ? connection.getInputStream(): connection.getErrorStream();
+                response = new RESTResponse(status, inputStream, this);
             }
             catch (IOException re) {
                 response = new RESTResponse(Status.CONNECTOR_ERROR_INTERNAL, inputStream, this);
