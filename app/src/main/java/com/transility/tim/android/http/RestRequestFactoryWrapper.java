@@ -35,9 +35,9 @@ public class RestRequestFactoryWrapper {
      * @param requestUrl
      * @param requestJson
      */
-    public void callHttpRestRequest(String requestUrl,String requestJson){
+    public void callHttpRestRequest(String requestUrl,String requestJson, RESTRequest.Method method){
         List<RESTResponseHandler> handlers = Arrays.asList(okhandler,errorHandler);
-        RESTRequestFactory.dispatch(context, RESTRequest.Method.POST, requestUrl, requestJson, null,handlers ,null);
+        RESTRequestFactory.dispatch(context, method , requestUrl, requestJson, null,handlers ,null);
     }
     /**
      * Handler called when the Resquest has executed Successfully.

@@ -30,6 +30,7 @@ import com.transility.tim.android.Utilities.RestResponseShowFeedbackInterface;
 import com.transility.tim.android.bean.EmployeeInfoBean;
 import com.transility.tim.android.bean.Logon;
 
+import com.transility.tim.android.http.RESTRequest.Method;
 import com.transility.tim.android.http.RESTResponse;
 
 import com.transility.tim.android.http.RestRequestFactoryWrapper;
@@ -113,7 +114,7 @@ public class LoginActivity extends FragmentActivity {
         String json=Logon.writeLogonJSON(mEmailView.getText().toString(),mPasswordView.getText().toString(),null,telephonyManager.getDeviceId());
         String loginRequest=getResources().getString(R.string.baseUrl)+getResources().getString(R.string.api_login);
 
-        restRequestFactoryWrapper.callHttpRestRequest(loginRequest,json);
+        restRequestFactoryWrapper.callHttpRestRequest(loginRequest,json, Method.POST);
         mProgressView.setVisibility(View.VISIBLE);
 
     }
