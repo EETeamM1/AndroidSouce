@@ -7,4 +7,8 @@
     <dimen name="metrics_20">20dp</dimen>
     <dimen name="metrics_50">50dp</dimen>
     <dimen name="metrics_45">45dp</dimen>
+    <dimen name="metrics_1">1dp</dimen>
+    <dimen name="metrics_10">10dp</dimen>
+    <dimen name="metrics_200">200dp</dimen>
+
 </resources>

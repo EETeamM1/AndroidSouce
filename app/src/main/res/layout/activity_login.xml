@@ -24,11 +24,9 @@
                 android:src="@drawable/transility_logo"
                 android:layout_marginTop="@dimen/metrics_20"
                 android:layout_gravity="center_horizontal"
+
                 />
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_marginTop="@dimen/metrics_20"
-                android:layout_height="wrap_content">
+
 
                 <EditText
                     android:id="@+id/email"
@@ -36,19 +34,16 @@
                     android:layout_height="@dimen/metrics_50"
                     android:hint="@string/prompt_email"
                     android:inputType="textEmailAddress"
+                    android:layout_marginTop="@dimen/metrics_20"
+
                     android:textColor="@android:color/background_dark"
                     android:maxLines="1"
                     style="?android:textAppearanceMedium"
                     android:gravity="center_vertical"
-
+                    android:background="@drawable/textboxbackground"
                     android:singleLine="true" />
 
-            </android.support.design.widget.TextInputLayout>
 
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_marginTop="@dimen/metrics_20"
-                android:layout_height="wrap_content">
 
                 <EditText
                     android:id="@+id/password"
@@ -57,21 +52,22 @@
                     android:hint="@string/prompt_password"
                     android:imeActionId="@+id/login"
                     android:imeActionLabel="@string/action_sign_in_short"
+                    android:layout_marginTop="@dimen/metrics_20"
+                    android:inputType="textPassword"
                     android:imeOptions="actionDone"
                     android:textColor="@android:color/background_dark"
                     android:maxLines="1"
                     android:gravity="center_vertical"
                     style="?android:textAppearanceMedium"
-
+                    android:background="@drawable/textboxbackground"
                     android:singleLine="true" />
 
-            </android.support.design.widget.TextInputLayout>
 
             <Button
                 android:id="@+id/email_sign_in_button"
                 style="?android:textAppearanceMedium"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/metrics_50"
+                android:layout_height="@dimen/metrics_45"
                 android:layout_marginTop="@dimen/metrics_20"
                 android:text="@string/action_sign_in"
                 android:textColor="@color/textColor"
@@ -87,14 +83,17 @@
         android:layout_marginTop="@dimen/metrics_20"
         android:layout_height="@dimen/metrics_45"
 
+        android:visibility="gone"
         />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textColor="@color/textColor"
+        android:textColor="@color/textColorBlack"
         android:layout_marginTop="@dimen/metrics_20"
+        android:padding="@dimen/metrics_10"
+
         android:id="@+id/responseAndProgressMessageTv"
 
          />

@@ -8,14 +8,15 @@ import android.database.sqlite.SQLiteDatabase;
  */
 public class EmployeeInfoBean {
     public  static String USER_EMAIL="userEmail";
-    public  static String EMPLOYEE_ID="employeeID";
+
     public  static String TIMEOUT_PERIOD="timeOutPeriod";
     public static String MASTER_PASSWORD="masterPassword";
 
 
     private String userEmail;
-    private String employeeID;
-    private String timeOutPeriod;
+
+    private int timeOutPeriod;
+    private String masterPassword;
 
     public String getMasterPassword() {
         return masterPassword;
@@ -25,7 +26,7 @@ public class EmployeeInfoBean {
         this.masterPassword = masterPassword;
     }
 
-    private String masterPassword;
+
 
     public String getUserEmail() {
         return userEmail;
@@ -35,19 +36,13 @@ public class EmployeeInfoBean {
         this.userEmail = userEmail;
     }
 
-    public String getEmployeeID() {
-        return employeeID;
-    }
 
-    public void setEmployeeID(String employeeID) {
-        this.employeeID = employeeID;
-    }
 
-    public String getTimeOutPeriod() {
+    public int getTimeOutPeriod() {
         return timeOutPeriod;
     }
 
-    public void setTimeOutPeriod(String timeOutPeriod) {
+    public void setTimeOutPeriod(int timeOutPeriod) {
         this.timeOutPeriod = timeOutPeriod;
     }
 }

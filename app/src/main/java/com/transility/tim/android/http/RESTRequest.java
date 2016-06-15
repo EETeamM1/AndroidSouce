@@ -114,6 +114,7 @@ public class RESTRequest {
                 else {
                     connection.setRequestMethod("GET");
                 }
+
                 inputStream = connection.getInputStream();
                 response = new RESTResponse(
                         connection.getResponseCode()==HttpURLConnection.HTTP_OK?Status.SUCCESS_OK:Status.CONNECTOR_ERROR_INTERNAL,

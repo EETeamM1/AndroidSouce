@@ -3,5 +3,10 @@
     <dimen name="metrics_15">15dp</dimen>
     <dimen name="metrics_20">18dp</dimen>
     <dimen name="metrics_50">60dp</dimen>
+
     <dimen name="metrics_45">50dp</dimen>
+    <dimen name="metrics_10">13dp</dimen>
+    <dimen name="metrics_1">1.25dp</dimen>
+    <dimen name="metrics_200">210dp</dimen>
+
 </resources>

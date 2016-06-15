@@ -18,4 +18,12 @@
     <string name="textAdminAppRefeshIndicator">Sync data from server</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="textDisableTheDevieAdminApp">You have tried to disable the device admin app device will now get locked Ha Ha Ha!!!</string>
+
+    <string name="title_activity_transility_screen_splash_screen">TransilityScreenSplashScreen
+    </string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="title_activity_ra">ra</string>
+    <string name="textReports">Check Device Reports</string>
+    <string name="textLogout">Logout</string>
 </resources>

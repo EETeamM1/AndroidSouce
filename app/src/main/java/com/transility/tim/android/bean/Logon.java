@@ -1,11 +1,14 @@
 package com.transility.tim.android.bean;
 
 import android.location.Location;
+import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 
+import com.transility.tim.android.BuildConfig;
 import com.transility.tim.android.Constants;
+import com.transility.tim.android.Utilities.Utility;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -37,12 +40,13 @@ public class Logon implements Parcelable{
          Logon logon = new Logon();
 
         try {
+
             JSONObject jsonObject = new JSONObject(jsonResponse);
             JSONObject result  = jsonObject.getJSONObject("result");
 
-            logon.sessionToken = result.getString("sessionToken");
+            logon.sessionToken = result.optString("sessionToken");
             logon.masterPassword = result.optString("masterPassword");
-            logon.timeout = Integer.parseInt(jsonObject.optString("timeout").toString());
+            logon.timeout = result.optInt("timeout");
 
 
         } catch (JSONException e) {
@@ -52,21 +56,39 @@ public class Logon implements Parcelable{
         return  logon;
     }
 
-    public static String writeLogonJSON (String username, String password, long deviceId, Location location){
+    public static String writeLogonJSON (String username, String password, Location location,String imeiNumber){
 
         String logonJSON=null;
         try {
             JSONObject jsonObject =  new JSONObject();
             JSONObject paramObject = new JSONObject();
 
+
             paramObject.put("userId", username);
             paramObject.put("password", password);
-            paramObject.put("deviceId", deviceId);
+            Utility.logError("Imei Number",imeiNumber);
+            /**
+             * Added this since no data is avalible on server yet.
+             */
+            if (BuildConfig.DEBUG){
+                imeiNumber="12345655474255";
+            }
+
+            paramObject.put("deviceId", imeiNumber);
+
+            paramObject.put("osVersion", Build.VERSION.RELEASE);
 
             //TODO add os version
 //            paramObject.put("osVersion", "osVersion");
-            paramObject.put("latitude", location.getLatitude());
-            paramObject.put("longitude", location.getLongitude());
+            if (location!=null){
+                paramObject.put("latitude", location.getLatitude());
+                paramObject.put("longitude", location.getLongitude());
+            }
+            else {
+                paramObject.put("latitude", "");
+                paramObject.put("longitude", "");
+            }
+
 
             jsonObject.put("parameters",paramObject);
 
@@ -74,7 +96,7 @@ public class Logon implements Parcelable{
 
 
         } catch (JSONException e) {
-            e.printStackTrace();
+            Utility.printHandledException(e);
             Log.e(Constants.LOGTAG, "Unable to write Logon JSON: ", e);
         }
 

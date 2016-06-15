@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="textUnauthorisedPerson">Username or Password is incorrect.</string>
+    <string name="textServerisDown">Server is down please contact your inventory manager for master password.</string>
+    <string name="textSomeErrorOccured">Some error occured please contact your inventory manager.</string>
+    <string name="textNetworkNotAvaliable">Network Not Avaliable please eanble your network through notification bar.</string>
+</resources>

@@ -21,6 +21,7 @@
         android:text="@string/textAdminAppText"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textColor="@color/textColorBlack"
+        android:gravity="center"
      />
 
     <Switch
@@ -33,5 +34,30 @@
 
         android:textStyle="bold" />
 
+    <Button
+        android:id="@+id/reportsBtn"
+        style="?android:textAppearanceSmall"
+        android:layout_width="@dimen/metrics_200"
+        android:layout_height="@dimen/metrics_45"
+        android:layout_marginTop="@dimen/metrics_20"
+        android:text="@string/textReports"
+        android:textColor="@color/textColor"
+        android:padding="@dimen/metrics_10"
+        android:layout_gravity="center_horizontal"
+        android:background="@color/backMaroon"
+        />
+    <Button
+        android:id="@+id/logoutBtn"
+        style="?android:textAppearanceSmall"
+        android:layout_width="@dimen/metrics_200"
+        android:layout_height="@dimen/metrics_45"
+        android:layout_marginTop="@dimen/metrics_20"
+        android:text="@string/textLogout"
+        android:textColor="@color/textColor"
+        android:padding="@dimen/metrics_10"
+
+        android:layout_gravity="center_horizontal"
+        android:background="@color/backMaroon"
+        />
 
 </LinearLayout>

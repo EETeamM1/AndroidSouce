@@ -5,21 +5,25 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:gravity="center"
+    android:background="@color/backWhite"
     tools:context=".MasterPasswordScreen">
 
-    <EditText
-        android:id="@+id/masterPasswordEt"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
 
-        />
+<TextView
 
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/metrics_10"
+    android:text="Screen Under development please click on the submit btn to  disable with app"
+    />
     <Button
+        android:id="@+id/submitBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Submit"
-        android:gravity="center_horizontal"
-
+        android:layout_gravity="center"
+        android:layout_marginTop="@dimen/metrics_10"
         />
 
 </LinearLayout>

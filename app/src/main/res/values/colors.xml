@@ -4,7 +4,10 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
     <color name="backWhite">#ffffff</color>
-    <color name="textColor">#000000</color>
+    <color name="textColor">#ffffff</color>
+
     <color name="backMaroon">#8b0d38</color>
     <color name="textColorBlack">#000000</color>
+
+    <color name="black_overlay">#66000000</color>
 </resources>

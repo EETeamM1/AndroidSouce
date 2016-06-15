@@ -21,7 +21,7 @@ public class InventoryDatabaseManager extends SQLiteOpenHelper{
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-
+        employeeDatabaseTable.createEmployeeDatabaseTable(db);
 
 
     }
@@ -34,6 +34,11 @@ public class InventoryDatabaseManager extends SQLiteOpenHelper{
     @Override
     public void onOpen(SQLiteDatabase db) {
         super.onOpen(db);
+
+    }
+
+    public EmployeeDatabaseTable getEmployeeDataTable(){
+        return  employeeDatabaseTable;
 
     }
 }
