@@ -6,6 +6,7 @@ import android.content.ComponentName;
 import android.content.Context;
 
 import android.content.Intent;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -14,12 +15,15 @@ import android.widget.LinearLayout;
 import com.transility.tim.android.R;
 import com.transility.tim.android.Utilities.Utility;
 
+import java.util.zip.Inflater;
+
 public class MyDeviceAdminReciver extends DeviceAdminReceiver {
     public static String MAHEVENT="action.com.app.tranisity.android";
 
     private static WindowManager  windowManager;
     private static LinearLayout wrapperView;
-    private Button button;
+    private static  Button submitBtn;
+
     @Override
     public void onDisabled(Context context, Intent intent) {
 
@@ -41,15 +45,18 @@ public class MyDeviceAdminReciver extends DeviceAdminReceiver {
             windowManager= (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         }
         wrapperView=new LinearLayout(context);
-        button=new Button(context);
-        button.setOnClickListener(onClickListener);
-        WindowManager.LayoutParams localLayoutParams = new WindowManager.LayoutParams( WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
-        LinearLayout.LayoutParams lpView = new  LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        wrapperView.setOrientation(LinearLayout.VERTICAL);
 
-        wrapperView.addView(button,0,lpView);
+            LayoutInflater inflater= (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+        WindowManager.LayoutParams localLayoutParams = new WindowManager.LayoutParams( WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
+
+        View masterScreen=inflater.inflate(R.layout.activity_main,wrapperView);
+
         windowManager.addView(wrapperView, localLayoutParams);
 
-
+        submitBtn= (Button) masterScreen.findViewById(R.id.submitBtn);
+        submitBtn.setOnClickListener(onClickListener);
 
         return context.getString(R.string.textDisableTheDevieAdminApp);
     }

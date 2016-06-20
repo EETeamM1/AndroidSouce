@@ -26,7 +26,9 @@ public class RESTResponse {
 
         USER_CANCELLED_AUTH(1012),
 
-        CLIENT_ERROR_UNAUTHORIZED(HttpURLConnection.HTTP_UNAUTHORIZED);
+        CLIENT_ERROR_UNAUTHORIZED(HttpURLConnection.HTTP_UNAUTHORIZED),
+
+        CLIENT_ERROR(HttpURLConnection.HTTP_BAD_REQUEST);
 
         private final int sc;
         Status(int scode){

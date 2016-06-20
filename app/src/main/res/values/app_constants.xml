@@ -2,4 +2,5 @@
 <resources>
     <string name="baseUrl">http://172.26.60.21:9000/InventoryManagement/api/user/</string>
     <string name="api_login">login</string>
+    <integer name="defaultTimeInterval">30</integer>
 </resources>

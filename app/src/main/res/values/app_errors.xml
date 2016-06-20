@@ -5,4 +5,12 @@
     <string name="textServerisDown">Server is down please contact your inventory manager for master password.</string>
     <string name="textSomeErrorOccured">Some error occured please contact your inventory manager.</string>
     <string name="textNetworkNotAvaliable">Network Not Avaliable please eanble your network through notification bar.</string>
+    <string name="textEmptyUserName">UserName cannot be empty.</string>
+    <string name="textEmptyPassword">Password cannot be empty.</string>
+    <string name="textUseMasterPassword">Due to Unavabiltty of network we are unable to authenticate you .
+        In this case you can either use your master password (contact admin) or enable internet through notification bar .</string>
+    <string name="textDataBaseErrorOccured">Data base error occurred.</string>
+    <string name="textIncorrectMasterPassword">Master password you entred is incorrect.</string>
+    <string name="textWindowWarning">Device is to get unlocked in few seconds . You will be given window of 30 min to enable network and logout from Inventory app home screen.
+        \n After 30 min device will automatically get locked.</string>
 </resources>

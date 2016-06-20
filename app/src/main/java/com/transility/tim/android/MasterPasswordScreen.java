@@ -11,7 +11,7 @@ import android.widget.Button;
 
 public class MasterPasswordScreen extends Activity {
 
-    public final static int REQUESTCODE_FROMAPP=101;
+    public final static int REQUESTCODE_FROMAPP=501;
 
     private Button submitBtn;
 

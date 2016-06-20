@@ -3,6 +3,7 @@ package com.transility.tim.android.http;
 import android.util.Log;
 
 import com.transility.tim.android.Constants;
+import com.transility.tim.android.Utilities.Utility;
 import com.transility.tim.android.http.RESTResponse.Status;
 
 import java.io.IOException;
@@ -121,7 +122,11 @@ public class RESTRequest {
                 }else if(connection.getResponseCode()==HttpURLConnection.HTTP_UNAUTHORIZED){
                     status = Status.CLIENT_ERROR_UNAUTHORIZED;
                 }
+                else if (connection.getResponseCode()==HttpURLConnection.HTTP_BAD_REQUEST){
+                    status = Status.CLIENT_ERROR;
+                }
 
+                Utility.logError("Rest Request status>>>",connection.getResponseCode()+"");
                 inputStream =  connection.getResponseCode()==HttpURLConnection.HTTP_OK ? connection.getInputStream(): connection.getErrorStream();
                 response = new RESTResponse(status, inputStream, this);
             }

@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 
 import android.telephony.TelephonyManager;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.WindowManager;
@@ -60,7 +61,7 @@ public class LoginActivity extends FragmentActivity {
         // Set up the login form.
         Utility.logError(LoginActivity.this.getClass().getSimpleName(),"onCreate");
 
-        WindowManager.LayoutParams localLayoutParams = new WindowManager.LayoutParams( WindowManager.LayoutParams.TYPE_SYSTEM_ERROR);
+        WindowManager.LayoutParams localLayoutParams = new WindowManager.LayoutParams( WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
 
         winManager = ((WindowManager)getApplicationContext().getSystemService(WINDOW_SERVICE));
 
@@ -92,11 +93,58 @@ public class LoginActivity extends FragmentActivity {
         public void onClick(View v) {
             switch (v.getId()){
                 case R.id.email_sign_in_button:
-                    if (Utility.checkInternetConnection(LoginActivity.this)){
-                        intiateLogin();
+                    Utility.removeKeyboardfromScreen(LoginActivity.this);
+
+                    mResponseAndProgressMessageTv.setText("");
+                    boolean isNetworkConnected=Utility.checkInternetConnection(LoginActivity.this);
+                    if(isNetworkConnected){
+
+                        if (TextUtils.isEmpty(mEmailView.getText())){
+                            mEmailView.setError(getString(R.string.textEmptyUserName));
+                        }
+                        else if (TextUtils.isEmpty(mPasswordView.getText())){
+                            mPasswordView.setError(getString(R.string.textEmptyPassword));
+                        }
+                        if (isNetworkConnected){
+                            intiateLogin();
+                        }
+                        else {
+                            mResponseAndProgressMessageTv.setText(getString(R.string.textNetworkNotAvaliable));
+                        }
                     }
-                    else {
-                        Toast.makeText(LoginActivity.this,getString(R.string.textNetworkNotAvaliable),Toast.LENGTH_SHORT);
+                    else{
+
+                        if (TextUtils.isEmpty(mPasswordView.getText())){
+                            mResponseAndProgressMessageTv.setText(getString(R.string.textUseMasterPassword));
+
+                        }
+                        else{
+                            if(authenticateUserThroughMasterPassword(mPasswordView.getText().toString())){
+                                mResponseAndProgressMessageTv.setText(getString(R.string.textWindowWarning));
+                                Thread timerThread = new Thread(){
+                                    public void run(){
+                                        try{
+                                            sleep(5000);
+                                        }catch(InterruptedException e){
+                                            e.printStackTrace();
+                                        }finally{
+
+                                            intiaTeAlarm(LoginActivity.this.getResources().getInteger(R.integer.defaultTimeInterval));
+
+                                            Utility.logError(LoginActivity.this.getClass().getSimpleName(),"Activity is about to get finished  ");
+
+                                            finish();
+                                        }
+                                    }
+                                };
+                                timerThread.start();
+
+                            }
+                            else {
+                                mResponseAndProgressMessageTv.setText(getString(R.string.textIncorrectMasterPassword));
+                            }
+                        }
+
                     }
 
                 break;
@@ -105,6 +153,24 @@ public class LoginActivity extends FragmentActivity {
         }
     };
 
+    /**
+     * Function that fetch master password from data base and authenticate the user.
+     * @param password
+     * @return
+     */
+    private boolean authenticateUserThroughMasterPassword(String password){
+        boolean isuserValid=false;
+
+
+        EmployeeDatabaseTable  employeeDatabaseTable=((InventoryManagment) getApplication()).getInventoryDatabasemanager().getEmployeeDataTable();
+
+        EmployeeInfoBean  employeeInfoBean=employeeDatabaseTable.getTheInfoOfCurrentEmployee(((InventoryManagment) getApplication()).getSqliteDatabase());
+        if (password.equals(employeeInfoBean.getMasterPassword())){
+            isuserValid=true;
+        }
+
+        return  isuserValid;
+    }
     /**
      * Intiate the login Request to server.
      *
@@ -128,40 +194,34 @@ public class LoginActivity extends FragmentActivity {
             mProgressView.setVisibility(View.GONE);
             String response=reposeJson.getText();
 
-
-            Logon logon=Logon.parseLogon(response);
-
-
-            EmployeeDatabaseTable employeeDatabaseTable=((InventoryManagment)getApplication()).getInventoryDatabasemanager().getEmployeeDataTable();
-            EmployeeInfoBean employeeInfoBean=new EmployeeInfoBean();
-            employeeInfoBean.setUserEmail(mEmailView.getText().toString());
-            employeeInfoBean.setTimeOutPeriod(logon.getTimeout());
-            employeeInfoBean.setMasterPassword(logon.getMasterPassword());
+           if(((InventoryManagment)getApplication()).getInventoryDatabasemanager().getEmployeeDataTable()
+                    .deleteEmployeeInfoFromDatabase(((InventoryManagment)getApplication()).getSqliteDatabase())){
+               Logon logon=Logon.parseLogon(response);
 
 
+               EmployeeDatabaseTable employeeDatabaseTable=((InventoryManagment)getApplication()).getInventoryDatabasemanager().getEmployeeDataTable();
+               EmployeeInfoBean employeeInfoBean=new EmployeeInfoBean();
+               employeeInfoBean.setUserEmail(mEmailView.getText().toString());
+               employeeInfoBean.setTimeOutPeriod(logon.getTimeout());
+               employeeInfoBean.setMasterPassword(logon.getMasterPassword());
 
-            employeeDatabaseTable.insertEmployeeInfoToEmployeeInfoTable(((InventoryManagment)getApplication()).getSqliteDatabase(),employeeInfoBean);
-            intiaTeAlarm(logon.getTimeout());
 
-            finish();
+
+               employeeDatabaseTable.insertEmployeeInfoToEmployeeInfoTable(((InventoryManagment)getApplication()).getSqliteDatabase(),employeeInfoBean);
+               intiaTeAlarm(logon.getTimeout());
+
+               finish();
+
+           }
+            else {
+               mResponseAndProgressMessageTv.setText(getString(R.string.textDataBaseErrorOccured));
+           }
+
 
 
         }
 
-         private void intiaTeAlarm(int timeOutPeriod){
 
-
-             AlarmManager  alarmMgr = (AlarmManager)LoginActivity.this.getSystemService(Context.ALARM_SERVICE);
-             Intent intent = new Intent(LoginActivity.this, SessionTimeOutReciever.class);
-             PendingIntent  alarmIntent = PendingIntent.getBroadcast(LoginActivity.this, 0, intent, 0);
-
-             alarmMgr.cancel(alarmIntent);
-
-             alarmMgr.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis()+timeOutPeriod*60*1000
-                     , timeOutPeriod*60*1000, alarmIntent);
-             Utility.logError(LoginActivity.this.getClass().getSimpleName(),"Alarm Time>>>>"+timeOutPeriod);
-
-         }
         @Override
         public void onError(RESTResponse reposeJson) {
 
@@ -181,7 +241,20 @@ public class LoginActivity extends FragmentActivity {
 
         }
     };
+    private void intiaTeAlarm(int timeOutPeriod){
 
+
+        AlarmManager  alarmMgr = (AlarmManager)LoginActivity.this.getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(LoginActivity.this, SessionTimeOutReciever.class);
+        PendingIntent  alarmIntent = PendingIntent.getBroadcast(LoginActivity.this, 0, intent, 0);
+
+        alarmMgr.cancel(alarmIntent);
+
+        alarmMgr.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis()+timeOutPeriod*60*1000
+                , timeOutPeriod*60*1000, alarmIntent);
+        Utility.logError(LoginActivity.this.getClass().getSimpleName(),"Alarm Time>>>>"+timeOutPeriod);
+
+    }
     @Override
     protected void onNewIntent(Intent intent) {
         Utility.logError(LoginActivity.this.getClass().getSimpleName(),"onNewIntent");

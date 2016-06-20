@@ -31,7 +31,8 @@
         android:layout_below="@+id/line"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="@dimen/metrics_20"
-
+        android:textOn="@string/textOn"
+        android:textOff="@string/textOff"
         android:textStyle="bold" />
 
     <Button
