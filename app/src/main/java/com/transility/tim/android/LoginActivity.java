@@ -22,7 +22,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 
 import com.transility.tim.android.InventoryDatabase.EmployeeDatabaseTable;
@@ -43,84 +42,78 @@ import devicepolicymanager.SessionTimeOutReciever;
  */
 public class LoginActivity extends FragmentActivity {
 
-    private EditText mEmailView;
-    private EditText mPasswordView;
+    private EditText username;
+    private EditText password;
 
-    private View mProgressView;
-    private View mLoginFormView;
-    private TextView mResponseAndProgressMessageTv;
+    private View progressView;
+    private TextView errorMessage;
     private WindowManager winManager;
     private RelativeLayout wrapperView;
-    private Button mEmailSignInButton,reportsBtn,logoutBtn;
+    private Button loginButton;
     private RestRequestFactoryWrapper restRequestFactoryWrapper;
     private TelephonyManager telephonyManager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         // Set up the login form.
         Utility.logError(LoginActivity.this.getClass().getSimpleName(),"onCreate");
 
-        WindowManager.LayoutParams localLayoutParams = new WindowManager.LayoutParams( WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
+        View activityView = getWindowManager( R.layout.activity_login);
 
-        winManager = ((WindowManager)getApplicationContext().getSystemService(WINDOW_SERVICE));
-
-        wrapperView = new RelativeLayout(this);
-        wrapperView.setBackgroundColor(this.getResources().getColor(R.color.backWhite));
-        telephonyManager= (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
-        View activityView= View.inflate(this, R.layout.activity_login, this.wrapperView);
-//        setContentView(activityView);
-
-        this.winManager.addView(wrapperView, localLayoutParams);
         restRequestFactoryWrapper=new RestRequestFactoryWrapper(this,restResponseShowFeedbackInterface);
+        telephonyManager= (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
 
-        mEmailSignInButton = (Button) activityView.findViewById(R.id.email_sign_in_button);
-        mResponseAndProgressMessageTv= (TextView) activityView.findViewById(R.id.responseAndProgressMessageTv);
-        mEmailSignInButton.setOnClickListener(onClickListener);
-        mPasswordView = (EditText)activityView.findViewById(R.id.password);
+        loginButton = (Button) activityView.findViewById(R.id.login);
+        errorMessage = (TextView) activityView.findViewById(R.id.error_message);
+        password = (EditText)activityView.findViewById(R.id.password);
+        username = (EditText) activityView.findViewById(R.id.username);
+        progressView = activityView.findViewById(R.id.login_progress);
 
-        mEmailView = (EditText) activityView.findViewById(R.id.email);
-        mLoginFormView = activityView.findViewById(R.id.login_form);
-        mProgressView = activityView.findViewById(R.id.login_progress);
-        mResponseAndProgressMessageTv= (TextView) activityView.findViewById(R.id.responseAndProgressMessageTv);
-
-
+        loginButton.setOnClickListener(onClickListener);
     }
 
+    private View getWindowManager (int layoutId){
+        WindowManager.LayoutParams localLayoutParams = new WindowManager.LayoutParams( WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
+        winManager = ((WindowManager)getApplicationContext().getSystemService(WINDOW_SERVICE));
+        wrapperView = new RelativeLayout(this);
+        wrapperView.setBackgroundColor(this.getResources().getColor(R.color.backWhite));
+        this.winManager.addView(wrapperView, localLayoutParams);
+        return View.inflate(this, layoutId, this.wrapperView);
+    }
 
     private OnClickListener onClickListener=new OnClickListener() {
         @Override
         public void onClick(View v) {
             switch (v.getId()){
-                case R.id.email_sign_in_button:
+                case R.id.login:
                     Utility.removeKeyboardfromScreen(LoginActivity.this);
 
-                    mResponseAndProgressMessageTv.setText("");
+                    errorMessage.setText("");
                     boolean isNetworkConnected=Utility.checkInternetConnection(LoginActivity.this);
-                    if(isNetworkConnected){
 
-                        if (TextUtils.isEmpty(mEmailView.getText())){
-                            mEmailView.setError(getString(R.string.textEmptyUserName));
+                    if(isNetworkConnected){
+                        if (TextUtils.isEmpty(username.getText())){
+                            username.setError(getString(R.string.textEmptyUserName));
                         }
-                        else if (TextUtils.isEmpty(mPasswordView.getText())){
-                            mPasswordView.setError(getString(R.string.textEmptyPassword));
+                        else if (TextUtils.isEmpty(password.getText())){
+                            password.setError(getString(R.string.textEmptyPassword));
                         }
                         if (isNetworkConnected){
                             intiateLogin();
                         }
                         else {
-                            mResponseAndProgressMessageTv.setText(getString(R.string.textNetworkNotAvaliable));
+                            errorMessage.setText(getString(R.string.textNetworkNotAvaliable));
                         }
                     }
                     else{
 
-                        if (TextUtils.isEmpty(mPasswordView.getText())){
-                            mResponseAndProgressMessageTv.setText(getString(R.string.textUseMasterPassword));
+                        if (TextUtils.isEmpty(password.getText())){
+                            errorMessage.setText(getString(R.string.textUseMasterPassword));
 
                         }
                         else{
-                            if(authenticateUserThroughMasterPassword(mPasswordView.getText().toString())){
-                                mResponseAndProgressMessageTv.setText(getString(R.string.textWindowWarning));
+                            if(authenticateUserThroughMasterPassword(password.getText().toString())){
+                                errorMessage.setText(getString(R.string.textWindowWarning));
                                 Thread timerThread = new Thread(){
                                     public void run(){
                                         try{
@@ -130,9 +123,7 @@ public class LoginActivity extends FragmentActivity {
                                         }finally{
 
                                             intiaTeAlarm(LoginActivity.this.getResources().getInteger(R.integer.defaultTimeInterval));
-
                                             Utility.logError(LoginActivity.this.getClass().getSimpleName(),"Activity is about to get finished  ");
-
                                             finish();
                                         }
                                     }
@@ -141,7 +132,7 @@ public class LoginActivity extends FragmentActivity {
 
                             }
                             else {
-                                mResponseAndProgressMessageTv.setText(getString(R.string.textIncorrectMasterPassword));
+                                errorMessage.setText(getString(R.string.textIncorrectMasterPassword));
                             }
                         }
 
@@ -177,11 +168,11 @@ public class LoginActivity extends FragmentActivity {
      */
     private void intiateLogin(){
 
-        String json=Logon.writeLogonJSON(mEmailView.getText().toString(),mPasswordView.getText().toString(),null,telephonyManager.getDeviceId());
+        String json=Logon.writeLogonJSON(username.getText().toString(), password.getText().toString(), null, telephonyManager.getDeviceId());
         String loginRequest=getResources().getString(R.string.baseUrl)+getResources().getString(R.string.api_login);
 
         restRequestFactoryWrapper.callHttpRestRequest(loginRequest,json, Method.POST);
-        mProgressView.setVisibility(View.VISIBLE);
+        progressView.setVisibility(View.VISIBLE);
 
     }
     /**
@@ -191,7 +182,7 @@ public class LoginActivity extends FragmentActivity {
         @Override
         public void onSucces(RESTResponse reposeJson) {
 
-            mProgressView.setVisibility(View.GONE);
+            progressView.setVisibility(View.GONE);
             String response=reposeJson.getText();
 
            if(((InventoryManagment)getApplication()).getInventoryDatabasemanager().getEmployeeDataTable()
@@ -201,7 +192,7 @@ public class LoginActivity extends FragmentActivity {
 
                EmployeeDatabaseTable employeeDatabaseTable=((InventoryManagment)getApplication()).getInventoryDatabasemanager().getEmployeeDataTable();
                EmployeeInfoBean employeeInfoBean=new EmployeeInfoBean();
-               employeeInfoBean.setUserEmail(mEmailView.getText().toString());
+               employeeInfoBean.setUserEmail(username.getText().toString());
                employeeInfoBean.setTimeOutPeriod(logon.getTimeout());
                employeeInfoBean.setMasterPassword(logon.getMasterPassword());
 
@@ -214,7 +205,7 @@ public class LoginActivity extends FragmentActivity {
 
            }
             else {
-               mResponseAndProgressMessageTv.setText(getString(R.string.textDataBaseErrorOccured));
+               errorMessage.setText(getString(R.string.textDataBaseErrorOccured));
            }
 
 
@@ -226,16 +217,16 @@ public class LoginActivity extends FragmentActivity {
         public void onError(RESTResponse reposeJson) {
 
 
-            mProgressView.setVisibility(View.GONE);
+            progressView.setVisibility(View.GONE);
              if(reposeJson.status.isClientError()){
-                 mResponseAndProgressMessageTv.setText(getString(R.string.textUnauthorisedPerson));
+                 errorMessage.setText(getString(R.string.textUnauthorisedPerson));
 
              }
             else  if (reposeJson.status.isServerError()){
-                 mResponseAndProgressMessageTv.setText(getString(R.string.textServerisDown));
+                 errorMessage.setText(getString(R.string.textServerisDown));
              }
             else {
-                mResponseAndProgressMessageTv.setText(getString(R.string.textSomeErrorOccured));
+                errorMessage.setText(getString(R.string.textSomeErrorOccured));
              }
 
 

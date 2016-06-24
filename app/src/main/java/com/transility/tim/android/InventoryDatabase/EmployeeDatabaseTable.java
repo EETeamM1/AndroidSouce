@@ -11,8 +11,13 @@ import com.transility.tim.android.bean.EmployeeInfoBean;
  */
 public class EmployeeDatabaseTable {
 
+    public final static String ID = "_id";
 
+    public final static String TABLE_EMPLOYEE = "EMPLOYEES";
+    public final static String USERNAME ="userEmail";
 
+    public final static String TIMEOUT_PERIOD="timeOutPeriod";
+    public final static String MASTER_PASSWORD="masterPassword";
 
     /**
      * Empty constrouctor might be used in future.
@@ -26,9 +31,11 @@ public class EmployeeDatabaseTable {
      */
     public void createEmployeeDatabaseTable(SQLiteDatabase sqLiteDatabase){
 
-        String createEmployeeDatabeseTable="CREATE TABLE "+this.getClass().getSimpleName()+" ("
-            +EmployeeInfoBean.USER_EMAIL+" VARCHAR NOT NULL,"+EmployeeInfoBean.MASTER_PASSWORD+" VARCHAR NOT NULL,"+EmployeeInfoBean.TIMEOUT_PERIOD+" INTEGER NOT NULL"+")";
-            sqLiteDatabase.execSQL(createEmployeeDatabeseTable);
+        sqLiteDatabase.execSQL( "CREATE TABLE "+ TABLE_EMPLOYEE+ " ("
+                + ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                USERNAME + " VARCHAR NOT NULL," +
+                MASTER_PASSWORD + " VARCHAR NOT NULL," +
+                TIMEOUT_PERIOD + " INTEGER NOT NULL" + ")" );
 
     }
 
@@ -48,18 +55,14 @@ public class EmployeeDatabaseTable {
      */
     public EmployeeInfoBean getTheInfoOfCurrentEmployee(SQLiteDatabase sqLiteDatabase){
 
-        String[] columns={EmployeeInfoBean.USER_EMAIL,EmployeeInfoBean.TIMEOUT_PERIOD,EmployeeInfoBean.MASTER_PASSWORD};
         EmployeeInfoBean employeeInfoBean=new EmployeeInfoBean();
-        Cursor cursor=sqLiteDatabase.query(true,this.getClass().getSimpleName(),columns,null,null,null,null,null,null);
+        Cursor cursor=sqLiteDatabase.query(true,this.getClass().getSimpleName(),null,null,null,null,null,null,null);
+
         while (cursor.moveToNext()){
-            employeeInfoBean.setUserEmail(cursor.getString(cursor.getColumnIndex(EmployeeInfoBean.USER_EMAIL)));
-
-            employeeInfoBean.setTimeOutPeriod(cursor.getInt(cursor.getColumnIndex(EmployeeInfoBean.TIMEOUT_PERIOD)));
-            employeeInfoBean.setMasterPassword(cursor.getString(cursor.getColumnIndex(EmployeeInfoBean.MASTER_PASSWORD)));
+            employeeInfoBean.setUserEmail(cursor.getString(cursor.getColumnIndex(USERNAME)));
+            employeeInfoBean.setTimeOutPeriod(cursor.getInt(cursor.getColumnIndex(TIMEOUT_PERIOD)));
+            employeeInfoBean.setMasterPassword(cursor.getString(cursor.getColumnIndex(MASTER_PASSWORD)));
         }
-
-
-
         return employeeInfoBean;
     }
 
@@ -72,18 +75,11 @@ public class EmployeeDatabaseTable {
      */
     public boolean deleteEmployeeInfoFromDatabase(SQLiteDatabase sqLiteDatabase){
         boolean delteEmployeeFromDatabase=false;
-
-
-       int numberOfRowsAffected=  sqLiteDatabase.delete(this.getClass().getSimpleName(),"1",null);
-
-
-            if(numberOfRowsAffected>1){
-                delteEmployeeFromDatabase=true;
-            }
-
-
+        int numberOfRowsAffected=  sqLiteDatabase.delete(this.getClass().getSimpleName(),"1",null);
+        if(numberOfRowsAffected>1){
+            delteEmployeeFromDatabase=true;
+        }
         return delteEmployeeFromDatabase;
-
     }
 
     /**
@@ -97,9 +93,9 @@ public class EmployeeDatabaseTable {
         boolean insertEmployeeToDatabase=false;
         ContentValues contentValues=new ContentValues();
 
-        contentValues.put(EmployeeInfoBean.MASTER_PASSWORD,employeeInfoBean.getMasterPassword());
-        contentValues.put(EmployeeInfoBean.TIMEOUT_PERIOD,employeeInfoBean.getTimeOutPeriod());
-        contentValues.put(EmployeeInfoBean.USER_EMAIL,employeeInfoBean.getUserEmail());
+        contentValues.put(MASTER_PASSWORD,employeeInfoBean.getMasterPassword());
+        contentValues.put(TIMEOUT_PERIOD,employeeInfoBean.getTimeOutPeriod());
+        contentValues.put(USERNAME,employeeInfoBean.getUserEmail());
         long status= sqLiteDatabase.insert(this.getClass().getSimpleName(),null,contentValues);
         if (status!=-1){
             insertEmployeeToDatabase=true;

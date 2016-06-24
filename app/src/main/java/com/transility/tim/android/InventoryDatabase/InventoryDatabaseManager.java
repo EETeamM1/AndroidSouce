@@ -22,8 +22,6 @@ public class InventoryDatabaseManager extends SQLiteOpenHelper{
     @Override
     public void onCreate(SQLiteDatabase db) {
         employeeDatabaseTable.createEmployeeDatabaseTable(db);
-
-
     }
 
     @Override
