@@ -54,6 +54,10 @@ public class LoginActivity extends FragmentActivity {
     private Button mEmailSignInButton,reportsBtn,logoutBtn;
     private RestRequestFactoryWrapper restRequestFactoryWrapper;
     private TelephonyManager telephonyManager;
+    private View activityView;
+
+    private boolean isServerDown=false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,10 +72,11 @@ public class LoginActivity extends FragmentActivity {
         wrapperView = new RelativeLayout(this);
         wrapperView.setBackgroundColor(this.getResources().getColor(R.color.backWhite));
         telephonyManager= (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
-        View activityView= View.inflate(this, R.layout.activity_login, this.wrapperView);
+       activityView= View.inflate(this, R.layout.activity_login, this.wrapperView);
 //        setContentView(activityView);
 
         this.winManager.addView(wrapperView, localLayoutParams);
+
         restRequestFactoryWrapper=new RestRequestFactoryWrapper(this,restResponseShowFeedbackInterface);
 
         mEmailSignInButton = (Button) activityView.findViewById(R.id.email_sign_in_button);
@@ -86,6 +91,7 @@ public class LoginActivity extends FragmentActivity {
 
 
     }
+
 
 
     private OnClickListener onClickListener=new OnClickListener() {
@@ -153,6 +159,10 @@ public class LoginActivity extends FragmentActivity {
         }
     };
 
+
+    protected View getParentViewOfThisActivity(){
+        return activityView;
+    }
     /**
      * Function that fetch master password from data base and authenticate the user.
      * @param password
@@ -233,6 +243,8 @@ public class LoginActivity extends FragmentActivity {
              }
             else  if (reposeJson.status.isServerError()){
                  mResponseAndProgressMessageTv.setText(getString(R.string.textServerisDown));
+                 isServerDown=true;
+
              }
             else {
                 mResponseAndProgressMessageTv.setText(getString(R.string.textSomeErrorOccured));

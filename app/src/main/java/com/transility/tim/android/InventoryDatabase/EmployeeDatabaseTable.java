@@ -49,6 +49,7 @@ public class EmployeeDatabaseTable {
     public EmployeeInfoBean getTheInfoOfCurrentEmployee(SQLiteDatabase sqLiteDatabase){
 
         String[] columns={EmployeeInfoBean.USER_EMAIL,EmployeeInfoBean.TIMEOUT_PERIOD,EmployeeInfoBean.MASTER_PASSWORD};
+
         EmployeeInfoBean employeeInfoBean=new EmployeeInfoBean();
         Cursor cursor=sqLiteDatabase.query(true,this.getClass().getSimpleName(),columns,null,null,null,null,null,null);
         while (cursor.moveToNext()){
@@ -58,7 +59,7 @@ public class EmployeeDatabaseTable {
             employeeInfoBean.setMasterPassword(cursor.getString(cursor.getColumnIndex(EmployeeInfoBean.MASTER_PASSWORD)));
         }
 
-
+        cursor.close();
 
         return employeeInfoBean;
     }

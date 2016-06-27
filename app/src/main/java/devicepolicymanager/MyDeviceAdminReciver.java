@@ -1,5 +1,7 @@
 package devicepolicymanager;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.app.admin.DeviceAdminReceiver;
 import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
@@ -12,6 +14,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
+import com.transility.tim.android.LoginActivity;
 import com.transility.tim.android.R;
 import com.transility.tim.android.Utilities.Utility;
 
@@ -117,5 +120,24 @@ private View.OnClickListener onClickListener=new View.OnClickListener() {
         super.onReceive(context, intent);
         Utility.logError(MyDeviceAdminReciver.class.getSimpleName(),"onReceive");
 
+        if (intent.getAction()!=null&&intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED)){
+            cancelCurrentPendingIntent(context);
+            Intent intent1=new Intent(context, LoginActivity.class);
+            intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(intent1);
+        }
     }
+
+
+    /**
+     * Cancels the current Pending Intent when the device is restarted.
+     * @param context
+     */
+    private void cancelCurrentPendingIntent(Context context){
+        AlarmManager alarmManager= (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(context, SessionTimeOutReciever.class);
+        PendingIntent  alarmIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
+        alarmManager.cancel(alarmIntent);
+
+        }
 }
