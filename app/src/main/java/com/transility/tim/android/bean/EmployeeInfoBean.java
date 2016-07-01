@@ -7,12 +7,6 @@ import android.database.sqlite.SQLiteDatabase;
  * Created by ambesh.kukreja on 6/7/2016.
  */
 public class EmployeeInfoBean {
-    public  static String USER_EMAIL="userEmail";
-
-    public  static String TIMEOUT_PERIOD="timeOutPeriod";
-    public static String MASTER_PASSWORD="masterPassword";
-
-
     private String userEmail;
 
     private int timeOutPeriod;

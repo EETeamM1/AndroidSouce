@@ -30,7 +30,7 @@
 
 
                 <EditText
-                    android:id="@+id/email"
+                    android:id="@+id/username"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/metrics_50"
                     android:hint="@string/textUserName"
@@ -64,7 +64,7 @@
 
 
             <Button
-                android:id="@+id/email_sign_in_button"
+                android:id="@+id/login"
                 style="?android:textAppearanceMedium"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/metrics_45"
@@ -94,7 +94,7 @@
         android:layout_marginTop="@dimen/metrics_20"
         android:padding="@dimen/metrics_10"
 
-        android:id="@+id/responseAndProgressMessageTv"
+        android:id="@+id/error_message"
 
          />
 </LinearLayout>
