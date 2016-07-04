@@ -2,10 +2,8 @@ package com.transility.tim.android;
 
 import android.app.Application;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.StrictMode;
-import android.widget.Toast;
 
 import com.transility.tim.android.InventoryDatabase.InventoryDatabaseManager;
 import com.transility.tim.android.Utilities.TransiltiyInvntoryAppSharedPref;
@@ -42,9 +40,6 @@ public class InventoryManagment extends Application {
 
     }
 
-
-
-
     private void initateAllowPolicyToApplication() {
         int SDK_INT = android.os.Build.VERSION.SDK_INT;
         if (SDK_INT > 8)
@@ -53,13 +48,9 @@ public class InventoryManagment extends Application {
                     .permitAll().build();
             StrictMode.setThreadPolicy(policy);
 
-
         }
 
     }
-
-
-
 
     /**
      * Returns the current instance of Database manager

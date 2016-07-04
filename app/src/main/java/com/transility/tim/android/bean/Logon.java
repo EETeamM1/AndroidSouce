@@ -6,7 +6,6 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 
-import com.transility.tim.android.BuildConfig;
 import com.transility.tim.android.Constants;
 import com.transility.tim.android.Utilities.Utility;
 
@@ -40,14 +39,12 @@ public class Logon implements Parcelable{
          Logon logon = new Logon();
 
         try {
-
             JSONObject jsonObject = new JSONObject(jsonResponse);
             JSONObject result  = jsonObject.getJSONObject("result");
 
             logon.sessionToken = result.optString("sessionToken");
             logon.masterPassword = result.optString("masterPassword");
             logon.timeout = result.optInt("timeout");
-
 
         } catch (JSONException e) {
             Log.e(Constants.LOGTAG, "Unable to parse JSON: " + jsonResponse, e);
@@ -57,12 +54,10 @@ public class Logon implements Parcelable{
     }
 
     public static String writeLogonJSON (String username, String password, Location location,String imeiNumber){
-
         String logonJSON=null;
         try {
             JSONObject jsonObject =  new JSONObject();
             JSONObject paramObject = new JSONObject();
-
 
             paramObject.put("userId", username);
             paramObject.put("password", password);
@@ -76,11 +71,9 @@ public class Logon implements Parcelable{
             Utility.logError("Imei Number",imeiNumber);
 
             paramObject.put("deviceId", imeiNumber);
-
             paramObject.put("osVersion", Build.VERSION.RELEASE);
 
             //TODO add os version
-//            paramObject.put("osVersion", "osVersion");
             if (location!=null){
                 paramObject.put("latitude", location.getLatitude());
                 paramObject.put("longitude", location.getLongitude());
@@ -90,11 +83,9 @@ public class Logon implements Parcelable{
                 paramObject.put("longitude", "");
             }
 
-
             jsonObject.put("parameters",paramObject);
 
             logonJSON = jsonObject.toString();
-
 
         } catch (JSONException e) {
             Utility.printHandledException(e);

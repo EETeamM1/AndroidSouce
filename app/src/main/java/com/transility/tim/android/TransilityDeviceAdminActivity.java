@@ -28,6 +28,7 @@ public class TransilityDeviceAdminActivity extends AppCompatActivity {
     private final static String LOG_TAG = "DevicePolicyAdmin";
     DevicePolicyManager truitonDevicePolicyManager;
     ComponentName truitonDevicePolicyAdmin;
+
     private Switch enableDeviceApp;
     private Button logoutBtn,reportsBtn;
 //    private boolean isMasterScreenCalled=false;
@@ -42,7 +43,6 @@ public class TransilityDeviceAdminActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_admin_app_home_page);
 
-
         truitonDevicePolicyManager = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
         alarmManager= (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         truitonDevicePolicyAdmin = new ComponentName(this,
@@ -53,8 +53,6 @@ public class TransilityDeviceAdminActivity extends AppCompatActivity {
         messageLineTv= (TextView) findViewById(R.id.messageLineTv);
         logoutBtn.setOnClickListener(onClickListener);
         reportsBtn.setOnClickListener(onClickListener);
-
-
 }
 
 
@@ -76,6 +74,7 @@ public class TransilityDeviceAdminActivity extends AppCompatActivity {
             }
         }
     };
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -84,17 +83,12 @@ public class TransilityDeviceAdminActivity extends AppCompatActivity {
         int rowCount=inventoryManagment.getInventoryDatabasemanager().getEmployeeDataTable().getEmployeeTableRowCount(inventoryManagment.getSqliteDatabase());
 
         if (rowCount!=0){
-
             logoutBtn.setVisibility(View.VISIBLE);
             reportsBtn.setVisibility(View.VISIBLE);
-
-
-
         }
         else{
             logoutBtn.setVisibility(View.GONE);
             reportsBtn.setVisibility(View.GONE);
-
         }
 
         if (isMyDevicePolicyReceiverActive()) {

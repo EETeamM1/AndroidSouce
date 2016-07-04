@@ -15,19 +15,14 @@ public class EmployeeDatabaseTable {
 
     public final static String TABLE_EMPLOYEE = "EMPLOYEES";
     public final static String USERNAME ="userName";
-
     public final static String TIMEOUT_PERIOD="timeOutPeriod";
-    public final static String MASTER_PASSWORD="masterPassword";
-    public final static String MASTER_USERNAME="masterUserName";
     public final static String SESSIONTOKEN="sessionToken";
-    public final static String MASTERUSERNAMEDEAULT="Admin";
 
 
     /**
      * Empty constrouctor might be used in future.
      */
-    public EmployeeDatabaseTable(){
-    }
+    public EmployeeDatabaseTable(){}
 
     /**
      * Create a empty data base table
@@ -102,7 +97,6 @@ public class EmployeeDatabaseTable {
         boolean insertEmployeeToDatabase=false;
         deleteEmployeeInfoFromDatabase(sqLiteDatabase);
         ContentValues contentValues=new ContentValues();
-
 
         contentValues.put(TIMEOUT_PERIOD,employeeInfoBean.getTimeOutPeriod());
         contentValues.put(USERNAME,employeeInfoBean.getUserEmail());

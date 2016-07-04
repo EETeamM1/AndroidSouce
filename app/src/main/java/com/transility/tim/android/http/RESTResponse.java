@@ -58,8 +58,6 @@ public class RESTResponse {
         /**
          * Indicates if the status is a server error status.
          *
-         * @param code
-         *            The code of the status.
          * @return True if the status is a server error status.
          */
         public boolean isServerError() {
@@ -90,7 +88,7 @@ public class RESTResponse {
         this.status = status;
         this.value = value;
         this.originatingRequest = originatingRequest;
-        contentType = RESTRequest.MediaType.APPLICATION_JSON;//TODO hard code
+        contentType = RESTRequest.MediaType.APPLICATION_JSON;// hard code
     }
 
     public boolean isEmpty() {
