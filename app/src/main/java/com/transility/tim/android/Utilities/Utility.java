@@ -39,12 +39,7 @@ public class Utility {
         ConnectivityManager conMgr = (ConnectivityManager) context.getSystemService (Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo=conMgr.getActiveNetworkInfo();
         boolean isConnected=false;
-        if (networkInfo!=null&&networkInfo.isConnected()){
-            isConnected=true;
-        }
-        else {
-        isConnected=false;
-        }
+        isConnected = networkInfo != null && networkInfo.isConnected();
         return isConnected;
     }
 

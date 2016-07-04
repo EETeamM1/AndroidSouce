@@ -19,7 +19,7 @@ public class SingleButtonAlertDialog extends DialogFragment {
 
     private static  String TITLE="title";
     public interface SingleButtonAlertDialogInterface{
-        public void onOkButtonClick();
+        void onOkButtonClick();
     }
 
     private SingleButtonAlertDialogInterface singleButtonAlertDialogInterface;

@@ -15,10 +15,10 @@ public  interface UnitTestHelperInventoryManagementApp {
 
 
 
-    public abstract void setUpBeforeEachTestCase();
+    void setUpBeforeEachTestCase();
 
 
-    public abstract void tearDownAfterEachTestCase();
+    void tearDownAfterEachTestCase();
 
 
 }

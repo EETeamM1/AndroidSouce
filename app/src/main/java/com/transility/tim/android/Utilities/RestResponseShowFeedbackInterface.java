@@ -12,11 +12,11 @@ public interface RestResponseShowFeedbackInterface {
      * Show proper feedback when the API response Returns success.
      * @param reposeJson
      */
-    public void onSucces(RESTResponse reposeJson);
+    void onSucces(RESTResponse reposeJson);
 
     /***
      * Show proper feedback when the API response Returns error.
      * @param reposeJson
      */
-    public void onError(RESTResponse reposeJson);
+    void onError(RESTResponse reposeJson);
 }

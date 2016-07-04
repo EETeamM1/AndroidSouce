@@ -25,7 +25,7 @@ public class RESTRequest {
 
     public enum Method{
         POST,
-        GET;
+        GET
     }
 
     public enum MediaType{
