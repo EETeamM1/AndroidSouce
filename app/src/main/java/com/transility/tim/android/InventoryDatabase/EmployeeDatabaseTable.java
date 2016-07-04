@@ -14,10 +14,14 @@ public class EmployeeDatabaseTable {
     public final static String ID = "_id";
 
     public final static String TABLE_EMPLOYEE = "EMPLOYEES";
-    public final static String USERNAME ="userEmail";
+    public final static String USERNAME ="userName";
 
     public final static String TIMEOUT_PERIOD="timeOutPeriod";
     public final static String MASTER_PASSWORD="masterPassword";
+    public final static String MASTER_USERNAME="masterUserName";
+    public final static String SESSIONTOKEN="sessionToken";
+    public final static String MASTERUSERNAMEDEAULT="Admin";
+
 
     /**
      * Empty constrouctor might be used in future.
@@ -32,9 +36,8 @@ public class EmployeeDatabaseTable {
     public void createEmployeeDatabaseTable(SQLiteDatabase sqLiteDatabase){
 
         sqLiteDatabase.execSQL( "CREATE TABLE "+ TABLE_EMPLOYEE+ " ("
-                + ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                + ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +SESSIONTOKEN+" VARCHAR NOT NULL,"+
                 USERNAME + " VARCHAR NOT NULL," +
-                MASTER_PASSWORD + " VARCHAR NOT NULL," +
                 TIMEOUT_PERIOD + " INTEGER NOT NULL" + ")" );
 
     }
@@ -56,13 +59,17 @@ public class EmployeeDatabaseTable {
     public EmployeeInfoBean getTheInfoOfCurrentEmployee(SQLiteDatabase sqLiteDatabase){
 
         EmployeeInfoBean employeeInfoBean=new EmployeeInfoBean();
-        Cursor cursor=sqLiteDatabase.query(true,this.getClass().getSimpleName(),null,null,null,null,null,null,null);
+        String[] columnsName={USERNAME,TIMEOUT_PERIOD,SESSIONTOKEN};
+
+        Cursor cursor=sqLiteDatabase.query(true,TABLE_EMPLOYEE,columnsName,null,null,null,null,null,null);
 
         while (cursor.moveToNext()){
             employeeInfoBean.setUserEmail(cursor.getString(cursor.getColumnIndex(USERNAME)));
             employeeInfoBean.setTimeOutPeriod(cursor.getInt(cursor.getColumnIndex(TIMEOUT_PERIOD)));
-            employeeInfoBean.setMasterPassword(cursor.getString(cursor.getColumnIndex(MASTER_PASSWORD)));
+            employeeInfoBean.setSessionToken(cursor.getString(cursor.getColumnIndex(SESSIONTOKEN)));
+
         }
+        cursor.close();
         return employeeInfoBean;
     }
 
@@ -75,10 +82,12 @@ public class EmployeeDatabaseTable {
      */
     public boolean deleteEmployeeInfoFromDatabase(SQLiteDatabase sqLiteDatabase){
         boolean delteEmployeeFromDatabase=false;
-        int numberOfRowsAffected=  sqLiteDatabase.delete(this.getClass().getSimpleName(),"1",null);
+        int numberOfRowsAffected=  sqLiteDatabase.delete(TABLE_EMPLOYEE,null,null);
+
         if(numberOfRowsAffected>1){
             delteEmployeeFromDatabase=true;
         }
+
         return delteEmployeeFromDatabase;
     }
 
@@ -91,12 +100,14 @@ public class EmployeeDatabaseTable {
      */
     public boolean insertEmployeeInfoToEmployeeInfoTable(SQLiteDatabase sqLiteDatabase,EmployeeInfoBean employeeInfoBean){
         boolean insertEmployeeToDatabase=false;
+        deleteEmployeeInfoFromDatabase(sqLiteDatabase);
         ContentValues contentValues=new ContentValues();
 
-        contentValues.put(MASTER_PASSWORD,employeeInfoBean.getMasterPassword());
+
         contentValues.put(TIMEOUT_PERIOD,employeeInfoBean.getTimeOutPeriod());
         contentValues.put(USERNAME,employeeInfoBean.getUserEmail());
-        long status= sqLiteDatabase.insert(this.getClass().getSimpleName(),null,contentValues);
+        contentValues.put(SESSIONTOKEN,employeeInfoBean.getSessionToken());
+        long status= sqLiteDatabase.insert(TABLE_EMPLOYEE,null,contentValues);
         if (status!=-1){
             insertEmployeeToDatabase=true;
         }
@@ -104,4 +115,23 @@ public class EmployeeDatabaseTable {
         return insertEmployeeToDatabase;
     }
 
+
+    /**
+     * Returns the row count for table.
+     * @param sqLiteDatabase
+     * @return
+     */
+    public int getEmployeeTableRowCount(SQLiteDatabase sqLiteDatabase){
+
+        String countQuery="Select COUNT(*) From "+TABLE_EMPLOYEE;
+
+        int count=0;
+        Cursor cursor=sqLiteDatabase.rawQuery(countQuery,null);
+        if (cursor.moveToNext()){
+            count=cursor.getInt(0);
+        }
+
+        return count;
+
+    }
 }

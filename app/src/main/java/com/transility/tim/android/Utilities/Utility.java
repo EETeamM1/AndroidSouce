@@ -48,11 +48,15 @@ public class Utility {
         return isConnected;
     }
 
-    public static void removeKeyboardfromScreen(Activity context){
-        View view = context.getCurrentFocus();
-        if (view != null) {
-            InputMethodManager imm = (InputMethodManager)context.getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_IMPLICIT_ONLY);
-        }
+    public static void removeKeyboardfromScreen(View view){
+
+
+            InputMethodManager imm = (InputMethodManager)view.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+
+         imm.hideSoftInputFromWindow(view.getWindowToken(),0);
+
+
     }
+
+
 }

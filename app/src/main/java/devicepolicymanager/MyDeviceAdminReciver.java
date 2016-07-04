@@ -14,8 +14,11 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
+import com.transility.tim.android.InventoryManagment;
 import com.transility.tim.android.LoginActivity;
-import com.transility.tim.android.R;
+import com.transility.tim.android.MasterPasswordScreen;
+
+import com.transility.tim.android.Utilities.TransiltiyInvntoryAppSharedPref;
 import com.transility.tim.android.Utilities.Utility;
 
 import java.util.zip.Inflater;
@@ -30,39 +33,30 @@ public class MyDeviceAdminReciver extends DeviceAdminReceiver {
     @Override
     public void onDisabled(Context context, Intent intent) {
 
-        Utility.logError(MyDeviceAdminReciver.class.getSimpleName(),"onDisabled");
+        cancelCurrentPendingIntent(context);
+        ((InventoryManagment)context.getApplicationContext()).getInventoryDatabasemanager().getEmployeeDataTable()
+                .deleteEmployeeInfoFromDatabase(((InventoryManagment)context.getApplicationContext()).getSqliteDatabase());
+        Intent intent1=new Intent(context, MasterPasswordScreen.class);
+        intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(intent1);
+
 
     }
 
     @Override
     public void onEnabled(Context context, Intent intent) {
-        Utility.logError(MyDeviceAdminReciver.class.getSimpleName(),"onEnabled");
+
+        cancelCurrentPendingIntent(context);
+        Intent intent1=new Intent(context, LoginActivity.class);
+        intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(intent1);
+
     }
 
 
 
-    @Override
-    public CharSequence onDisableRequested(Context context, Intent intent) {
-        Utility.logError(MyDeviceAdminReciver.class.getSimpleName(),"onDisableRequested");
-        if (windowManager==null){
-            windowManager= (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-        }
-        wrapperView=new LinearLayout(context);
-        wrapperView.setOrientation(LinearLayout.VERTICAL);
 
-            LayoutInflater inflater= (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-        WindowManager.LayoutParams localLayoutParams = new WindowManager.LayoutParams( WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
-
-        View masterScreen=inflater.inflate(R.layout.activity_main,wrapperView);
-
-        windowManager.addView(wrapperView, localLayoutParams);
-
-        submitBtn= (Button) masterScreen.findViewById(R.id.submitBtn);
-        submitBtn.setOnClickListener(onClickListener);
-
-        return context.getString(R.string.textDisableTheDevieAdminApp);
-    }
 
 
 private View.OnClickListener onClickListener=new View.OnClickListener() {
@@ -96,6 +90,7 @@ private View.OnClickListener onClickListener=new View.OnClickListener() {
         long delta = expr - System.currentTimeMillis();
         boolean expired = delta < 0L;
         if (expired) {
+
             localDPM.setPasswordExpirationTimeout(localComponent, 10000L);
             Intent passwordChangeIntent = new Intent(
                     DevicePolicyManager.ACTION_SET_NEW_PASSWORD);
@@ -121,10 +116,36 @@ private View.OnClickListener onClickListener=new View.OnClickListener() {
         Utility.logError(MyDeviceAdminReciver.class.getSimpleName(),"onReceive");
 
         if (intent.getAction()!=null&&intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED)){
-            cancelCurrentPendingIntent(context);
-            Intent intent1=new Intent(context, LoginActivity.class);
-            intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            context.startActivity(intent1);
+            if (((InventoryManagment)context.getApplicationContext()).getInventoryDatabasemanager()
+                    .getEmployeeDataTable().getEmployeeTableRowCount(((InventoryManagment)context.getApplicationContext()).getSqliteDatabase())==0){
+
+                cancelCurrentPendingIntent(context);
+                Intent intent1=new Intent(context, LoginActivity.class);
+                intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(intent1);
+            }
+            else {
+                if (TransiltiyInvntoryAppSharedPref.getWasLoginScreenVisible(context)){
+
+                    cancelCurrentPendingIntent(context);
+                    Intent intent1=new Intent(context, LoginActivity.class);
+                    intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(intent1);
+
+                }
+                else {
+                    TransiltiyInvntoryAppSharedPref.setWasLoginScreenVisible(context,false);
+                }
+            }
+
+        }
+        else  if (intent.getAction()!=null&&intent.getAction().equals(Intent.ACTION_SHUTDOWN)){
+
+            if (!TransiltiyInvntoryAppSharedPref.getWasLoginScreenVisible(context)){
+                TransiltiyInvntoryAppSharedPref.setWasLoginScreenVisible(context,false);
+            }
+
+
         }
     }
 

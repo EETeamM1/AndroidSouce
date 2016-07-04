@@ -7,25 +7,22 @@
     <string name="textPassword">Password</string>
     <string name="action_sign_in">Login</string>
     <string name="action_sign_in_short">Login</string>
-    <string name="error_invalid_email">This email address is invalid</string>
-    <string name="error_invalid_password">This password is too short</string>
-    <string name="error_incorrect_password">This password is incorrect</string>
-    <string name="error_field_required">This field is required</string>
-    <string name="permission_rationale">"Contacts permissions are needed for providing email
-        completions."
+
+     <string name="error_field_required">This field is required</string>
+    <string name="textAdminAppTextWhenDisabled">Please Enable application Admin privileges , after enabling it you will be bind to use the policy enforced by this application.</string>
+    <string name="textAdminAppWhenEnabled">Currently device is working under policy enforced by App .\nTo remove these policies disable the app.
     </string>
-    <string name="textAdminAppText">Please Enable application Admin privileges , after enabling it you will be bind to use the policy enforced by this application.</string>
     <string name="textAdminAppRefeshIndicator">Sync data from server</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="textDisableTheDevieAdminApp">You may now uninstall the application.</string>
 
     <string name="title_activity_transility_screen_splash_screen">TransilityScreenSplashScreen
     </string>
-    <string name="dummy_button">Dummy Button</string>
-    <string name="dummy_content">DUMMY\nCONTENT</string>
-    <string name="title_activity_ra">ra</string>
+
+   \
     <string name="textReports">Check Device Reports</string>
     <string name="textLogout">Logout</string>
     <string name="textOn">On</string>
+    <string name="textOk">Ok</string>
     <string name="textOff">Off</string>
 </resources>

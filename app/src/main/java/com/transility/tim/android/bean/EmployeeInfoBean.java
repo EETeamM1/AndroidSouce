@@ -11,6 +11,8 @@ public class EmployeeInfoBean {
 
     private int timeOutPeriod;
     private String masterPassword;
+    private String sessionToken;
+    private String masterUser;
 
     public String getMasterPassword() {
         return masterPassword;
@@ -20,8 +22,14 @@ public class EmployeeInfoBean {
         this.masterPassword = masterPassword;
     }
 
+    public String getSessionToken(){
+        return  sessionToken;
+    }
 
+    public void setSessionToken(String sessionToken){
 
+        this.sessionToken=sessionToken;
+    }
     public String getUserEmail() {
         return userEmail;
     }
@@ -38,5 +46,13 @@ public class EmployeeInfoBean {
 
     public void setTimeOutPeriod(int timeOutPeriod) {
         this.timeOutPeriod = timeOutPeriod;
+    }
+
+    public String getMasterUser(){
+        return masterUser;
+    }
+    public void setMasterUser(String masterUser){
+        this.masterUser=masterUser;
+
     }
 }

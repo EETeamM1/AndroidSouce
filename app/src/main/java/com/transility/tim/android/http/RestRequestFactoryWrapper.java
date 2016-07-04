@@ -45,7 +45,7 @@ public class RestRequestFactoryWrapper {
     RESTResponseHandler okhandler =  new RESTResponseHandler() {
         @Override
         public void handleResponseInBackground(Context context, Class<? extends Context> forContextType, RESTResponse response) {
-
+            restResponseShowFeedbackInterface.onSucces(response);
             Utility.logError(this.getClass().getSimpleName(),"handleResponseInBackground");
 
         }
@@ -54,7 +54,7 @@ public class RestRequestFactoryWrapper {
         public void handleResponseInUI(Context context, Class<? extends Context> forContextType, RESTResponse response) {
             Utility.logError(this.getClass().getSimpleName(),"handleResponseInUI");
 
-            restResponseShowFeedbackInterface.onSucces(response);
+
         }
 
         @Override

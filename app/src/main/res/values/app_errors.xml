@@ -2,15 +2,16 @@
 <resources>
 
     <string name="textUnauthorisedPerson">Username or Password is incorrect.</string>
-    <string name="textServerisDown">Server is down please contact your inventory manager for master password.</string>
+    <string name="textServerisDown">Server is down please contact your inventory manager.</string>
     <string name="textSomeErrorOccured">Some error occured please contact your inventory manager.</string>
-    <string name="textNetworkNotAvaliable">Network Not Avaliable please eanble your network through notification bar.</string>
+    <string name="textNetworkNotAvaliable">Network Not Avaliable please contact your inventory manager.</string>
     <string name="textEmptyUserName">UserName cannot be empty.</string>
     <string name="textEmptyPassword">Password cannot be empty.</string>
-    <string name="textUseMasterPassword">Due to Unavabiltty of network we are unable to authenticate you .
-        In this case you can either use your master password (contact admin) or enable internet through notification bar .</string>
+    <string name="textUseMasterPassword">Due to Unavailability of network we are unable to authenticate you .
+       Please contact your invetory amanger for further Assistance.</string>
     <string name="textDataBaseErrorOccured">Data base error occurred.</string>
-    <string name="textIncorrectMasterPassword">Master password you entred is incorrect.</string>
+    <string name="textIncorrectMasterPassword">Master username or password you entered is incorrect.</string>
     <string name="textWindowWarning">Device is to get unlocked in few seconds . You will be given window of 30 min to enable network and logout from Inventory app home screen.
         \n After 30 min device will automatically get locked.</string>
+    <string name="textPleaseEnableNetwork">Please enable your network connection.</string>
 </resources>

@@ -2,11 +2,13 @@ package com.transility.tim.android;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.StrictMode;
 import android.widget.Toast;
 
 import com.transility.tim.android.InventoryDatabase.InventoryDatabaseManager;
+import com.transility.tim.android.Utilities.TransiltiyInvntoryAppSharedPref;
 
 /**
  * Added Comment Ambesh Kurkeja: This application file is created to keep all the reources that shwould be avaliable in application scope.
@@ -24,6 +26,7 @@ public class InventoryManagment extends Application {
     public void onCreate() {
         super.onCreate();
         initiateDatabase();
+        initateAllowPolicyToApplication ();
     }
 
     /**
@@ -35,17 +38,12 @@ public class InventoryManagment extends Application {
          */
         inventoryDatabaseManager=new InventoryDatabaseManager(this,this.getString(R.string.app_name),null,1,null);
         sqLiteDatabase=inventoryDatabaseManager.getWritableDatabase();
+        TransiltiyInvntoryAppSharedPref.setUserNameToSharedPref(this,getString(R.string.masterUserName));
+
     }
 
 
-    public void handleServerError() {
-        handleServerError((String)null);
-    }
 
-    public void handleServerError(String message) {
-        showServerError(message, SERVER_ERROR_DIALOG_ID);
-        initateAllowPolicyToApplication();
-    }
 
     private void initateAllowPolicyToApplication() {
         int SDK_INT = android.os.Build.VERSION.SDK_INT;
@@ -60,13 +58,7 @@ public class InventoryManagment extends Application {
 
     }
 
-    private void showServerError(String message, int dialogId) {
 
-        //TODO error handling wil do here
-        Toast.makeText(this, "error  server not responding " +
-                message, Toast.LENGTH_LONG).show();
-
-    }
 
 
     /**

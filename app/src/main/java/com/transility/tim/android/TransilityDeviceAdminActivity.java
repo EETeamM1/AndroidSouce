@@ -14,8 +14,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
+
+import com.transility.tim.android.Dialogs.SingleButtonAlertDialog;
+import com.transility.tim.android.Utilities.Utility;
 
 import devicepolicymanager.MyDeviceAdminReciver;
 import devicepolicymanager.SessionTimeOutReciever;
@@ -26,11 +30,13 @@ public class TransilityDeviceAdminActivity extends AppCompatActivity {
     ComponentName truitonDevicePolicyAdmin;
     private Switch enableDeviceApp;
     private Button logoutBtn,reportsBtn;
-    private boolean isMasterScreenCalled=false;
+//    private boolean isMasterScreenCalled=false;
     protected static final int REQUEST_ENABLE = 1;
     private AlarmManager alarmManager;
+    private TextView messageLineTv;
+    private SingleButtonAlertDialog singleButtonAlertDialog;
 
-
+    private InventoryManagment inventoryManagment;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,14 +50,10 @@ public class TransilityDeviceAdminActivity extends AppCompatActivity {
         enableDeviceApp = (Switch) findViewById(R.id.enableDeviceApp);
         logoutBtn= (Button) findViewById(R.id.logoutBtn);
         reportsBtn= (Button)findViewById(R.id.reportsBtn);
+        messageLineTv= (TextView) findViewById(R.id.messageLineTv);
         logoutBtn.setOnClickListener(onClickListener);
         reportsBtn.setOnClickListener(onClickListener);
 
-        if (isMyDevicePolicyReceiverActive()) {
-            enableDeviceApp.setChecked(true);
-        } else {
-            enableDeviceApp.setChecked(false);
-        }
 
 }
 
@@ -61,10 +63,15 @@ public class TransilityDeviceAdminActivity extends AppCompatActivity {
         public void onClick(View v) {
             switch (v.getId()){
                 case  R.id.logoutBtn:
-                    Toast.makeText(TransilityDeviceAdminActivity.this,"Comming Soon",Toast.LENGTH_SHORT).show();
+                    cancelCurrentPendingIntent(TransilityDeviceAdminActivity.this);
+                    Intent intent1=new Intent(TransilityDeviceAdminActivity.this, LoginActivity.class);
+                    intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    TransilityDeviceAdminActivity.this.startActivity(intent1);
+
+                    finish();
                     break;
                 case R.id.reportsBtn:
-                    Toast.makeText(TransilityDeviceAdminActivity.this,"Comming Soon",Toast.LENGTH_SHORT).show();
+
                     break;
             }
         }
@@ -72,14 +79,37 @@ public class TransilityDeviceAdminActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if (isMasterScreenCalled){
-            isMasterScreenCalled=false;
-            return;
+
+        inventoryManagment  =((InventoryManagment)TransilityDeviceAdminActivity.this.getApplication());
+        int rowCount=inventoryManagment.getInventoryDatabasemanager().getEmployeeDataTable().getEmployeeTableRowCount(inventoryManagment.getSqliteDatabase());
+
+        if (rowCount!=0){
+
+            logoutBtn.setVisibility(View.VISIBLE);
+            reportsBtn.setVisibility(View.VISIBLE);
+
+
+
+        }
+        else{
+            logoutBtn.setVisibility(View.GONE);
+            reportsBtn.setVisibility(View.GONE);
+
         }
 
+        if (isMyDevicePolicyReceiverActive()) {
+            enableDeviceApp.setChecked(true);
+            messageLineTv.setText(getString(R.string.textAdminAppWhenEnabled));
 
-        enableDeviceApp
+        } else {
+            enableDeviceApp.setChecked(false);
+            messageLineTv.setText(getString(R.string.textAdminAppTextWhenDisabled));
+
+        }
+
+           enableDeviceApp
                 .setOnCheckedChangeListener(onCheckedChangeListener);
+
     }
 
 
@@ -89,53 +119,85 @@ private CompoundButton.OnCheckedChangeListener onCheckedChangeListener=new Compo
     public void onCheckedChanged(CompoundButton buttonView,
                                  boolean isChecked) {
         if (isChecked) {
+            enableDeviceApp.setOnCheckedChangeListener(null);
             if (!isMyDevicePolicyReceiverActive()){
-                Intent intent = new Intent(
-                        DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
-                intent.putExtra(
-                        DevicePolicyManager.EXTRA_DEVICE_ADMIN,
-                        truitonDevicePolicyAdmin);
-                intent.putExtra(
-                        DevicePolicyManager.EXTRA_ADD_EXPLANATION,
-                        "");
-                startActivityForResult(intent, REQUEST_ENABLE);
+
+
+                int rowCount=inventoryManagment.getInventoryDatabasemanager().getEmployeeDataTable().getEmployeeTableRowCount(inventoryManagment.getSqliteDatabase());
+                if (Utility.checkInternetConnection(TransilityDeviceAdminActivity.this)){
+                    enableDeviceAdminApp();
+                }
+                else {
+
+                    if (rowCount!=0){
+                        enableDeviceAdminApp();
+                    }
+                    else
+                    {
+                        enableDeviceApp.setChecked(false);
+                        singleButtonAlertDialog=SingleButtonAlertDialog.newInstance(getString(R.string.textPleaseEnableNetwork));
+
+                        singleButtonAlertDialog.show(getFragmentManager(),SingleButtonAlertDialog.class.getSimpleName());
+
+                    }
+                }
+
+
             }
 
         } else {
 
-            Intent masterPasswrodScreenIntent=new Intent(TransilityDeviceAdminActivity.this,MasterPasswordScreen.class);
-            masterPasswrodScreenIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-            isMasterScreenCalled=true;
-            startActivityForResult(masterPasswrodScreenIntent,MasterPasswordScreen.REQUESTCODE_FROMAPP);
+
+            truitonDevicePolicyManager.removeActiveAdmin(truitonDevicePolicyAdmin);
+
 
         }
+
+        enableDeviceApp.setOnCheckedChangeListener(onCheckedChangeListener);
     }
 };
 
+    private void cancelCurrentPendingIntent(Context context){
+        AlarmManager alarmManager= (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(context, SessionTimeOutReciever.class);
+        PendingIntent  alarmIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
+        alarmManager.cancel(alarmIntent);
+
+    }
+
+
+    /**
+     * Function calls the activity that initates the enabling of the apllication as device admin app.
+     */
+    private void enableDeviceAdminApp(){
+        Intent intent = new Intent(
+                DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
+        intent.putExtra(
+                DevicePolicyManager.EXTRA_DEVICE_ADMIN,
+                truitonDevicePolicyAdmin);
+        intent.putExtra(
+                DevicePolicyManager.EXTRA_ADD_EXPLANATION,
+                "");
+        startActivityForResult(intent, REQUEST_ENABLE);
+    }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
             switch (requestCode) {
+
+                case MasterPasswordScreen.REQUESTCODE_FROMAPP:
+                      enableDeviceApp.setOnCheckedChangeListener(null);
+                        enableDeviceApp.setChecked(false);
+                      enableDeviceApp.setOnCheckedChangeListener(onCheckedChangeListener);
+
+
+                    break;
+
                 case REQUEST_ENABLE:
 
-                     Intent intent=new Intent(TransilityDeviceAdminActivity.this,LoginActivity.class);
-                    startActivity(intent);
                     finish();
                     break;
-                case MasterPasswordScreen.REQUESTCODE_FROMAPP:
-                        truitonDevicePolicyManager.removeActiveAdmin(truitonDevicePolicyAdmin);
-                    Intent alarmIntent = new Intent(TransilityDeviceAdminActivity.this, SessionTimeOutReciever.class);
-                    PendingIntent alarmIntentPi = PendingIntent.getBroadcast(TransilityDeviceAdminActivity.this, 0, alarmIntent, 0);
-
-                    alarmManager.cancel(alarmIntentPi);
-                    enableDeviceApp.setOnCheckedChangeListener(null);
-                        enableDeviceApp.setChecked(false);
-                    enableDeviceApp.setOnCheckedChangeListener(onCheckedChangeListener);
-
-                    break;
-
-
             }
         }
         else if (resultCode==RESULT_CANCELED){
@@ -147,9 +209,9 @@ private CompoundButton.OnCheckedChangeListener onCheckedChangeListener=new Compo
                     enableDeviceApp.setOnCheckedChangeListener(onCheckedChangeListener);
                     break;
                 case REQUEST_ENABLE:
-                enableDeviceApp.setOnCheckedChangeListener(null);
+                    enableDeviceApp.setOnCheckedChangeListener(null);
                     enableDeviceApp.setChecked(false);
-                enableDeviceApp.setOnCheckedChangeListener(onCheckedChangeListener);
+                    enableDeviceApp.setOnCheckedChangeListener(onCheckedChangeListener);
                     break;
 
             }
