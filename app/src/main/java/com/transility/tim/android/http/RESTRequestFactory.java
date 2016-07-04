@@ -69,7 +69,6 @@ public class RESTRequestFactory {
     }
 
     protected RESTRequestFactory(android.content.Context context) {
-        //initializeContexts(context.getApplicationContext());
         appContext = context.getApplicationContext();
     }
 

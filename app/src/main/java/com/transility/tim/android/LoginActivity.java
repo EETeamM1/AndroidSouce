@@ -14,7 +14,6 @@ import android.support.v4.app.FragmentActivity;
 
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.WindowManager;
@@ -53,7 +52,6 @@ public class LoginActivity extends FragmentActivity {
     private Button loginButton;
     private RestRequestFactoryWrapper restRequestFactoryWrapper;
     private TelephonyManager telephonyManager;
-    private boolean isServerDown = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,7 +59,7 @@ public class LoginActivity extends FragmentActivity {
         // Set up the login form.
         Utility.logError(LoginActivity.this.getClass().getSimpleName(), "onCreate");
 
-       View  activityView = attacheViewWithIdToWindow(R.layout.activity_login);
+        View  activityView = attacheViewWithIdToWindow(R.layout.activity_login);
 
         restRequestFactoryWrapper = new RestRequestFactoryWrapper(this, restResponseShowFeedbackInterface);
         telephonyManager = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
@@ -73,7 +71,7 @@ public class LoginActivity extends FragmentActivity {
         progressView = activityView.findViewById(R.id.login_progress);
 
         loginButton.setOnClickListener(onClickListener);
-        TransiltiyInvntoryAppSharedPref.setWasLoginScreenVisible(LoginActivity.this,true);
+        TransiltiyInvntoryAppSharedPref.setWasLoginScreenVisible(LoginActivity.this, true);
     }
 
     private View attacheViewWithIdToWindow(int layoutId) {
@@ -92,8 +90,6 @@ public class LoginActivity extends FragmentActivity {
                 case R.id.login:
                     Utility.removeKeyboardfromScreen(v);
 
-
-
                     errorMessage.setText("");
                     boolean isNetworkConnected = Utility.checkInternetConnection(LoginActivity.this);
 
@@ -102,9 +98,7 @@ public class LoginActivity extends FragmentActivity {
 
                     } else if (TextUtils.isEmpty(password.getText())) {
                         password.setError(getString(R.string.textEmptyPassword));
-
                     }
-
                     else if (authenticateUserThroughMasterPassword()) {
                         errorMessage.setText(getString(R.string.textWindowWarning));
                         Thread timerThread = new Thread() {
@@ -115,36 +109,22 @@ public class LoginActivity extends FragmentActivity {
                                     e.printStackTrace();
                                 } finally {
 
-                                    intiaTeAlarm(LoginActivity.this.getResources().getInteger(R.integer.defaultTimeInterval));
+                                    intiateAlarm(LoginActivity.this.getResources().getInteger(R.integer.defaultTimeInterval));
                                     Utility.logError(LoginActivity.this.getClass().getSimpleName(), "Activity is about to get finished  ");
                                     finish();
                                 }
                             }
                         };
                         timerThread.start();
-
-                    }
-                   else if (isNetworkConnected) {
-
-
-                        intiateLogin();
-
                     }
                     else {
-
-                       errorMessage.setText(getString(R.string.textNetworkNotAvaliable));
-
+                        intiateLogin();
                     }
-
-
                     break;
 
             }
         }
     };
-
-
-
 
     /**
      * Function that fetch master password from data base and authenticate the user.
@@ -155,9 +135,8 @@ public class LoginActivity extends FragmentActivity {
     private boolean authenticateUserThroughMasterPassword() {
         boolean isuserValid = false;
 
-
-        if (password.getText().toString().equals(TransiltiyInvntoryAppSharedPref.getMasterPasswordToSharedPref(LoginActivity.this))
-                &&username.getText().toString().equals(TransiltiyInvntoryAppSharedPref.getUserNameToSharedPref(LoginActivity.this))) {
+        if (password.getText().toString().equals(TransiltiyInvntoryAppSharedPref.getMasterPasswordToSharedPref(this))
+                &&username.getText().toString().equals(TransiltiyInvntoryAppSharedPref.getUserNameToSharedPref(this))) {
             isuserValid = true;
         }
 
@@ -174,7 +153,6 @@ public class LoginActivity extends FragmentActivity {
 
         restRequestFactoryWrapper.callHttpRestRequest(loginRequest, json, Method.POST);
         progressView.setVisibility(View.VISIBLE);
-
     }
 
     /**
@@ -184,70 +162,54 @@ public class LoginActivity extends FragmentActivity {
         @Override
         public void onSucces(RESTResponse reposeJson) {
 
+            String response = reposeJson.getText();
+            Logon logon = Logon.parseLogon(response);
 
-               String response = reposeJson.getText();
+            EmployeeDatabaseTable employeeDatabaseTable = ((InventoryManagment) getApplication()).getInventoryDatabasemanager().getEmployeeDataTable();
+            EmployeeInfoBean employeeInfoBean = new EmployeeInfoBean();
+            employeeInfoBean.setUserEmail(username.getText().toString());
+            employeeInfoBean.setTimeOutPeriod(logon.getTimeout());
 
+            employeeInfoBean.setSessionToken(logon.getSessionToken());
 
+            TransiltiyInvntoryAppSharedPref.setMasterPasswordToSharedPref(LoginActivity.this,logon.getMasterPassword());
 
-                Logon logon = Logon.parseLogon(response);
-
-
-                EmployeeDatabaseTable employeeDatabaseTable = ((InventoryManagment) getApplication()).getInventoryDatabasemanager().getEmployeeDataTable();
-                EmployeeInfoBean employeeInfoBean = new EmployeeInfoBean();
-                employeeInfoBean.setUserEmail(username.getText().toString());
-                employeeInfoBean.setTimeOutPeriod(logon.getTimeout());
-
-                employeeInfoBean.setSessionToken(logon.getSessionToken());
-
-                TransiltiyInvntoryAppSharedPref.setMasterPasswordToSharedPref(LoginActivity.this,logon.getMasterPassword());
-
-
-
-                employeeDatabaseTable.insertEmployeeInfoToEmployeeInfoTable(((InventoryManagment) getApplication()).getSqliteDatabase(), employeeInfoBean);
-                intiaTeAlarm(logon.getTimeout());
+            employeeDatabaseTable.insertEmployeeInfoToEmployeeInfoTable(((InventoryManagment) getApplication()).getSqliteDatabase(), employeeInfoBean);
+            intiateAlarm(logon.getTimeout());
 
             /**
              * Included so that the Ui Updates occur on main thread.
              */
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        progressView.setVisibility(View.GONE);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    progressView.setVisibility(View.GONE);
 
-                        password.setText("");
-                        username.setText("");
-                    }
-                });
-                finish();
-
-
-
-
+                    password.setText("");
+                    username.setText("");
+                }
+            });
+            finish();
         }
 
 
         @Override
         public void onError(RESTResponse reposeJson) {
-
-
             progressView.setVisibility(View.GONE);
             if (reposeJson.status.isClientError()) {
                 errorMessage.setText(getString(R.string.textUnauthorisedPerson));
-
             } else if (reposeJson.status.isServerError()) {
                 errorMessage.setText(getString(R.string.textServerisDown));
-                isServerDown = true;
             } else {
                 errorMessage.setText(getString(R.string.textSomeErrorOccured));
             }
 
-        password.setText("");
+            password.setText("");
             username.setText("");
         }
     };
 
-    private void intiaTeAlarm(int timeOutPeriod) {
-
+    private void intiateAlarm(int timeOutPeriod) {
 
         AlarmManager alarmMgr = (AlarmManager) LoginActivity.this.getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(LoginActivity.this, SessionTimeOutReciever.class);
@@ -272,8 +234,6 @@ public class LoginActivity extends FragmentActivity {
      */
     @Override
     public void onBackPressed() {
-
-
     }
 
     @Override
@@ -285,7 +245,5 @@ public class LoginActivity extends FragmentActivity {
          */
         winManager.removeView(wrapperView);
     }
-
-
 }
 

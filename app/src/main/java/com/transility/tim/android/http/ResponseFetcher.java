@@ -71,28 +71,8 @@ public class ResponseFetcher  extends AsyncTask<Void,RESTResponse,RESTResponse>
         this.responseHandler = handlers;
         this.userData = userData;
 
-//        this.request.uri = IntellicusMobilePreferences.checkUri(appContext, originalUri);;
-
         activeFetchers.put(this.id, this);
         Log.i(Constants.LOGTAG, "ResponseFetcher-" + id + " created for " + originalUri);
-    }
-
-    public void updateRequestURI(String serverURI) {
-//        this.request.uri = IntellicusMobilePreferences.checkUri(appContext, serverURI, originalUri);;
-    }
-
-    public String getID() {
-        return id;
-    }
-
-    public void retryRequest(boolean retry) {
-        synchronized (this) {
-            tryRequestAgain = retry;
-            authStatus = retry ? null : RESTResponseHandler.STATUS_USER_CANCELLED_AUTH;
-
-            waitForAuthorizedAnswer = false;
-            this.notifyAll();
-        }
     }
 
     @Override
