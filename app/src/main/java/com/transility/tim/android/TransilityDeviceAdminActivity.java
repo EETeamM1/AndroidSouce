@@ -156,13 +156,7 @@ public class TransilityDeviceAdminActivity extends AppCompatActivity {
         }
     };
 
-    private void cancelCurrentPendingIntent(Context context) {
-        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        Intent intent = new Intent(context, SessionTimeOutReciever.class);
-        PendingIntent alarmIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
-        alarmManager.cancel(alarmIntent);
 
-    }
 
 
     /**
@@ -232,18 +226,22 @@ public class TransilityDeviceAdminActivity extends AppCompatActivity {
     private RestResponseShowFeedbackInterface restResponseShowFeedbackInterface = new RestResponseShowFeedbackInterface() {
         @Override
         public void onSuccessOfBackGroundOperation(RESTResponse reposeJson) {
-
+            Utility.logError(TransilityDeviceAdminActivity.class.getSimpleName(),"Request Code>>"+reposeJson.status.getCode()+" Resposne Message>>"+reposeJson.getText());
+            InventoryDatabaseManager  inventoryDatabaseManager=((InventoryManagment)TransilityDeviceAdminActivity.this.getApplication()).getInventoryDatabasemanager();
+            inventoryDatabaseManager.getEmployeeDataTable().deleteEmployeeInfoFromDatabase(((InventoryManagment)TransilityDeviceAdminActivity.this.getApplication()).getSqliteDatabase());
         }
 
         @Override
         public void onErrorInBackgroundOperation(RESTResponse reposeJson) {
-
+            Utility.logError(TransilityDeviceAdminActivity.class.getSimpleName(),"Request Code>>"+reposeJson.status.getCode()+" Resposne Message>>"+reposeJson.getText());
+            InventoryDatabaseManager  inventoryDatabaseManager=((InventoryManagment)TransilityDeviceAdminActivity.this.getApplication()).getInventoryDatabasemanager();
+            inventoryDatabaseManager.getEmployeeDataTable().deleteEmployeeInfoFromDatabase(((InventoryManagment)TransilityDeviceAdminActivity.this.getApplication()).getSqliteDatabase());
         }
 
         @Override
         public void onSuccessInForeGroundOperation(RESTResponse restResponse) {
 
-            cancelCurrentPendingIntent(TransilityDeviceAdminActivity.this);
+            Utility.cancelCurrentPendingIntent(TransilityDeviceAdminActivity.this);
             Intent intent1 = new Intent(TransilityDeviceAdminActivity.this, LoginActivity.class);
             intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             TransilityDeviceAdminActivity.this.startActivity(intent1);
@@ -254,7 +252,7 @@ public class TransilityDeviceAdminActivity extends AppCompatActivity {
         @Override
         public void onErrorInForeGroundOperation(RESTResponse restResponse) {
 
-            cancelCurrentPendingIntent(TransilityDeviceAdminActivity.this);
+            Utility.cancelCurrentPendingIntent(TransilityDeviceAdminActivity.this);
             Intent intent1 = new Intent(TransilityDeviceAdminActivity.this, LoginActivity.class);
             intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             TransilityDeviceAdminActivity.this.startActivity(intent1);

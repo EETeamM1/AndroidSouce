@@ -40,7 +40,7 @@
 
         <activity
             android:name=".TransilityDeviceAdminActivity"
-            android:screenOrientation="portrait"
+            android:screenOrientation="unspecified"
             android:launchMode="singleTop"
            >
 
@@ -52,7 +52,7 @@
             />
         <activity
             android:name=".MasterPasswordScreen"
-
+            android:screenOrientation="locked"
             android:launchMode="singleTask"
 
          android:theme="@style/AppTheme.NoActionBar" />
@@ -65,7 +65,7 @@
 
 
         <activity android:name=".TransilityApplicationSplashScreen"
-            android:screenOrientation="portrait"
+            android:screenOrientation="unspecified"
 
             >
             <intent-filter>

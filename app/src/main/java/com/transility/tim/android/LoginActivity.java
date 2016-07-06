@@ -173,6 +173,8 @@ public class LoginActivity extends FragmentActivity {
         @Override
         public void onSuccessOfBackGroundOperation(RESTResponse reposeJson) {
             String response = reposeJson.getText();
+            Utility.logError(TransilityDeviceAdminActivity.class.getSimpleName(),"Request Code>>"+reposeJson.status.getCode()+" Resposne Message>>"+response);
+
             Logon logon = Logon.parseLogon(response);
 
             EmployeeDatabaseTable employeeDatabaseTable = ((InventoryManagment) getApplication()).getInventoryDatabasemanager().getEmployeeDataTable();
@@ -192,6 +194,8 @@ public class LoginActivity extends FragmentActivity {
         @Override
         public void onErrorInBackgroundOperation(RESTResponse reposeJson) {
 
+
+
         }
 
         @Override
@@ -200,6 +204,7 @@ public class LoginActivity extends FragmentActivity {
 
             password.setText("");
             username.setText("");
+            finish();
         }
 
         @Override

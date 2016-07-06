@@ -33,7 +33,7 @@ public class MyDeviceAdminReciver extends DeviceAdminReceiver {
     @Override
     public void onDisabled(Context context, Intent intent) {
 
-        cancelCurrentPendingIntent(context);
+        Utility.cancelCurrentPendingIntent(context);
         ((InventoryManagment)context.getApplicationContext()).getInventoryDatabasemanager().getEmployeeDataTable()
                 .deleteEmployeeInfoFromDatabase(((InventoryManagment)context.getApplicationContext()).getSqliteDatabase());
         Intent intent1=new Intent(context, MasterPasswordScreen.class);
@@ -46,7 +46,7 @@ public class MyDeviceAdminReciver extends DeviceAdminReceiver {
     @Override
     public void onEnabled(Context context, Intent intent) {
 
-        cancelCurrentPendingIntent(context);
+        Utility.cancelCurrentPendingIntent(context);
         Intent intent1=new Intent(context, LoginActivity.class);
         intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent1);
@@ -119,7 +119,7 @@ private View.OnClickListener onClickListener=new View.OnClickListener() {
             if (((InventoryManagment)context.getApplicationContext()).getInventoryDatabasemanager()
                     .getEmployeeDataTable().getEmployeeTableRowCount(((InventoryManagment)context.getApplicationContext()).getSqliteDatabase())==0){
 
-                cancelCurrentPendingIntent(context);
+                Utility.cancelCurrentPendingIntent(context);
                 Intent intent1=new Intent(context, LoginActivity.class);
                 intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(intent1);
@@ -127,7 +127,7 @@ private View.OnClickListener onClickListener=new View.OnClickListener() {
             else {
                 if (TransiltiyInvntoryAppSharedPref.getWasLoginScreenVisible(context)){
 
-                    cancelCurrentPendingIntent(context);
+                    Utility.cancelCurrentPendingIntent(context);
                     Intent intent1=new Intent(context, LoginActivity.class);
                     intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(intent1);
@@ -150,15 +150,5 @@ private View.OnClickListener onClickListener=new View.OnClickListener() {
     }
 
 
-    /**
-     * Cancels the current Pending Intent when the device is restarted.
-     * @param context
-     */
-    private void cancelCurrentPendingIntent(Context context){
-        AlarmManager alarmManager= (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        Intent intent = new Intent(context, SessionTimeOutReciever.class);
-        PendingIntent  alarmIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
-        alarmManager.cancel(alarmIntent);
 
-        }
 }

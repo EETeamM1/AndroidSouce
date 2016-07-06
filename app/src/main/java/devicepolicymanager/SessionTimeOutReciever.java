@@ -19,9 +19,8 @@ public class SessionTimeOutReciever extends BroadcastReceiver {
         // TODO: This method is called when the BroadcastReceiver is receiving
         // an Intent broadcast.
         
-        Intent intent1=new Intent(context, LoginActivity.class);
-        intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        context.startActivity(intent1);
+        Intent logoutServiceIntent=new Intent(context,LogoutServiceClient.class);
+        context.startService(logoutServiceIntent);
 
     }
 }

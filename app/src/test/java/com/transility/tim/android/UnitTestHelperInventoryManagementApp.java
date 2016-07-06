@@ -12,9 +12,6 @@ import org.junit.BeforeClass;
 public  interface UnitTestHelperInventoryManagementApp {
 
 
-
-
-
     void setUpBeforeEachTestCase();
 
 

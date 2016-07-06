@@ -1,12 +1,17 @@
 package com.transility.tim.android.Utilities;
 
 import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+
+import devicepolicymanager.SessionTimeOutReciever;
 
 /**
  * Logger class to log application info and print handled exception.
@@ -53,5 +58,11 @@ public class Utility {
 
     }
 
+    public static void cancelCurrentPendingIntent(Context context) {
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(context, SessionTimeOutReciever.class);
+        PendingIntent alarmIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
+        alarmManager.cancel(alarmIntent);
 
+    }
 }
