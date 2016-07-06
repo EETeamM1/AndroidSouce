@@ -24,8 +24,6 @@ import android.widget.TextView;
 
 
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationServices;
-import com.transility.tim.android.Dialogs.SingleButtonAlertDialog;
 import com.transility.tim.android.InventoryDatabase.EmployeeDatabaseTable;
 import com.transility.tim.android.Utilities.TransiltiyInvntoryAppSharedPref;
 import com.transility.tim.android.Utilities.Utility;
@@ -77,12 +75,9 @@ public class LoginActivity extends FragmentActivity {
         loginButton.setOnClickListener(onClickListener);
         TransiltiyInvntoryAppSharedPref.setWasLoginScreenVisible(LoginActivity.this, true);
 
-
     }
 
-
-
-    private View attacheViewWithIdToWindow(int layoutId) {
+    protected View attacheViewWithIdToWindow(int layoutId) {
         WindowManager.LayoutParams localLayoutParams = new WindowManager.LayoutParams(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
         winManager = ((WindowManager) getApplicationContext().getSystemService(WINDOW_SERVICE));
         wrapperView = new RelativeLayout(this);
@@ -99,7 +94,6 @@ public class LoginActivity extends FragmentActivity {
                     Utility.removeKeyboardfromScreen(v);
 
                     errorMessage.setText("");
-                    boolean isNetworkConnected = Utility.checkInternetConnection(LoginActivity.this);
 
                     if (TextUtils.isEmpty(username.getText())) {
                         username.setError(getString(R.string.textEmptyUserName));
@@ -107,7 +101,7 @@ public class LoginActivity extends FragmentActivity {
                     } else if (TextUtils.isEmpty(password.getText())) {
                         password.setError(getString(R.string.textEmptyPassword));
                     }
-                    else if (authenticateUserThroughMasterPassword()) {
+                    else if (authenticateMasterUser(password.getText().toString(), username.getText().toString())) {
                         errorMessage.setText(getString(R.string.textWindowWarning));
                         Thread timerThread = new Thread() {
                             public void run() {
@@ -132,26 +126,21 @@ public class LoginActivity extends FragmentActivity {
                         errorMessage.setText(getString(R.string.textNetworkNotAvaliable));
                     }
                     break;
-
             }
         }
     };
 
     /**
-     * Function that fetch master password from data base and authenticate the user.
+     * Function that fetch master password from local prefrences and authenticate the user.
      *
      *
      * @return
+     * @param passwordStr
+     * @param usernameStr
      */
-    private boolean authenticateUserThroughMasterPassword() {
-        boolean isuserValid = false;
-
-        if (password.getText().toString().equals(TransiltiyInvntoryAppSharedPref.getMasterPasswordToSharedPref(this))
-                &&username.getText().toString().equals(TransiltiyInvntoryAppSharedPref.getUserNameToSharedPref(this))) {
-            isuserValid = true;
-        }
-
-        return isuserValid;
+    protected boolean authenticateMasterUser(String passwordStr, String usernameStr) {
+        return passwordStr.equals(TransiltiyInvntoryAppSharedPref.getMasterPasswordToSharedPref(this))
+                && usernameStr.equals(TransiltiyInvntoryAppSharedPref.getUserNameToSharedPref(this));
     }
 
     /**

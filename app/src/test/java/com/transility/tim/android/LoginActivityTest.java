@@ -1,29 +1,24 @@
 package com.transility.tim.android;
 
 import android.content.Context;
-import android.os.Build;
-import android.telephony.TelephonyManager;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.transility.tim.android.Utilities.TransiltiyInvntoryAppSharedPref;
+
 import org.junit.After;
-import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricGradleTestRunner;
+import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
-
-import static org.junit.Assert.*;
+import org.robolectric.util.ActivityController;
 
 /**
  *
@@ -32,74 +27,61 @@ import static org.junit.Assert.*;
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class)
 
-public class LoginActivityTest implements UnitTestHelperInventoryManagementApp {
+public class LoginActivityTest  {
 
-
+    ActivityController<LoginActivity> activityController;
     private LoginActivity  mLoginActivity;
-
-
-
-
-
+    Context context;
 
     @Before
-    @Override
-    public void setUpBeforeEachTestCase() {
-        mLoginActivity= Robolectric.buildActivity(LoginActivity.class).create().resume().visible().get();
+    public void setUp() {
+         context = RuntimeEnvironment.application.getBaseContext();
+        activityController = Robolectric.buildActivity(LoginActivity.class).create();
+        mLoginActivity= activityController.start().resume().visible().get();
     }
 
     @After
-    @Override
-    public void tearDownAfterEachTestCase() {
+    public void tearDown() {
 
     }
 
     @Test
-    public void test001CheckIfTextOnUiComponentsIsCorrect(){
-//        WindowManager.LayoutParams localLayoutParams = new WindowManager.LayoutParams( WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
-//
-//       WindowManager winManager = ((WindowManager)mLoginActivity.getApplicationContext().getSystemService(Context.WINDOW_SERVICE));
-//
-//       ViewGroup wrapperView = new RelativeLayout(mLoginActivity);
-//        wrapperView.setBackgroundColor(mLoginActivity.getResources().getColor(R.color.backWhite));
-//
-//        View activityView= View.inflate(mLoginActivity, R.layout.activity_login, wrapperView);
+    public void testCheckUI(){
 
-        View  activityView  =mLoginActivity.getWindow().peekDecorView();
+        View  activityView = mLoginActivity.attacheViewWithIdToWindow(R.layout.activity_login);
 
-        String userNameEtText=mLoginActivity.getString(R.string.textUserName);
+        String userNameEtText = mLoginActivity.getString(R.string.textUserName);
+        EditText mUserNameEt = (EditText) activityView.findViewById(R.id.username);
+        Assert.assertEquals("The text on User Name is incorrect.", userNameEtText, mUserNameEt.getHint());
 
-//        activityView= mLoginActivity.getParentViewOfThisActivity();
+        String passwordTvText = mLoginActivity.getString(R.string.textPassword);
+        EditText mPasswordEt= (EditText) activityView.findViewById(R.id.password);
+        Assert.assertEquals("The text shown on Password is incorrect.", passwordTvText, mPasswordEt.getHint());
 
-//        EditText mUserNameEt = (EditText) activityView.findViewById(R.id.email);
-//
-//        assertEquals("The text on User Name is incorrect.",userNameEtText,mUserNameEt.getHint());
-//
-//        String passwordTvText=mLoginActivity.getString(R.string.textPassword);
-//
-//        EditText mPasswordEt= (EditText) activityView.findViewById(R.id.password);
-//        assertEquals("The text shown on Password is incorrect.",passwordTvText,mPasswordEt.getHint());
-//
-//        String emailTextEt=mLoginActivity.getString(R.string.action_sign_in);
-//        Button email_sign_in_button= (Button) activityView.findViewById(R.id.email_sign_in_button);
-//
-//        assertEquals("The text on login button is incorrect.",emailTextEt,email_sign_in_button.getText());
-//
-//        ProgressBar login_progress= (ProgressBar) activityView.findViewById(R.id.login_progress);
-//        assertTrue("Progress Bar should not be visible.",login_progress.getVisibility()== View.GONE);
-//
-//        TextView mErrorTv= (TextView) activityView.findViewById(R.id.responseAndProgressMessageTv);
-//
-//        String errorTvText="";
+        String emailTextEt = mLoginActivity.getString(R.string.action_sign_in);
+        Button email_sign_in_button= (Button) activityView.findViewById(R.id.login);
+        Assert.assertEquals("The text on login button is incorrect.", emailTextEt, email_sign_in_button.getText());
 
-//        assertEquals("No text should be shown on error response text view.",errorTvText,mErrorTv.getText());
+        ProgressBar login_progress = (ProgressBar) activityView.findViewById(R.id.login_progress);
+        Assert.assertTrue("Progress Bar should not be visible.", login_progress.getVisibility() == View.GONE);
+
+        TextView mErrorTv = (TextView) activityView.findViewById(R.id.error_message);
+        String errorTvText = "";
+        Assert.assertEquals("No text should be shown on error response text view.", errorTvText, mErrorTv.getText());
+
+        Assert.assertTrue("Login scren visbile prefrence is not correct", TransiltiyInvntoryAppSharedPref.getWasLoginScreenVisible(mLoginActivity));
 
     }
 
-   public void test002CheckCorrectMasterPasswordIsAuthenticated(){
+    @Test
+    public void testAuthenticateUserThroughMasterPassword(){
 
+        TransiltiyInvntoryAppSharedPref.setUserNameToSharedPref(context, mLoginActivity.getString(R.string.masterUserName));
+        TransiltiyInvntoryAppSharedPref.setMasterPasswordToSharedPref(context, mLoginActivity.getString(R.string.masterPassword));
+        Assert.assertTrue("Master user is not authenticate",
+                mLoginActivity.authenticateMasterUser(mLoginActivity.getString(R.string.masterPassword), mLoginActivity.getString(R.string.masterUserName)));
 
-
+        Assert.assertFalse("Empty user is authenticate as Master", mLoginActivity.authenticateMasterUser("", ""));
    }
 
 
