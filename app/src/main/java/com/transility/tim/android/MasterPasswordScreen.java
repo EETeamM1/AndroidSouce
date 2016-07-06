@@ -91,6 +91,6 @@ public class MasterPasswordScreen extends Activity {
     protected void onDestroy() {
         super.onDestroy();
 
-        
+        winManager.removeView(wrapperView);
     }
 }

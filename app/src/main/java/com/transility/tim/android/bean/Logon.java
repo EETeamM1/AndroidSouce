@@ -29,7 +29,7 @@ public class Logon implements Parcelable{
         }
     };
 
-    public Logon (){}
+    private Logon (){}
 
     private String masterPassword;
     private int timeout;
@@ -108,7 +108,7 @@ public class Logon implements Parcelable{
     }
 
 
-    protected Logon(Parcel source) {
+    private Logon(Parcel source) {
         final Object[] values = source.readArray(getClass().getClassLoader());
         int i = 0;
 

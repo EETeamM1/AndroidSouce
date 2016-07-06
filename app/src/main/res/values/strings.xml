@@ -1,28 +1,27 @@
 <resources>
     <string name="app_name">TranilityInventoryManagement</string>
-    <string name="title_activity_login">Sign in</string>
+
 
     <!-- Strings related to login -->
     <string name="textUserName">User Name</string>
     <string name="textPassword">Password</string>
     <string name="action_sign_in">Login</string>
-    <string name="action_sign_in_short">Login</string>
 
-     <string name="error_field_required">This field is required</string>
+
+
     <string name="textAdminAppTextWhenDisabled">Please Enable application Admin privileges , after enabling it you will be bind to use the policy enforced by this application.</string>
     <string name="textAdminAppWhenEnabled">Currently device is working under policy enforced by App .\nTo remove these policies disable the app.
     </string>
-    <string name="textAdminAppRefeshIndicator">Sync data from server</string>
-    <string name="title_activity_main">MainActivity</string>
+
+
     <string name="textDisableTheDevieAdminApp">You may now uninstall the application.</string>
 
-    <string name="title_activity_transility_screen_splash_screen">TransilityScreenSplashScreen
-    </string>
 
-   \
+
+
     <string name="textReports">Check Device Reports</string>
     <string name="textLogout">Logout</string>
     <string name="textOn">On</string>
-    <string name="textOk">Ok</string>
+    <string name="textOk">O5</string>
     <string name="textOff">Off</string>
 </resources>

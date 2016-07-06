@@ -11,12 +11,12 @@ import com.transility.tim.android.bean.EmployeeInfoBean;
  */
 public class EmployeeDatabaseTable {
 
-    public final static String ID = "_id";
+    private  final static String ID = "_id";
 
-    public final static String TABLE_EMPLOYEE = "EMPLOYEES";
-    public final static String USERNAME ="userName";
-    public final static String TIMEOUT_PERIOD="timeOutPeriod";
-    public final static String SESSIONTOKEN="sessionToken";
+    private final static String TABLE_EMPLOYEE = "EMPLOYEES";
+    private final static String USERNAME ="userName";
+    private final static String TIMEOUT_PERIOD="timeOutPeriod";
+    private final static String SESSIONTOKEN="sessionToken";
 
 
     /**
@@ -124,8 +124,24 @@ public class EmployeeDatabaseTable {
         if (cursor.moveToNext()){
             count=cursor.getInt(0);
         }
-
+        cursor.close();
         return count;
 
+    }
+
+
+    /**
+     * Returns the session token.
+     * @param sqLiteDatabase
+     * @return
+     */
+    public String getSessionToken(SQLiteDatabase sqLiteDatabase){
+        String[] columnsName={SESSIONTOKEN};
+        Cursor cursor=sqLiteDatabase.query(true,TABLE_EMPLOYEE,columnsName,null,null,null,null,null,null);
+        String sessionToken=null;
+        while (cursor.moveToNext()){
+            sessionToken=cursor.getString(cursor.getColumnIndex(SESSIONTOKEN));
+        }
+        return sessionToken;
     }
 }

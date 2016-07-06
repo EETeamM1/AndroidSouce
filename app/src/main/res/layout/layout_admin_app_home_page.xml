@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:gravity="center_vertical"
-    android:background="@color/backWhite"
+
      >
 
     <ImageView
@@ -13,6 +13,7 @@
         android:src="@drawable/transility_logo"
         android:layout_marginTop="@dimen/metrics_20"
         android:layout_gravity="center_horizontal"
+
         />
 
     <TextView
@@ -30,7 +31,7 @@
         android:id="@+id/enableDeviceApp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/line"
+       
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="@dimen/metrics_20"
         android:textOn="@string/textOn"

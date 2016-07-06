@@ -9,14 +9,26 @@ import com.transility.tim.android.http.RESTResponse;
 public interface RestResponseShowFeedbackInterface {
 
     /***
-     * Show proper feedback when the API response Returns success.
+     * Perform action when the background operation was successfully completed..
      * @param reposeJson
      */
-    void onSucces(RESTResponse reposeJson);
+    void onSuccessOfBackGroundOperation(RESTResponse reposeJson);
 
     /***
-     * Show proper feedback when the API response Returns error.
+     * Perfrom action when the background operation was not successful.
      * @param reposeJson
      */
-    void onError(RESTResponse reposeJson);
+    void onErrorInBackgroundOperation(RESTResponse reposeJson);
+
+    /**
+     * Perfrom action when the foreground operation was successful.
+     * @param restResponse
+     */
+    void onSuccessInForeGroundOperation(RESTResponse restResponse);
+
+    /**
+     * Perfrom Action when the foreground operation was not successful
+     * @param restResponse
+     */
+    void onErrorInForeGroundOperation(RESTResponse restResponse);
 }

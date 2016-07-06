@@ -23,6 +23,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
+import com.transility.tim.android.Dialogs.SingleButtonAlertDialog;
 import com.transility.tim.android.InventoryDatabase.EmployeeDatabaseTable;
 import com.transility.tim.android.Utilities.TransiltiyInvntoryAppSharedPref;
 import com.transility.tim.android.Utilities.Utility;
@@ -52,6 +55,7 @@ public class LoginActivity extends FragmentActivity {
     private Button loginButton;
     private RestRequestFactoryWrapper restRequestFactoryWrapper;
     private TelephonyManager telephonyManager;
+    private GoogleApiClient googleApiClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,7 +76,11 @@ public class LoginActivity extends FragmentActivity {
 
         loginButton.setOnClickListener(onClickListener);
         TransiltiyInvntoryAppSharedPref.setWasLoginScreenVisible(LoginActivity.this, true);
+
+
     }
+
+
 
     private View attacheViewWithIdToWindow(int layoutId) {
         WindowManager.LayoutParams localLayoutParams = new WindowManager.LayoutParams(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
@@ -117,8 +125,11 @@ public class LoginActivity extends FragmentActivity {
                         };
                         timerThread.start();
                     }
-                    else {
+                    else if (Utility.checkInternetConnection(LoginActivity.this)){
                         intiateLogin();
+                    }
+                    else{
+                        errorMessage.setText(getString(R.string.textNetworkNotAvaliable));
                     }
                     break;
 
@@ -160,8 +171,7 @@ public class LoginActivity extends FragmentActivity {
      */
     private RestResponseShowFeedbackInterface restResponseShowFeedbackInterface = new RestResponseShowFeedbackInterface() {
         @Override
-        public void onSucces(RESTResponse reposeJson) {
-
+        public void onSuccessOfBackGroundOperation(RESTResponse reposeJson) {
             String response = reposeJson.getText();
             Logon logon = Logon.parseLogon(response);
 
@@ -177,28 +187,27 @@ public class LoginActivity extends FragmentActivity {
             employeeDatabaseTable.insertEmployeeInfoToEmployeeInfoTable(((InventoryManagment) getApplication()).getSqliteDatabase(), employeeInfoBean);
             intiateAlarm(logon.getTimeout());
 
-            /**
-             * Included so that the Ui Updates occur on main thread.
-             */
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    progressView.setVisibility(View.GONE);
-
-                    password.setText("");
-                    username.setText("");
-                }
-            });
-            finish();
         }
 
+        @Override
+        public void onErrorInBackgroundOperation(RESTResponse reposeJson) {
+
+        }
 
         @Override
-        public void onError(RESTResponse reposeJson) {
+        public void onSuccessInForeGroundOperation(RESTResponse restResponse) {
             progressView.setVisibility(View.GONE);
-            if (reposeJson.status.isClientError()) {
+
+            password.setText("");
+            username.setText("");
+        }
+
+        @Override
+        public void onErrorInForeGroundOperation(RESTResponse restResponse) {
+            progressView.setVisibility(View.GONE);
+            if (restResponse.status.isClientError()) {
                 errorMessage.setText(getString(R.string.textUnauthorisedPerson));
-            } else if (reposeJson.status.isServerError()) {
+            } else if (restResponse.status.isServerError()) {
                 errorMessage.setText(getString(R.string.textServerisDown));
             } else {
                 errorMessage.setText(getString(R.string.textSomeErrorOccured));
@@ -207,6 +216,8 @@ public class LoginActivity extends FragmentActivity {
             password.setText("");
             username.setText("");
         }
+
+
     };
 
     private void intiateAlarm(int timeOutPeriod) {

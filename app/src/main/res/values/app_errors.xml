@@ -7,10 +7,9 @@
     <string name="textNetworkNotAvaliable">Network Not Avaliable please contact your inventory manager.</string>
     <string name="textEmptyUserName">UserName cannot be empty.</string>
     <string name="textEmptyPassword">Password cannot be empty.</string>
-    <string name="textUseMasterPassword">Due to Unavailability of network we are unable to authenticate you .
-       Please contact your invetory amanger for further Assistance.</string>
-    <string name="textDataBaseErrorOccured">Data base error occurred.</string>
-    <string name="textIncorrectMasterPassword">Master username or password you entered is incorrect.</string>
+
+
+
     <string name="textWindowWarning">Device is to get unlocked in few seconds . You will be given window of 30 min to enable network and logout from Inventory app home screen.
         \n After 30 min device will automatically get locked.</string>
     <string name="textPleaseEnableNetwork">Please enable your network connection.</string>

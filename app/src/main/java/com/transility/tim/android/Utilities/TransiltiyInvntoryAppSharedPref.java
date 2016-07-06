@@ -19,7 +19,7 @@ public class TransiltiyInvntoryAppSharedPref  {
         SharedPreferences  sp=context.getSharedPreferences(TRANSILITY_INVENTORY_SHARED_PREF,Context.MODE_PRIVATE);
         SharedPreferences.Editor editor=sp.edit();
         editor.putString(KEY_MASTER_PASSWORD,masterPassword);
-        editor.commit();
+        editor.apply();
 
 
 
@@ -36,7 +36,7 @@ public class TransiltiyInvntoryAppSharedPref  {
     SharedPreferences sp=context.getSharedPreferences(TRANSILITY_INVENTORY_SHARED_PREF,Context.MODE_PRIVATE);
     SharedPreferences.Editor editor=sp.edit();
     editor.putString(KEY_USER_NAME,userName);
-    editor.commit();
+    editor.apply();
 }
 
     public static String getUserNameToSharedPref(Context context){
@@ -51,7 +51,7 @@ public class TransiltiyInvntoryAppSharedPref  {
             SharedPreferences sp=context.getSharedPreferences(TRANSILITY_INVENTORY_SHARED_PREF,Context.MODE_PRIVATE);
         SharedPreferences.Editor edit=sp.edit();
         edit.putBoolean(KEY_WAS_LOGIN_SCREEN_VISIBLE,isScreenVisible);
-        edit.commit();
+        edit.apply();
 
     }
     public static boolean getWasLoginScreenVisible(Context context){

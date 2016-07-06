@@ -24,7 +24,7 @@ public class InventoryManagment extends Application {
     public void onCreate() {
         super.onCreate();
         initiateDatabase();
-        initateAllowPolicyToApplication ();
+
     }
 
     /**
@@ -37,20 +37,12 @@ public class InventoryManagment extends Application {
         inventoryDatabaseManager=new InventoryDatabaseManager(this,this.getString(R.string.app_name),null,1,null);
         sqLiteDatabase=inventoryDatabaseManager.getWritableDatabase();
         TransiltiyInvntoryAppSharedPref.setUserNameToSharedPref(this,getString(R.string.masterUserName));
+        TransiltiyInvntoryAppSharedPref.setMasterPasswordToSharedPref(this,getString(R.string.masterPassword));
+
 
     }
 
-    private void initateAllowPolicyToApplication() {
-        int SDK_INT = android.os.Build.VERSION.SDK_INT;
-        if (SDK_INT > 8)
-        {
-            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
-                    .permitAll().build();
-            StrictMode.setThreadPolicy(policy);
 
-        }
-
-    }
 
     /**
      * Returns the current instance of Database manager

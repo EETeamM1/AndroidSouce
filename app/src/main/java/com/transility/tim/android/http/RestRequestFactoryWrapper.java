@@ -15,51 +15,53 @@ import java.util.List;
 public class RestRequestFactoryWrapper {
 
 
-
     private RestResponseShowFeedbackInterface restResponseShowFeedbackInterface;
     private Context context;
 
     /**
      * Creates a object for this wrapper class.
+     *
      * @param context
      * @param restResponseShowFeedbackInterface
      */
-    public RestRequestFactoryWrapper(Context context,RestResponseShowFeedbackInterface restResponseShowFeedbackInterface){
+    public RestRequestFactoryWrapper(Context context, RestResponseShowFeedbackInterface restResponseShowFeedbackInterface) {
 
-        this.restResponseShowFeedbackInterface=restResponseShowFeedbackInterface;
-        this.context=context;
+        this.restResponseShowFeedbackInterface = restResponseShowFeedbackInterface;
+        this.context = context;
     }
 
     /**
      * Create and intiate a Rest Request to the RequestURL passed.
+     *
      * @param requestUrl
      * @param requestJson
      */
-    public void callHttpRestRequest(String requestUrl,String requestJson, RESTRequest.Method method){
-        List<RESTResponseHandler> handlers = Arrays.asList(okhandler,errorHandler);
-        RESTRequestFactory.dispatch(context, method , requestUrl, requestJson, null,handlers ,null);
+    public void callHttpRestRequest(String requestUrl, String requestJson, RESTRequest.Method method) {
+        List<RESTResponseHandler> handlers = Arrays.asList(okhandler, errorHandler);
+        RESTRequestFactory.dispatch(context, method, requestUrl, requestJson, null, handlers, null);
     }
+
     /**
      * Handler called when the Resquest has executed Successfully.
      */
-    RESTResponseHandler okhandler =  new RESTResponseHandler() {
+    RESTResponseHandler okhandler = new RESTResponseHandler() {
         @Override
         public void handleResponseInBackground(Context context, Class<? extends Context> forContextType, RESTResponse response) {
-            restResponseShowFeedbackInterface.onSucces(response);
-            Utility.logError(this.getClass().getSimpleName(),"handleResponseInBackground");
+            restResponseShowFeedbackInterface.onSuccessOfBackGroundOperation(response);
+            Utility.logError(this.getClass().getSimpleName(), "handleResponseInBackground");
 
         }
 
         @Override
         public void handleResponseInUI(Context context, Class<? extends Context> forContextType, RESTResponse response) {
-            Utility.logError(this.getClass().getSimpleName(),"handleResponseInUI");
+            Utility.logError(this.getClass().getSimpleName(), "handleResponseInUI");
 
-
+            restResponseShowFeedbackInterface.onSuccessInForeGroundOperation(response);
         }
 
         @Override
         public void handleCancelledRequest(Context context, Class<? extends Context> forContextType, RESTRequest request) {
-            Utility.logError(this.getClass().getSimpleName(),"handleCancelledRequest");
+            Utility.logError(this.getClass().getSimpleName(), "handleCancelledRequest");
 
         }
 
@@ -72,24 +74,23 @@ public class RestRequestFactoryWrapper {
     /**
      * Handler called when the Resquest executed with errors.
      */
-    RESTResponseHandler errorHandler =  new RESTResponseHandler() {
+    RESTResponseHandler errorHandler = new RESTResponseHandler() {
         @Override
         public void handleResponseInBackground(Context context, Class<? extends Context> forContextType, RESTResponse response) {
-
-            Utility.logError(this.getClass().getSimpleName(),"handleResponseInBackground");
+            Utility.logError(this.getClass().getSimpleName(), "handleResponseInBackground");
+            restResponseShowFeedbackInterface.onErrorInBackgroundOperation(response);
 
         }
 
         @Override
         public void handleResponseInUI(Context context, Class<? extends Context> forContextType, RESTResponse response) {
-            Utility.logError(this.getClass().getSimpleName(),"handleResponseInUI");
-            restResponseShowFeedbackInterface.onError(response);
-
+            Utility.logError(this.getClass().getSimpleName(), "handleResponseInUI");
+            restResponseShowFeedbackInterface.onErrorInForeGroundOperation(response);
         }
 
         @Override
         public void handleCancelledRequest(Context context, Class<? extends Context> forContextType, RESTRequest request) {
-            Utility.logError(this.getClass().getSimpleName(),"handleCancelledRequest");
+            Utility.logError(this.getClass().getSimpleName(), "handleCancelledRequest");
 
         }
 
