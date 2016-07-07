@@ -5,20 +5,14 @@ package com.transility.tim.android.bean;
  * Created by ambesh.kukreja on 6/7/2016.
  */
 public class EmployeeInfoBean {
-    private String userEmail;
+    private String userName;
 
     private int timeOutPeriod;
-    private String masterPassword;
+
     private String sessionToken;
-    private String masterUser;
 
-    public String getMasterPassword() {
-        return masterPassword;
-    }
 
-    public void setMasterPassword(String masterPassword) {
-        this.masterPassword = masterPassword;
-    }
+
 
     public String getSessionToken(){
         return  sessionToken;
@@ -28,12 +22,12 @@ public class EmployeeInfoBean {
 
         this.sessionToken=sessionToken;
     }
-    public String getUserEmail() {
-        return userEmail;
+    public String getUserName() {
+        return userName;
     }
 
-    public void setUserEmail(String userEmail) {
-        this.userEmail = userEmail;
+    public void setUserName(String userEmail) {
+        this.userName = userEmail;
     }
 
 
@@ -46,11 +40,5 @@ public class EmployeeInfoBean {
         this.timeOutPeriod = timeOutPeriod;
     }
 
-    public String getMasterUser(){
-        return masterUser;
-    }
-    public void setMasterUser(String masterUser){
-        this.masterUser=masterUser;
 
-    }
 }

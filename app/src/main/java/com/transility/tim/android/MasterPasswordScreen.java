@@ -11,6 +11,8 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 
+import devicepolicymanager.MyDeviceAdminReciver;
+
 public class MasterPasswordScreen extends Activity {
 
     public final static int REQUESTCODE_FROMAPP=501;
@@ -32,6 +34,8 @@ public class MasterPasswordScreen extends Activity {
         View activityView=attacheViewWithIdToWindow(R.layout.layout_master_password_screen);
         masterpasswordEntredBtn= (Button) activityView.findViewById(R.id.masterpasswordEntredBtn);
         continueWithAdminPolicy= (Button) activityView.findViewById(R.id.continueWithAdminPolicy);
+        truitonDevicePolicyAdmin = new ComponentName(this,
+                MyDeviceAdminReciver.class);
         masterpasswordEntredBtn.setOnClickListener(onClickListener);
         continueWithAdminPolicy.setOnClickListener(onClickListener);
 
@@ -61,6 +65,7 @@ public class MasterPasswordScreen extends Activity {
                 setResult(RESULT_OK);
                 finish();
                 break;
+
         }
         }
     };
@@ -85,8 +90,27 @@ public class MasterPasswordScreen extends Activity {
                 "");
         startActivityForResult(intent, REQUEST_ENABLE);
 
-        finish();
+
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+switch (requestCode){
+    case REQUEST_ENABLE:
+
+        finish();
+}
+        }else if (resultCode == RESULT_CANCELED) {
+            switch (requestCode){
+                case REQUEST_ENABLE:
+
+
+            }
+        }
+        }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();

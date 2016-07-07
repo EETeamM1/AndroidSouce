@@ -59,7 +59,7 @@ public class EmployeeDatabaseTable {
         Cursor cursor=sqLiteDatabase.query(true,TABLE_EMPLOYEE,columnsName,null,null,null,null,null,null);
 
         while (cursor.moveToNext()){
-            employeeInfoBean.setUserEmail(cursor.getString(cursor.getColumnIndex(USERNAME)));
+            employeeInfoBean.setUserName(cursor.getString(cursor.getColumnIndex(USERNAME)));
             employeeInfoBean.setTimeOutPeriod(cursor.getInt(cursor.getColumnIndex(TIMEOUT_PERIOD)));
             employeeInfoBean.setSessionToken(cursor.getString(cursor.getColumnIndex(SESSIONTOKEN)));
 
@@ -99,7 +99,7 @@ public class EmployeeDatabaseTable {
         ContentValues contentValues=new ContentValues();
 
         contentValues.put(TIMEOUT_PERIOD,employeeInfoBean.getTimeOutPeriod());
-        contentValues.put(USERNAME,employeeInfoBean.getUserEmail());
+        contentValues.put(USERNAME,employeeInfoBean.getUserName());
         contentValues.put(SESSIONTOKEN,employeeInfoBean.getSessionToken());
         long status= sqLiteDatabase.insert(TABLE_EMPLOYEE,null,contentValues);
         if (status!=-1){

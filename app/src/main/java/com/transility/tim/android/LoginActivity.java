@@ -25,6 +25,7 @@ import android.widget.TextView;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.transility.tim.android.InventoryDatabase.EmployeeDatabaseTable;
+import com.transility.tim.android.InventoryDatabase.InventoryDatabaseManager;
 import com.transility.tim.android.Utilities.TransiltiyInvntoryAppSharedPref;
 import com.transility.tim.android.Utilities.Utility;
 import com.transility.tim.android.Utilities.RestResponseShowFeedbackInterface;
@@ -61,7 +62,7 @@ public class LoginActivity extends FragmentActivity {
         // Set up the login form.
         Utility.logError(LoginActivity.this.getClass().getSimpleName(), "onCreate");
 
-        View  activityView = attacheViewWithIdToWindow(R.layout.activity_login);
+        View activityView = attacheViewWithIdToWindow(R.layout.activity_login);
 
         restRequestFactoryWrapper = new RestRequestFactoryWrapper(this, restResponseShowFeedbackInterface);
         telephonyManager = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
@@ -100,9 +101,19 @@ public class LoginActivity extends FragmentActivity {
 
                     } else if (TextUtils.isEmpty(password.getText())) {
                         password.setError(getString(R.string.textEmptyPassword));
-                    }
-                    else if (authenticateMasterUser(password.getText().toString(), username.getText().toString())) {
+                    } else if (authenticateMasterUser(password.getText().toString(), username.getText().toString())) {
+
+
+                        EmployeeDatabaseTable employeeDatabaseTable = ((InventoryManagment) getApplication()).getInventoryDatabasemanager().getEmployeeDataTable();
+                        EmployeeInfoBean employeeInfoBean = new EmployeeInfoBean();
+                        employeeInfoBean.setUserName(username.getText().toString());
+                        employeeInfoBean.setTimeOutPeriod(getResources().getInteger(R.integer.defaultSessionTimeOutPeriod));
+
+                        employeeInfoBean.setSessionToken("");
+                        employeeDatabaseTable.insertEmployeeInfoToEmployeeInfoTable(((InventoryManagment) getApplication()).getSqliteDatabase(), employeeInfoBean);
+
                         errorMessage.setText(getString(R.string.textWindowWarning));
+
                         Thread timerThread = new Thread() {
                             public void run() {
                                 try {
@@ -111,18 +122,16 @@ public class LoginActivity extends FragmentActivity {
                                     e.printStackTrace();
                                 } finally {
 
-                                    intiateAlarm(LoginActivity.this.getResources().getInteger(R.integer.defaultTimeInterval));
+                                    intiateAlarm(LoginActivity.this.getResources().getInteger(R.integer.defaultSessionTimeOutPeriod));
                                     Utility.logError(LoginActivity.this.getClass().getSimpleName(), "Activity is about to get finished  ");
                                     finish();
                                 }
                             }
                         };
                         timerThread.start();
-                    }
-                    else if (Utility.checkInternetConnection(LoginActivity.this)){
+                    } else if (Utility.checkInternetConnection(LoginActivity.this)) {
                         intiateLogin();
-                    }
-                    else{
+                    } else {
                         errorMessage.setText(getString(R.string.textNetworkNotAvaliable));
                     }
                     break;
@@ -133,10 +142,9 @@ public class LoginActivity extends FragmentActivity {
     /**
      * Function that fetch master password from local prefrences and authenticate the user.
      *
-     *
-     * @return
      * @param passwordStr
      * @param usernameStr
+     * @return
      */
     protected boolean authenticateMasterUser(String passwordStr, String usernameStr) {
         return passwordStr.equals(TransiltiyInvntoryAppSharedPref.getMasterPasswordToSharedPref(this))
@@ -162,18 +170,18 @@ public class LoginActivity extends FragmentActivity {
         @Override
         public void onSuccessOfBackGroundOperation(RESTResponse reposeJson) {
             String response = reposeJson.getText();
-            Utility.logError(TransilityDeviceAdminActivity.class.getSimpleName(),"Request Code>>"+reposeJson.status.getCode()+" Resposne Message>>"+response);
+            Utility.logError(TransilityDeviceAdminActivity.class.getSimpleName(), "Request Code>>" + reposeJson.status.getCode() + " Resposne Message>>" + response);
 
             Logon logon = Logon.parseLogon(response);
 
             EmployeeDatabaseTable employeeDatabaseTable = ((InventoryManagment) getApplication()).getInventoryDatabasemanager().getEmployeeDataTable();
             EmployeeInfoBean employeeInfoBean = new EmployeeInfoBean();
-            employeeInfoBean.setUserEmail(username.getText().toString());
+            employeeInfoBean.setUserName(username.getText().toString());
             employeeInfoBean.setTimeOutPeriod(logon.getTimeout());
 
             employeeInfoBean.setSessionToken(logon.getSessionToken());
 
-            TransiltiyInvntoryAppSharedPref.setMasterPasswordToSharedPref(LoginActivity.this,logon.getMasterPassword());
+            TransiltiyInvntoryAppSharedPref.setMasterPasswordToSharedPref(LoginActivity.this, logon.getMasterPassword());
 
             employeeDatabaseTable.insertEmployeeInfoToEmployeeInfoTable(((InventoryManagment) getApplication()).getSqliteDatabase(), employeeInfoBean);
             intiateAlarm(logon.getTimeout());
@@ -182,7 +190,6 @@ public class LoginActivity extends FragmentActivity {
 
         @Override
         public void onErrorInBackgroundOperation(RESTResponse reposeJson) {
-
 
 
         }
@@ -249,6 +256,9 @@ public class LoginActivity extends FragmentActivity {
          * when on destroyed is called the current lock screen is removed from Device Window.
          */
         winManager.removeView(wrapperView);
+        TransiltiyInvntoryAppSharedPref.setWasLoginScreenVisible(LoginActivity.this, false);
+
+
     }
 }
 

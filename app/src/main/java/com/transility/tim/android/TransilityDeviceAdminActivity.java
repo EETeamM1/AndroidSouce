@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
@@ -74,9 +75,22 @@ public class TransilityDeviceAdminActivity extends AppCompatActivity {
                     InventoryDatabaseManager inventoryDatabaseManager = ((InventoryManagment) TransilityDeviceAdminActivity.this.getApplication()).getInventoryDatabasemanager();
                     String sessionToken = inventoryDatabaseManager.getEmployeeDataTable().
                             getSessionToken(((InventoryManagment) TransilityDeviceAdminActivity.this.getApplication()).getSqliteDatabase());
-                    String json = Logout.writeLogoutJson(sessionToken);
-                    String loginRequest = getResources().getString(R.string.baseUrl) + getResources().getString(R.string.api_logout);
-                    restRequestFactoryWrapper.callHttpRestRequest(loginRequest, json, RESTRequest.Method.POST);
+                    if (!TextUtils.isEmpty(sessionToken)){
+                        String json = Logout.writeLogoutJson(sessionToken);
+                        String loginRequest = getResources().getString(R.string.baseUrl) + getResources().getString(R.string.api_logout);
+                        restRequestFactoryWrapper.callHttpRestRequest(loginRequest, json, RESTRequest.Method.POST);
+                    }
+                    else {
+                        cleanTheDatabase();
+                        Utility.cancelCurrentPendingIntent(TransilityDeviceAdminActivity.this);
+                        Intent intent1 = new Intent(TransilityDeviceAdminActivity.this, LoginActivity.class);
+                        intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        TransilityDeviceAdminActivity.this.startActivity(intent1);
+
+                        finish();
+
+                    }
+
                     break;
                 case R.id.reportsBtn:
                     break;
@@ -222,20 +236,26 @@ public class TransilityDeviceAdminActivity extends AppCompatActivity {
                 .isAdminActive(truitonDevicePolicyAdmin);
     }
 
+    /**
+     * Method call to clean the database
+     */
+    private void cleanTheDatabase(){
+        InventoryDatabaseManager  inventoryDatabaseManager=((InventoryManagment)TransilityDeviceAdminActivity.this.getApplication()).getInventoryDatabasemanager();
+        inventoryDatabaseManager.getEmployeeDataTable().deleteEmployeeInfoFromDatabase(((InventoryManagment)TransilityDeviceAdminActivity.this.getApplication()).getSqliteDatabase());
+    }
 
     private RestResponseShowFeedbackInterface restResponseShowFeedbackInterface = new RestResponseShowFeedbackInterface() {
         @Override
         public void onSuccessOfBackGroundOperation(RESTResponse reposeJson) {
             Utility.logError(TransilityDeviceAdminActivity.class.getSimpleName(),"Request Code>>"+reposeJson.status.getCode()+" Resposne Message>>"+reposeJson.getText());
-            InventoryDatabaseManager  inventoryDatabaseManager=((InventoryManagment)TransilityDeviceAdminActivity.this.getApplication()).getInventoryDatabasemanager();
-            inventoryDatabaseManager.getEmployeeDataTable().deleteEmployeeInfoFromDatabase(((InventoryManagment)TransilityDeviceAdminActivity.this.getApplication()).getSqliteDatabase());
+            cleanTheDatabase();
         }
 
         @Override
         public void onErrorInBackgroundOperation(RESTResponse reposeJson) {
             Utility.logError(TransilityDeviceAdminActivity.class.getSimpleName(),"Request Code>>"+reposeJson.status.getCode()+" Resposne Message>>"+reposeJson.getText());
-            InventoryDatabaseManager  inventoryDatabaseManager=((InventoryManagment)TransilityDeviceAdminActivity.this.getApplication()).getInventoryDatabasemanager();
-            inventoryDatabaseManager.getEmployeeDataTable().deleteEmployeeInfoFromDatabase(((InventoryManagment)TransilityDeviceAdminActivity.this.getApplication()).getSqliteDatabase());
+            cleanTheDatabase();
+
         }
 
         @Override
