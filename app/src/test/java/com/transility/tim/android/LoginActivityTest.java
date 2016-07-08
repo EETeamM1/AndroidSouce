@@ -35,7 +35,7 @@ public class LoginActivityTest  {
 
     @Before
     public void setUp() {
-         context = RuntimeEnvironment.application.getBaseContext();
+        context = RuntimeEnvironment.application.getBaseContext();
         activityController = Robolectric.buildActivity(LoginActivity.class).create();
         mLoginActivity= activityController.start().resume().visible().get();
     }
@@ -46,7 +46,7 @@ public class LoginActivityTest  {
     }
 
     @Test
-    public void testCheckUI(){
+    public void testCheckUI() {
 
         View  activityView = mLoginActivity.attacheViewWithIdToWindow(R.layout.activity_login);
 
@@ -58,9 +58,9 @@ public class LoginActivityTest  {
         EditText mPasswordEt= (EditText) activityView.findViewById(R.id.password);
         Assert.assertEquals("The text shown on Password is incorrect.", passwordTvText, mPasswordEt.getHint());
 
-        String emailTextEt = mLoginActivity.getString(R.string.action_sign_in);
-        Button email_sign_in_button= (Button) activityView.findViewById(R.id.login);
-        Assert.assertEquals("The text on login button is incorrect.", emailTextEt, email_sign_in_button.getText());
+        String loginTxt = mLoginActivity.getString(R.string.action_sign_in);
+        Button login= (Button) activityView.findViewById(R.id.login);
+        Assert.assertEquals("The text on login button is incorrect.", loginTxt, login.getText());
 
         ProgressBar login_progress = (ProgressBar) activityView.findViewById(R.id.login_progress);
         Assert.assertTrue("Progress Bar should not be visible.", login_progress.getVisibility() == View.GONE);
@@ -74,7 +74,7 @@ public class LoginActivityTest  {
     }
 
     @Test
-    public void testAuthenticateUserThroughMasterPassword(){
+    public void testAuthenticateUserThroughMasterPassword() {
 
         TransiltiyInvntoryAppSharedPref.setUserNameToSharedPref(context, mLoginActivity.getString(R.string.masterUserName));
         TransiltiyInvntoryAppSharedPref.setMasterPasswordToSharedPref(context, mLoginActivity.getString(R.string.masterPassword));
@@ -82,6 +82,20 @@ public class LoginActivityTest  {
                 mLoginActivity.authenticateMasterUser(mLoginActivity.getString(R.string.masterPassword), mLoginActivity.getString(R.string.masterUserName)));
 
         Assert.assertFalse("Empty user is authenticate as Master", mLoginActivity.authenticateMasterUser("", ""));
+   }
+
+   @Test
+    public void testLoginButtonOnClick() {
+
+       //TODO add test case for missing username and password after change logic
+       mLoginActivity.username.setText("user");
+       mLoginActivity.password.setText("password");
+
+       TransiltiyInvntoryAppSharedPref.setUserNameToSharedPref(context, "user");
+       TransiltiyInvntoryAppSharedPref.setMasterPasswordToSharedPref(context, "password");
+
+       mLoginActivity.loginButton.performClick();
+       Assert.assertEquals("Error message is incorrect", mLoginActivity.getString(R.string.textWindowWarning), mLoginActivity.errorMessage.getText() );
    }
 
 

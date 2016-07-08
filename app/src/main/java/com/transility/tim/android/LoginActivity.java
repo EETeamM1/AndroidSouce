@@ -44,14 +44,14 @@ import devicepolicymanager.SessionTimeOutReciever;
  */
 public class LoginActivity extends FragmentActivity {
 
-    private EditText username;
-    private EditText password;
+    protected EditText username;
+    protected EditText password;
 
-    private View progressView;
-    private TextView errorMessage;
+    protected View progressView;
+    protected TextView errorMessage;
     private WindowManager winManager;
     private RelativeLayout wrapperView;
-    private Button loginButton;
+    protected Button loginButton;
     private RestRequestFactoryWrapper restRequestFactoryWrapper;
     private TelephonyManager telephonyManager;
     private GoogleApiClient googleApiClient;
@@ -95,14 +95,13 @@ public class LoginActivity extends FragmentActivity {
                     Utility.removeKeyboardfromScreen(v);
 
                     errorMessage.setText("");
-
+                    //TODO Merge both missing username and password in common logic with showing error message.
                     if (TextUtils.isEmpty(username.getText())) {
                         username.setError(getString(R.string.textEmptyUserName));
 
                     } else if (TextUtils.isEmpty(password.getText())) {
                         password.setError(getString(R.string.textEmptyPassword));
                     } else if (authenticateMasterUser(password.getText().toString(), username.getText().toString())) {
-
 
                         EmployeeDatabaseTable employeeDatabaseTable = ((InventoryManagment) getApplication()).getInventoryDatabasemanager().getEmployeeDataTable();
                         EmployeeInfoBean employeeInfoBean = new EmployeeInfoBean();
