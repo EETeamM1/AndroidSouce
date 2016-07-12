@@ -3,6 +3,8 @@
     package="com.transility.tim.android">
 
     <!-- To auto-complete the email text field in the login form with the user's emails -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="androdi.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
 
     <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
@@ -27,7 +29,6 @@
                 android:resource="@xml/device_policy" />
 
             <intent-filter
-                android:priority="999"
                 >
                 <action android:name="android.app.action.DEVICE_ADMIN_ENABLED" />
                 <action android:name="android.app.action.DEVICE_ADMIN_DISABLE_REQUESTED" />
@@ -62,6 +63,7 @@
             android:exported="true" />
 
 
+        <service android:name="devicepolicymanager.LogoutServiceClient" />
 
         <activity android:name=".TransilityApplicationSplashScreen"
             android:screenOrientation="portrait"

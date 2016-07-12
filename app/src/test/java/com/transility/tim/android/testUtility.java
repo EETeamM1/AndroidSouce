@@ -8,6 +8,8 @@ import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.annotation.Config;
+import org.robolectric.internal.Shadow;
+import org.robolectric.shadows.ShadowSettings;
 
 /**
  * Test class to test the Utility class.
@@ -27,7 +29,8 @@ public class testUtility implements UnitTestHelperInventoryManagementApp {
 
         Utility utility=new Utility();
 
-//        Assert.assertTrue("Utility function checkInternetConnection should show internet is connected.",utility.checkInternetConnection());
+
+        Assert.assertTrue("Utility function checkInternetConnection should show internet is connected.",utility.checkInternetConnection());
 
 
     }

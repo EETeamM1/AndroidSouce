@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.transility.tim.android.InventoryManagment;
 import com.transility.tim.android.LoginActivity;
@@ -117,6 +118,7 @@ private View.OnClickListener onClickListener=new View.OnClickListener() {
         Utility.logError(MyDeviceAdminReciver.class.getSimpleName(),"onReceive");
 
         if (intent.getAction()!=null&&intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED)){
+            Toast.makeText(context,"My Device Boot Completed",Toast.LENGTH_LONG).show();
             if (((InventoryManagment)context.getApplicationContext()).getInventoryDatabasemanager()
                     .getEmployeeDataTable().getEmployeeTableRowCount(((InventoryManagment)context.getApplicationContext()).getSqliteDatabase())==0){
 
@@ -128,6 +130,8 @@ private View.OnClickListener onClickListener=new View.OnClickListener() {
             }
             else {
                 if (TransiltiyInvntoryAppSharedPref.getWasLoginScreenVisible(context)){
+
+
                     Utility.logError(MyDeviceAdminReciver.class.getSimpleName(),"Inside Login Screen Visible loop");
                     Utility.cancelCurrentPendingIntent(context);
                     Intent intent1=new Intent(context, LoginActivity.class);
@@ -136,6 +140,7 @@ private View.OnClickListener onClickListener=new View.OnClickListener() {
 
                 }
                 else {
+
                     Utility.logError(MyDeviceAdminReciver.class.getSimpleName(),"Inside Login Screen invisible loop");
                     TransiltiyInvntoryAppSharedPref.setWasLoginScreenVisible(context,false);
                     reEnableAlarm(context);
@@ -147,7 +152,7 @@ private View.OnClickListener onClickListener=new View.OnClickListener() {
 
             if (!TransiltiyInvntoryAppSharedPref.getWasLoginScreenVisible(context)){
                 Utility.logError(MyDeviceAdminReciver.class.getSimpleName(),"Inside Action Shut Donw Screen invisible loop");
-                TransiltiyInvntoryAppSharedPref.setWasLoginScreenVisible(context,false);
+
                 TransiltiyInvntoryAppSharedPref.setKeyDeviceLastShutdownTime(context,System.currentTimeMillis());
             }
             else {
@@ -174,16 +179,18 @@ private View.OnClickListener onClickListener=new View.OnClickListener() {
         alarmMgr.cancel(alarmIntent);
 
         if (TransiltiyInvntoryAppSharedPref.getyDeviceLastShutdownTime(context)==0){
-            alarmMgr.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + employeeInfoBean.getTimeOutPeriod() * 60 * 1000
+            Toast.makeText(context,"Inside Last Shut Down Time loop "+System.currentTimeMillis() + (employeeInfoBean.getTimeOutPeriod() * 60 * 1000),Toast.LENGTH_LONG).show();
+            alarmMgr.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + (employeeInfoBean.getTimeOutPeriod() * 60 * 1000)
                     , employeeInfoBean.getTimeOutPeriod() * 60 * 1000, alarmIntent);
-            Utility.logError(context.getClass().getSimpleName(), "Alarm Time>>>>" + employeeInfoBean.getTimeOutPeriod());
+            Utility.logError(context.getClass().getSimpleName(), "Alarm Time>>>>" + System.currentTimeMillis() + (employeeInfoBean.getTimeOutPeriod() * 60 * 1000));
         }
         else
         {
             long elapsedTime=System.currentTimeMillis()-TransiltiyInvntoryAppSharedPref.getyDeviceLastShutdownTime(context);
+            Toast.makeText(context,"Inside Last Shut Down Time loop "+System.currentTimeMillis() + (elapsedTime),Toast.LENGTH_LONG).show();
             alarmMgr.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + elapsedTime
                 , employeeInfoBean.getTimeOutPeriod() * 60 * 1000, alarmIntent);
-            Utility.logError(context.getClass().getSimpleName(), "Alarm Time>>>>" + employeeInfoBean.getTimeOutPeriod());
+            Utility.logError(context.getClass().getSimpleName(), "Alarm Time>>>>" + System.currentTimeMillis() + (elapsedTime));
 
         }
 

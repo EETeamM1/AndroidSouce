@@ -92,7 +92,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textAppearance="?android:attr/textAppearanceSmall"
         android:textColor="@color/textColorBlack"
         android:layout_marginTop="@dimen/metrics_20"
         android:padding="@dimen/metrics_10"

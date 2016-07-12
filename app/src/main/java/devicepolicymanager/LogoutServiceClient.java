@@ -35,17 +35,30 @@ public class LogoutServiceClient extends IntentService{
 
     }
 
+    public LogoutServiceClient(){
+        super(LogoutServiceClient.class.getSimpleName());
+    }
     @Override
     protected void onHandleIntent(Intent intent) {
 
 
-        InventoryDatabaseManager inventoryDatabaseManager = ((InventoryManagment) LogoutServiceClient.this.getApplication()).getInventoryDatabasemanager();
-        String sessionToken = inventoryDatabaseManager.getEmployeeDataTable().
-                getSessionToken(((InventoryManagment) LogoutServiceClient.this.getApplication()).getSqliteDatabase());
-        String json = Logout.writeLogoutJson(sessionToken);
-        String loginRequest = getResources().getString(R.string.baseUrl) + getResources().getString(R.string.api_logout);
-     RestRequestFactoryWrapper   restRequestFactoryWrapper = new RestRequestFactoryWrapper(this, restResponseShowFeedbackInterface);
-        restRequestFactoryWrapper.callHttpRestRequest(loginRequest, json, RESTRequest.Method.POST);
+
+        if (Utility.checkInternetConnection(LogoutServiceClient.this)){
+            InventoryDatabaseManager inventoryDatabaseManager = ((InventoryManagment) LogoutServiceClient.this.getApplication()).getInventoryDatabasemanager();
+            String sessionToken = inventoryDatabaseManager.getEmployeeDataTable().
+                    getSessionToken(((InventoryManagment) LogoutServiceClient.this.getApplication()).getSqliteDatabase());
+            String json = Logout.writeLogoutJson(sessionToken);
+            String loginRequest = getResources().getString(R.string.baseUrl) + getResources().getString(R.string.api_logout);
+            RestRequestFactoryWrapper   restRequestFactoryWrapper = new RestRequestFactoryWrapper(this, restResponseShowFeedbackInterface);
+            restRequestFactoryWrapper.callHttpRestRequest(loginRequest, json, RESTRequest.Method.POST);
+        }
+        else{
+            InventoryDatabaseManager inventoryDatabaseManager = ((InventoryManagment) LogoutServiceClient.this.getApplication()).getInventoryDatabasemanager();
+            inventoryDatabaseManager.getEmployeeDataTable()
+                    .deleteEmployeeInfoFromDatabase(((InventoryManagment) LogoutServiceClient.this.getApplication()).getSqliteDatabase());
+            isOperationCompleted=true;
+        }
+
 
         /**
          * This will hold the thread until logout service response is returned.

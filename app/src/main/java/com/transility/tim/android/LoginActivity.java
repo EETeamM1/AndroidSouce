@@ -8,8 +8,11 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 
+import android.location.Location;
 import android.os.Bundle;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 
 import android.telephony.TelephonyManager;
@@ -23,7 +26,13 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 
+import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.FusedLocationProviderApi;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
 import com.transility.tim.android.InventoryDatabase.EmployeeDatabaseTable;
 import com.transility.tim.android.InventoryDatabase.InventoryDatabaseManager;
 import com.transility.tim.android.Utilities.TransiltiyInvntoryAppSharedPref;
@@ -54,7 +63,8 @@ public class LoginActivity extends FragmentActivity {
     private Button loginButton;
     private RestRequestFactoryWrapper restRequestFactoryWrapper;
     private TelephonyManager telephonyManager;
-    private GoogleApiClient googleApiClient;
+    private GoogleApiClient mGoogleApiClient;
+    private Location location;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,7 +85,42 @@ public class LoginActivity extends FragmentActivity {
 
         loginButton.setOnClickListener(onClickListener);
         TransiltiyInvntoryAppSharedPref.setWasLoginScreenVisible(LoginActivity.this, true);
+        intiateGooglePlayService();
 
+    }
+
+
+    private void intiateGooglePlayService() {
+
+
+
+            mGoogleApiClient = new GoogleApiClient.Builder(this)
+                    .addApi(LocationServices.API)
+                    .addConnectionCallbacks(connectionCallbacks)
+                    .addOnConnectionFailedListener(onConnectionFailedListener)
+                    .build();
+
+
+
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mGoogleApiClient.connect();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        startLocationUpdates();
+        mGoogleApiClient.disconnect();
+    }
+
+    protected void stopLocationUpdates() {
+        LocationServices.FusedLocationApi.removeLocationUpdates(
+                mGoogleApiClient, locationListener);
     }
 
     protected View attacheViewWithIdToWindow(int layoutId) {
@@ -87,6 +132,54 @@ public class LoginActivity extends FragmentActivity {
         return View.inflate(this, layoutId, this.wrapperView);
     }
 
+    private GoogleApiClient.ConnectionCallbacks connectionCallbacks=new GoogleApiClient.ConnectionCallbacks() {
+        @Override
+        public void onConnected(@Nullable Bundle bundle) {
+
+                startLocationUpdates();
+
+            Utility.logError(LoginActivity.class.getSimpleName(),"onConnected");
+
+        }
+
+        @Override
+        public void onConnectionSuspended(int i) {
+
+            Utility.logError(LoginActivity.class.getSimpleName(),"onConnectionSuspended");
+        }
+    };
+
+    private GoogleApiClient.OnConnectionFailedListener onConnectionFailedListener=new GoogleApiClient.OnConnectionFailedListener() {
+        @Override
+        public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+            Utility.logError(LoginActivity.class.getSimpleName(),"onConnectionFailed");
+
+        }
+    };
+
+    /**
+     * Startrs the location updates
+     */
+    protected void startLocationUpdates() {
+        // Create the location request
+        LocationRequest mLocationRequest = LocationRequest.create()
+                .setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY)
+                .setInterval(1800000)
+                .setFastestInterval(1800000);
+        // Request location updates
+        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient,
+                mLocationRequest, locationListener);
+
+    }
+
+    private LocationListener locationListener=new LocationListener() {
+        @Override
+        public void onLocationChanged(Location location) {
+            LoginActivity.this.location=location;
+
+        }
+    };
     private OnClickListener onClickListener = new OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -156,7 +249,9 @@ public class LoginActivity extends FragmentActivity {
      */
     private void intiateLogin() {
 
-        String json = Logon.writeLogonJSON(username.getText().toString(), password.getText().toString(), null, telephonyManager.getDeviceId());
+
+
+        String json = Logon.writeLogonJSON(username.getText().toString(), password.getText().toString(), location, telephonyManager.getDeviceId());
         String loginRequest = getResources().getString(R.string.baseUrl) + getResources().getString(R.string.api_login);
 
         restRequestFactoryWrapper.callHttpRestRequest(loginRequest, json, Method.POST);
@@ -229,7 +324,7 @@ public class LoginActivity extends FragmentActivity {
 
         alarmMgr.cancel(alarmIntent);
 
-        alarmMgr.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + timeOutPeriod * 60 * 1000
+        alarmMgr.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + (timeOutPeriod * 60 * 1000)
                 , timeOutPeriod * 60 * 1000, alarmIntent);
         Utility.logError(LoginActivity.this.getClass().getSimpleName(), "Alarm Time>>>>" + timeOutPeriod);
 

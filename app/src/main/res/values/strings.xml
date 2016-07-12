@@ -16,12 +16,13 @@
 
     <string name="textDisableTheDevieAdminApp">You may now uninstall the application.</string>
 
-
+    <string name="textEnableLocation">App wants to access your location please enable location services.</string>
 
 
     <string name="textReports">Check Device Reports</string>
     <string name="textLogout">Logout</string>
     <string name="textOn">On</string>
-    <string name="textOk">O5</string>
+    <string name="textOk">OK</string>
+    <string name="textCancel">CANCEL</string>
     <string name="textOff">Off</string>
 </resources>
