@@ -49,10 +49,10 @@ public class TransilityDeviceAdminActivity extends AppCompatActivity {
 
     private Switch enableDeviceApp;
     private Button logoutBtn, reportsBtn;
+    private TextView messageLineTv;
 
     protected static final int REQUEST_ENABLE = 1;
 
-    private TextView messageLineTv;
     private SingleButtonAlertDialog singleButtonAlertDialog;
     private RestRequestFactoryWrapper restRequestFactoryWrapper;
 
@@ -79,13 +79,13 @@ public class TransilityDeviceAdminActivity extends AppCompatActivity {
         logoutBtn.setOnClickListener(onClickListener);
         reportsBtn.setOnClickListener(onClickListener);
 
-//        if (!TransiltiyInvntoryAppSharedPref.isUserPrefrenceAlreadyTaken(this)){
+
 
             intiateGooglePlayService();
             createLocationSettingsRequest();
 
             checkLocationSettings();
-//        }
+
 
     }
 
@@ -330,14 +330,6 @@ public class TransilityDeviceAdminActivity extends AppCompatActivity {
             }
 
         }
-
-
-
-
-
-
-
-
 
 
     }

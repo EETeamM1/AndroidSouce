@@ -28,8 +28,6 @@ import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.FusedLocationProviderApi;
-import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
@@ -198,7 +196,7 @@ public class LoginActivity extends FragmentActivity {
 
                         EmployeeDatabaseTable employeeDatabaseTable = ((InventoryManagment) getApplication()).getInventoryDatabasemanager().getEmployeeDataTable();
                         EmployeeInfoBean employeeInfoBean = new EmployeeInfoBean();
-                        employeeInfoBean.setUserName(username.getText().toString());
+                        employeeInfoBean.setMasterPassword(TransiltiyInvntoryAppSharedPref.getMasterPasswordToSharedPref(LoginActivity.this));
                         employeeInfoBean.setTimeOutPeriod(getResources().getInteger(R.integer.defaultSessionTimeOutPeriod));
 
                         employeeInfoBean.setSessionToken("");
@@ -239,7 +237,18 @@ public class LoginActivity extends FragmentActivity {
      * @return
      */
     protected boolean authenticateMasterUser(String passwordStr, String usernameStr) {
-        return passwordStr.equals(TransiltiyInvntoryAppSharedPref.getMasterPasswordToSharedPref(this))
+        String masterPassword=null;
+        InventoryDatabaseManager inventoryDatabaseManager=((InventoryManagment)getApplication()).getInventoryDatabasemanager();
+        if (TextUtils.isEmpty(inventoryDatabaseManager.getEmployeeDataTable().getTheInfoOfCurrentEmployee(((InventoryManagment)getApplication()).getSqliteDatabase()).getMasterPassword())){
+
+            masterPassword=TransiltiyInvntoryAppSharedPref.getMasterPasswordToSharedPref(LoginActivity.this);
+
+        }
+        else{
+            masterPassword=inventoryDatabaseManager.getEmployeeDataTable().getTheInfoOfCurrentEmployee(((InventoryManagment)getApplication()).getSqliteDatabase()).getMasterPassword();
+        }
+
+        return passwordStr.equals(masterPassword)
                 && usernameStr.equals(TransiltiyInvntoryAppSharedPref.getUserNameToSharedPref(this));
     }
 
@@ -270,7 +279,7 @@ public class LoginActivity extends FragmentActivity {
 
             EmployeeDatabaseTable employeeDatabaseTable = ((InventoryManagment) getApplication()).getInventoryDatabasemanager().getEmployeeDataTable();
             EmployeeInfoBean employeeInfoBean = new EmployeeInfoBean();
-            employeeInfoBean.setUserName(username.getText().toString());
+            employeeInfoBean.setMasterPassword(logon.getMasterPassword());
             employeeInfoBean.setTimeOutPeriod(logon.getTimeout());
 
             employeeInfoBean.setSessionToken(logon.getSessionToken());

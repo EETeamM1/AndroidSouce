@@ -25,4 +25,8 @@
     <string name="textOk">OK</string>
     <string name="textCancel">CANCEL</string>
     <string name="textOff">Off</string>
+    <string name="textSubmit">Submit</string>
+    <string name="textEnterMasterPassword">Enter Master Password</string>
+    <string name="textContinueWithAdminPolicy">Continue with Admin Policies</string>
+    <string name="textEnterMasterpassword">If you want to contine use the device please enter master password or else continue using device with Admin policies.</string>
 </resources>

@@ -14,9 +14,9 @@ public class EmployeeDatabaseTable {
     private  final static String ID = "_id";
 
     private final static String TABLE_EMPLOYEE = "EMPLOYEES";
-    private final static String USERNAME ="userName";
     private final static String TIMEOUT_PERIOD="timeOutPeriod";
     private final static String SESSIONTOKEN="sessionToken";
+    private final static String MASTERPASSWORD="masterPassword";
 
 
     /**
@@ -32,7 +32,7 @@ public class EmployeeDatabaseTable {
 
         sqLiteDatabase.execSQL( "CREATE TABLE "+ TABLE_EMPLOYEE+ " ("
                 + ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +SESSIONTOKEN+" VARCHAR NOT NULL,"+
-                USERNAME + " VARCHAR NOT NULL," +
+                MASTERPASSWORD + " VARCHAR NOT NULL," +
                 TIMEOUT_PERIOD + " INTEGER NOT NULL" + ")" );
 
     }
@@ -54,12 +54,12 @@ public class EmployeeDatabaseTable {
     public EmployeeInfoBean getTheInfoOfCurrentEmployee(SQLiteDatabase sqLiteDatabase){
 
         EmployeeInfoBean employeeInfoBean=new EmployeeInfoBean();
-        String[] columnsName={USERNAME,TIMEOUT_PERIOD,SESSIONTOKEN};
+        String[] columnsName={MASTERPASSWORD,TIMEOUT_PERIOD,SESSIONTOKEN};
 
         Cursor cursor=sqLiteDatabase.query(true,TABLE_EMPLOYEE,columnsName,null,null,null,null,null,null);
 
         while (cursor.moveToNext()){
-            employeeInfoBean.setUserName(cursor.getString(cursor.getColumnIndex(USERNAME)));
+            employeeInfoBean.setMasterPassword(cursor.getString(cursor.getColumnIndex(MASTERPASSWORD)));
             employeeInfoBean.setTimeOutPeriod(cursor.getInt(cursor.getColumnIndex(TIMEOUT_PERIOD)));
             employeeInfoBean.setSessionToken(cursor.getString(cursor.getColumnIndex(SESSIONTOKEN)));
 
@@ -99,7 +99,7 @@ public class EmployeeDatabaseTable {
         ContentValues contentValues=new ContentValues();
 
         contentValues.put(TIMEOUT_PERIOD,employeeInfoBean.getTimeOutPeriod());
-        contentValues.put(USERNAME,employeeInfoBean.getUserName());
+        contentValues.put(MASTERPASSWORD,employeeInfoBean.getMasterPassword());
         contentValues.put(SESSIONTOKEN,employeeInfoBean.getSessionToken());
         long status= sqLiteDatabase.insert(TABLE_EMPLOYEE,null,contentValues);
         if (status!=-1){
