@@ -80,7 +80,7 @@ public class TransilityDeviceAdminActivity extends AppCompatActivity {
         logoutBtn.setOnClickListener(onClickListener);
         reportsBtn.setOnClickListener(onClickListener);
 
-             deviceIdTv.setText(getString(R.string.textDeviceId)+Utility.getDeviceId(TransilityDeviceAdminActivity.this));
+        deviceIdTv.setText(getString(R.string.textDeviceId)+Utility.getDeviceId(this));
 
             intiateGooglePlayService();
             createLocationSettingsRequest();

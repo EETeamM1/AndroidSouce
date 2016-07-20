@@ -88,20 +88,12 @@ public class LoginActivity extends FragmentActivity {
 
     }
 
-
     private void intiateGooglePlayService() {
-
-
-
-            mGoogleApiClient = new GoogleApiClient.Builder(this)
-                    .addApi(LocationServices.API)
-                    .addConnectionCallbacks(connectionCallbacks)
-                    .addOnConnectionFailedListener(onConnectionFailedListener)
-                    .build();
-
-
-
-
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addApi(LocationServices.API)
+                .addConnectionCallbacks(connectionCallbacks)
+                .addOnConnectionFailedListener(onConnectionFailedListener)
+                .build();
     }
 
     @Override
@@ -135,16 +127,12 @@ public class LoginActivity extends FragmentActivity {
     private GoogleApiClient.ConnectionCallbacks connectionCallbacks=new GoogleApiClient.ConnectionCallbacks() {
         @Override
         public void onConnected(@Nullable Bundle bundle) {
-
-                startLocationUpdates();
-
+            startLocationUpdates();
             Utility.logError(LoginActivity.class.getSimpleName(),"onConnected");
-
         }
 
         @Override
         public void onConnectionSuspended(int i) {
-
             Utility.logError(LoginActivity.class.getSimpleName(),"onConnectionSuspended");
         }
     };
@@ -152,9 +140,7 @@ public class LoginActivity extends FragmentActivity {
     private GoogleApiClient.OnConnectionFailedListener onConnectionFailedListener=new GoogleApiClient.OnConnectionFailedListener() {
         @Override
         public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
             Utility.logError(LoginActivity.class.getSimpleName(),"onConnectionFailed");
-
         }
     };
 
@@ -243,9 +229,7 @@ public class LoginActivity extends FragmentActivity {
         String masterPassword=null;
         InventoryDatabaseManager inventoryDatabaseManager=((InventoryManagment)getApplication()).getInventoryDatabasemanager();
         if (TextUtils.isEmpty(inventoryDatabaseManager.getEmployeeDataTable().getTheInfoOfCurrentEmployee(((InventoryManagment)getApplication()).getSqliteDatabase()).getMasterPassword())){
-
             masterPassword=TransiltiyInvntoryAppSharedPref.getMasterPasswordToSharedPref(LoginActivity.this);
-
         }
         else{
             masterPassword=inventoryDatabaseManager.getEmployeeDataTable().getTheInfoOfCurrentEmployee(((InventoryManagment)getApplication()).getSqliteDatabase()).getMasterPassword();
@@ -259,11 +243,6 @@ public class LoginActivity extends FragmentActivity {
      * Intiate the login Request to server.
      */
     private void intiateLogin() {
-
-
-        String androidDeviceId=null;
-
-
         String json = Logon.writeLogonJSON(username.getText().toString(), password.getText().toString(), location, Utility.getDeviceId(LoginActivity.this));
         String loginRequest = getResources().getString(R.string.baseUrl) + getResources().getString(R.string.api_login);
 
