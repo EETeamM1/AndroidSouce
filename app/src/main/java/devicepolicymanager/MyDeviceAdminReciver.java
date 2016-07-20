@@ -3,13 +3,9 @@ package devicepolicymanager;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.app.admin.DeviceAdminReceiver;
-import android.app.admin.DevicePolicyManager;
-import android.content.ComponentName;
 import android.content.Context;
 
 import android.content.Intent;
-import android.view.LayoutInflater;
-import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -22,8 +18,6 @@ import com.transility.tim.android.MasterPasswordScreen;
 import com.transility.tim.android.Utilities.TransiltiyInvntoryAppSharedPref;
 import com.transility.tim.android.Utilities.Utility;
 import com.transility.tim.android.bean.EmployeeInfoBean;
-
-import java.util.zip.Inflater;
 
 public class MyDeviceAdminReciver extends DeviceAdminReceiver {
     public static String MAHEVENT="action.com.app.tranisity.android";
@@ -147,7 +141,7 @@ public class MyDeviceAdminReciver extends DeviceAdminReceiver {
 
         alarmMgr.cancel(alarmIntent);
 
-        if (TransiltiyInvntoryAppSharedPref.getyDeviceLastShutdownTime(context)==0){
+        if (TransiltiyInvntoryAppSharedPref.getKeyDeviceLastShutdownTime(context)==0){
             Toast.makeText(context,"Inside Last Shut Down Time loop "+System.currentTimeMillis() + (employeeInfoBean.getTimeOutPeriod() * 60 * 1000),Toast.LENGTH_LONG).show();
             alarmMgr.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + (employeeInfoBean.getTimeOutPeriod() * 60 * 1000)
                     , employeeInfoBean.getTimeOutPeriod() * 60 * 1000, alarmIntent);
@@ -156,7 +150,7 @@ public class MyDeviceAdminReciver extends DeviceAdminReceiver {
         }
         else
         {
-            long elapsedTime=System.currentTimeMillis()-TransiltiyInvntoryAppSharedPref.getyDeviceLastShutdownTime(context);
+            long elapsedTime=System.currentTimeMillis()-TransiltiyInvntoryAppSharedPref.getKeyDeviceLastShutdownTime(context);
             Toast.makeText(context,"Inside Last Shut Down Time loop "+System.currentTimeMillis() + (elapsedTime),Toast.LENGTH_LONG).show();
             alarmMgr.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + elapsedTime
                 , employeeInfoBean.getTimeOutPeriod() * 60 * 1000, alarmIntent);
