@@ -16,6 +16,7 @@ public class TransiltiyInvntoryAppSharedPref  {
     private static String KEY_WAS_LOGIN_SCREEN_VISIBLE="wasLoginScreenVisible";
     private static String KEY_DEVICE_LAST_SHUTDOWN_TIME="deviceLastShuDownTime";
     private static String KEY_USER_PREF_TAKEN="userPrefTaken";
+    private static String KEY_DEVICE_ID="deviceId";
     public static void setMasterPasswordToSharedPref(Context context,String masterPassword){
 
         SharedPreferences  sp=context.getSharedPreferences(TRANSILITY_INVENTORY_SHARED_PREF,Context.MODE_PRIVATE);
@@ -80,19 +81,16 @@ public class TransiltiyInvntoryAppSharedPref  {
         return  sp.getLong(KEY_DEVICE_LAST_SHUTDOWN_TIME,0);
     }
 
-    public static void setUserPrefrenceAlreadyTakenFor(Context context,boolean isUserPrefTaken){
 
-
-        SharedPreferences  sp=context.getSharedPreferences(TRANSILITY_INVENTORY_SHARED_PREF,Context.MODE_PRIVATE);
+    public static void setDeviceId(String deviceId,Context context){
+        SharedPreferences sp=context.getSharedPreferences(TRANSILITY_INVENTORY_SHARED_PREF,Context.MODE_PRIVATE);
         SharedPreferences.Editor edit=sp.edit();
-
-        edit.putBoolean(KEY_USER_PREF_TAKEN,isUserPrefTaken);
+        edit.putString(KEY_DEVICE_ID,deviceId);
         edit.apply();
+
     }
-    public static boolean isUserPrefrenceAlreadyTaken(Context  context){
-
-        SharedPreferences  sp=context.getSharedPreferences(TRANSILITY_INVENTORY_SHARED_PREF,Context.MODE_PRIVATE);
-
-        return  sp.getBoolean(KEY_USER_PREF_TAKEN,false);
+    public static String getDeviceId(Context context){
+        SharedPreferences sp=context.getSharedPreferences(TRANSILITY_INVENTORY_SHARED_PREF,Context.MODE_PRIVATE);
+        return sp.getString(KEY_DEVICE_ID,"");
     }
 }

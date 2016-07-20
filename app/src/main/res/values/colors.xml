@@ -7,6 +7,7 @@
     <color name="textColor">#ffffff</color>
 
     <color name="backMaroon">#8b0d38</color>
+    <color name="errorColorMaroon">#8b0d38</color>
     <color name="textColorBlack">#000000</color>
 
     <color name="black_overlay">#66000000</color>

@@ -9,13 +9,24 @@ import android.content.Intent;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
+import android.os.Environment;
+import android.provider.Settings;
+import android.telephony.TelephonyManager;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.transility.tim.android.BuildConfig;
 import com.transility.tim.android.R;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 
 import devicepolicymanager.SessionTimeOutReciever;
 
@@ -70,6 +81,7 @@ public class Utility {
         PendingIntent alarmIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
         alarmManager.cancel(alarmIntent);
 
+        appendLog("Alarm cancelled");
     }
 
     /**
@@ -100,45 +112,63 @@ public class Utility {
         return false;
     }
 
-    /**
-     * Checl if the location is enabled.
-     * @param activity
-     * @return
-     */
-    public static boolean getIsLocationEnabled(Activity activity){
 
-        LocationManager lm = (LocationManager)activity.getSystemService(Context.LOCATION_SERVICE);
-        boolean gps_enabled = false;
-        boolean network_enabled = false;
-        boolean isLocationEnabled=false;
+public static String getDeviceId(Context context){
 
-        try {
-            gps_enabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
-
-
-        } catch(Exception ex) {
-
-
+    if (TextUtils.isEmpty(TransiltiyInvntoryAppSharedPref.getDeviceId(context))){
+        TelephonyManager telephonyManager= (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+        String deviceID=telephonyManager.getDeviceId();
+        if (TextUtils.isEmpty(deviceID)){
+            deviceID= Settings.Secure.getString(context.getContentResolver(),
+                    Settings.Secure.ANDROID_ID);
         }
-
-        try {
-            network_enabled = lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-        } catch(Exception ex) {
-
-        }
-
-        if(!gps_enabled && !network_enabled) {
-
-            isLocationEnabled=false;
-        }
-        else {
-            isLocationEnabled=true;
-        }
-
-
-
-        return isLocationEnabled;
+        TransiltiyInvntoryAppSharedPref.setDeviceId(deviceID,context);
+        return deviceID;
     }
+    else {
+        return TransiltiyInvntoryAppSharedPref.getDeviceId(context);
+    }
+
+
+}
+
+    public static void appendLog(String text)
+    {
+
+
+            File extStore = Environment.getExternalStoragePublicDirectory("");
+            File logFile=new File(extStore.getPath(),"logFile.txt");
+            Utility.logError(Utility.class.getSimpleName(),logFile.getPath());
+            if (!logFile.exists())
+            {
+
+                try
+                {
+                    extStore.mkdirs();
+                    logFile.createNewFile();
+                }
+                catch (IOException e)
+                {
+                    // TODO Auto-generated catch block
+                    printHandledException(e);
+                }
+            }
+            try
+            {
+                //BufferedWriter for performance, true to set append to file flag
+                BufferedWriter buf = new BufferedWriter(new FileWriter(logFile, true));
+                buf.append(text+"\n");
+                buf.newLine();
+                buf.close();
+
+            }
+            catch (IOException e)
+            {
+                // TODO Auto-generated catch block
+                printHandledException(e);
+            }
+        }
+
 
 
 }

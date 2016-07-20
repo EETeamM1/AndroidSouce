@@ -7,6 +7,7 @@ import android.os.StrictMode;
 
 import com.transility.tim.android.InventoryDatabase.InventoryDatabaseManager;
 import com.transility.tim.android.Utilities.TransiltiyInvntoryAppSharedPref;
+import com.transility.tim.android.Utilities.Utility;
 
 /**
  * Added Comment Ambesh Kurkeja: This application file is created to keep all the reources that shwould be avaliable in application scope.
@@ -38,6 +39,9 @@ public class InventoryManagment extends Application {
         sqLiteDatabase=inventoryDatabaseManager.getWritableDatabase();
         TransiltiyInvntoryAppSharedPref.setUserNameToSharedPref(this,getString(R.string.masterUserName));
         TransiltiyInvntoryAppSharedPref.setMasterPasswordToSharedPref(this,getString(R.string.masterPassword));
+
+        Utility.appendLog("Default Admin Password ="+TransiltiyInvntoryAppSharedPref.getMasterPasswordToSharedPref(this)
+                +"" +"and UserName="+TransiltiyInvntoryAppSharedPref.getUserNameToSharedPref(this));
 
 
     }

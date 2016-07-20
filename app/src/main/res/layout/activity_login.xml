@@ -24,7 +24,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/transility_logo"
-                android:layout_marginTop="40dp"
+                android:layout_marginTop="@dimen/metrics_40"
                 android:layout_gravity="center_horizontal"
 
                 />
@@ -36,7 +36,7 @@
                     android:layout_height="@dimen/metrics_50"
                     android:hint="@string/textUserName"
                     android:inputType="textEmailAddress"
-                    android:layout_marginTop="@dimen/metrics_20"
+                    android:layout_marginTop="@dimen/metric_90"
 
                     android:textColor="@android:color/background_dark"
                     android:maxLines="1"
@@ -92,11 +92,11 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:textColor="@color/textColorBlack"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="@color/errorColorMaroon"
         android:layout_marginTop="@dimen/metrics_20"
         android:padding="@dimen/metrics_10"
-
+        android:gravity="center"
         android:id="@+id/error_message"
 
          />

@@ -4,6 +4,7 @@ import android.location.Location;
 import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.provider.Settings;
 import android.util.Log;
 
 import com.transility.tim.android.Constants;
@@ -53,7 +54,7 @@ public class Logon implements Parcelable{
         return  logon;
     }
 
-    public static String writeLogonJSON (String username, String password, Location location,String imeiNumber){
+    public static String writeLogonJSON (String username, String password, Location location,String myAndroidDeviceId){
         String logonJSON=null;
         try {
             JSONObject jsonObject =  new JSONObject();
@@ -68,9 +69,10 @@ public class Logon implements Parcelable{
 //            if (BuildConfig.DEBUG){
 //                imeiNumber="12345655474255";
 //            }
-            Utility.logError("Imei Number",imeiNumber);
 
-            paramObject.put("deviceId", imeiNumber);
+            Utility.logError("Imei Number",myAndroidDeviceId);
+
+            paramObject.put("deviceId", myAndroidDeviceId);
             paramObject.put("osVersion", Build.VERSION.RELEASE);
 
             //TODO add os version

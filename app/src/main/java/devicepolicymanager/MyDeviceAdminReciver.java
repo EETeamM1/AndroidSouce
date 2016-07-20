@@ -55,60 +55,26 @@ public class MyDeviceAdminReciver extends DeviceAdminReceiver {
 
     }
 
-
-
-
-
-
-
-private View.OnClickListener onClickListener=new View.OnClickListener() {
-    @Override
-    public void onClick(View v) {
-        windowManager.removeViewImmediate(wrapperView);
-    }
-};
     @Override
     public void onPasswordChanged(Context context, Intent intent) {
-        Utility.logError(MyDeviceAdminReciver.class.getSimpleName(),"onPasswordChanged");
-
-        DevicePolicyManager localDPM = (DevicePolicyManager) context
-                .getSystemService(Context.DEVICE_POLICY_SERVICE);
-        ComponentName localComponent = new ComponentName(context,
-                MyDeviceAdminReciver.class);
-        localDPM.setPasswordExpirationTimeout(localComponent, 0L);
+        // Overwrided method
     }
 
 
     @Override
     public void onPasswordExpiring(Context context, Intent intent) {
         // This would require API 11 an above
-        Utility.logError(MyDeviceAdminReciver.class.getSimpleName(),"onPasswordExpiring");
-
-        DevicePolicyManager localDPM = (DevicePolicyManager) context
-                .getSystemService(Context.DEVICE_POLICY_SERVICE);
-        ComponentName localComponent = new ComponentName(context,
-                MyDeviceAdminReciver.class);
-        long expr = localDPM.getPasswordExpiration(localComponent);
-        long delta = expr - System.currentTimeMillis();
-        boolean expired = delta < 0L;
-        if (expired) {
-
-            localDPM.setPasswordExpirationTimeout(localComponent, 10000L);
-            Intent passwordChangeIntent = new Intent(
-                    DevicePolicyManager.ACTION_SET_NEW_PASSWORD);
-            passwordChangeIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            context.startActivity(passwordChangeIntent);
-        }
+       //Over writted method
     }
 
     @Override
     public void onPasswordFailed(Context context, Intent intent) {
-        Utility.logError(MyDeviceAdminReciver.class.getSimpleName(),"onPasswordFailed");
+       // Overwritted methods
     }
 
     @Override
     public void onPasswordSucceeded(Context context, Intent intent) {
-        Utility.logError(MyDeviceAdminReciver.class.getSimpleName(),"onPasswordSucceeded");
+       //Overwritted methods
     }
 
     @Override
@@ -122,6 +88,7 @@ private View.OnClickListener onClickListener=new View.OnClickListener() {
             if (((InventoryManagment)context.getApplicationContext()).getInventoryDatabasemanager()
                     .getEmployeeDataTable().getEmployeeTableRowCount(((InventoryManagment)context.getApplicationContext()).getSqliteDatabase())==0){
 
+                Utility.appendLog("Boot Got Completed and in previous shut down Login Mode was enabled.");
                 Utility.logError(MyDeviceAdminReciver.class.getSimpleName(),"Inside data base check loop");
                 Utility.cancelCurrentPendingIntent(context);
                 Intent intent1=new Intent(context, LoginActivity.class);
@@ -131,7 +98,7 @@ private View.OnClickListener onClickListener=new View.OnClickListener() {
             else {
                 if (TransiltiyInvntoryAppSharedPref.getWasLoginScreenVisible(context)){
 
-
+                    Utility.appendLog("Boot Got Completed and in previous shut down Login Mode was enabled.");
                     Utility.logError(MyDeviceAdminReciver.class.getSimpleName(),"Inside Login Screen Visible loop");
                     Utility.cancelCurrentPendingIntent(context);
                     Intent intent1=new Intent(context, LoginActivity.class);
@@ -140,7 +107,7 @@ private View.OnClickListener onClickListener=new View.OnClickListener() {
 
                 }
                 else {
-
+                    Utility.appendLog("Boot Got Completed and in previous shut down User was having a valid session. ");
                     Utility.logError(MyDeviceAdminReciver.class.getSimpleName(),"Inside Login Screen invisible loop");
                     TransiltiyInvntoryAppSharedPref.setWasLoginScreenVisible(context,false);
                     reEnableAlarm(context);
@@ -151,11 +118,13 @@ private View.OnClickListener onClickListener=new View.OnClickListener() {
         else  if (intent.getAction()!=null&&intent.getAction().equals(Intent.ACTION_SHUTDOWN)){
 
             if (!TransiltiyInvntoryAppSharedPref.getWasLoginScreenVisible(context)){
+                Utility.appendLog("Device Got Shut down and this time user might be having valid login session.");
                 Utility.logError(MyDeviceAdminReciver.class.getSimpleName(),"Inside Action Shut Donw Screen invisible loop");
 
                 TransiltiyInvntoryAppSharedPref.setKeyDeviceLastShutdownTime(context,System.currentTimeMillis());
             }
             else {
+                Utility.appendLog("Device Got Shut down and this time user was on login screen.");
                 Utility.logError(MyDeviceAdminReciver.class.getSimpleName(),"Inside Action Shut Donw Screen Visible loop");
                 TransiltiyInvntoryAppSharedPref.setKeyDeviceLastShutdownTime(context,0);
             }
@@ -182,6 +151,7 @@ private View.OnClickListener onClickListener=new View.OnClickListener() {
             Toast.makeText(context,"Inside Last Shut Down Time loop "+System.currentTimeMillis() + (employeeInfoBean.getTimeOutPeriod() * 60 * 1000),Toast.LENGTH_LONG).show();
             alarmMgr.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + (employeeInfoBean.getTimeOutPeriod() * 60 * 1000)
                     , employeeInfoBean.getTimeOutPeriod() * 60 * 1000, alarmIntent);
+            Utility.appendLog("Boot Got Completed the device will show login screen after "+employeeInfoBean.getTimeOutPeriod()+" min");
             Utility.logError(context.getClass().getSimpleName(), "Alarm Time>>>>" + System.currentTimeMillis() + (employeeInfoBean.getTimeOutPeriod() * 60 * 1000));
         }
         else
@@ -190,6 +160,7 @@ private View.OnClickListener onClickListener=new View.OnClickListener() {
             Toast.makeText(context,"Inside Last Shut Down Time loop "+System.currentTimeMillis() + (elapsedTime),Toast.LENGTH_LONG).show();
             alarmMgr.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + elapsedTime
                 , employeeInfoBean.getTimeOutPeriod() * 60 * 1000, alarmIntent);
+            Utility.appendLog("Boot Got Completed the device will show login screen after "+(elapsedTime/60000)+" min");
             Utility.logError(context.getClass().getSimpleName(), "Alarm Time>>>>" + System.currentTimeMillis() + (elapsedTime));
 
         }

@@ -6,7 +6,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
-import android.content.SharedPreferences;
+
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -33,7 +33,6 @@ import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.transility.tim.android.Dialogs.SingleButtonAlertDialog;
 import com.transility.tim.android.InventoryDatabase.InventoryDatabaseManager;
 import com.transility.tim.android.Utilities.RestResponseShowFeedbackInterface;
-import com.transility.tim.android.Utilities.TransiltiyInvntoryAppSharedPref;
 import com.transility.tim.android.Utilities.Utility;
 import com.transility.tim.android.bean.Logout;
 import com.transility.tim.android.http.RESTRequest;
@@ -49,7 +48,7 @@ public class TransilityDeviceAdminActivity extends AppCompatActivity {
 
     private Switch enableDeviceApp;
     private Button logoutBtn, reportsBtn;
-    private TextView messageLineTv;
+    private TextView messageLineTv,deviceIdTv;
 
     protected static final int REQUEST_ENABLE = 1;
 
@@ -75,11 +74,13 @@ public class TransilityDeviceAdminActivity extends AppCompatActivity {
         enableDeviceApp = (Switch) findViewById(R.id.enableDeviceApp);
         logoutBtn = (Button) findViewById(R.id.logoutBtn);
         reportsBtn = (Button) findViewById(R.id.reportsBtn);
+        deviceIdTv= (TextView) findViewById(R.id.deviceIdTv);
+
         messageLineTv = (TextView) findViewById(R.id.messageLineTv);
         logoutBtn.setOnClickListener(onClickListener);
         reportsBtn.setOnClickListener(onClickListener);
 
-
+             deviceIdTv.setText(getString(R.string.textDeviceId)+Utility.getDeviceId(TransilityDeviceAdminActivity.this));
 
             intiateGooglePlayService();
             createLocationSettingsRequest();
@@ -171,7 +172,7 @@ public class TransilityDeviceAdminActivity extends AppCompatActivity {
                         Intent intent1 = new Intent(TransilityDeviceAdminActivity.this, LoginActivity.class);
                         intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         TransilityDeviceAdminActivity.this.startActivity(intent1);
-
+                        Utility.appendLog("Offline Logout");
                         finish();
                     }
                     else{
@@ -182,6 +183,7 @@ public class TransilityDeviceAdminActivity extends AppCompatActivity {
                             String json = Logout.writeLogoutJson(sessionToken);
                             String loginRequest = getResources().getString(R.string.baseUrl) + getResources().getString(R.string.api_logout);
                             restRequestFactoryWrapper.callHttpRestRequest(loginRequest, json, RESTRequest.Method.POST);
+                            Utility.appendLog("Logout API Request="+loginRequest+" json="+json+" Call Type="+RESTRequest.Method.POST);
                         }
                         else {
                             cleanTheDatabase();
@@ -189,6 +191,7 @@ public class TransilityDeviceAdminActivity extends AppCompatActivity {
                             Intent intent1 = new Intent(TransilityDeviceAdminActivity.this, LoginActivity.class);
                             intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                             TransilityDeviceAdminActivity.this.startActivity(intent1);
+                            Utility.appendLog("Logout with no Previous Session Token");
 
                             finish();
 
@@ -355,12 +358,14 @@ public class TransilityDeviceAdminActivity extends AppCompatActivity {
     private RestResponseShowFeedbackInterface restResponseShowFeedbackInterface = new RestResponseShowFeedbackInterface() {
         @Override
         public void onSuccessOfBackGroundOperation(RESTResponse reposeJson) {
+            Utility.appendLog("Response Logout API="+reposeJson.getText());
             Utility.logError(TransilityDeviceAdminActivity.class.getSimpleName(),"Request Code>>"+reposeJson.status.getCode()+" Resposne Message>>"+reposeJson.getText());
             cleanTheDatabase();
         }
 
         @Override
         public void onErrorInBackgroundOperation(RESTResponse reposeJson) {
+            Utility.appendLog("Response Logout API="+reposeJson.getText());
             Utility.logError(TransilityDeviceAdminActivity.class.getSimpleName(),"Request Code>>"+reposeJson.status.getCode()+" Resposne Message>>"+reposeJson.getText());
             cleanTheDatabase();
 
@@ -368,7 +373,9 @@ public class TransilityDeviceAdminActivity extends AppCompatActivity {
 
         @Override
         public void onSuccessInForeGroundOperation(RESTResponse restResponse) {
-            Utility.logError(TransilityDeviceAdminActivity.class.getSimpleName(),"Request Code>>"+restResponse.status.getCode()+" Resposne Message>>"+restResponse.getText());
+
+
+
             Utility.cancelCurrentPendingIntent(TransilityDeviceAdminActivity.this);
             Intent intent1 = new Intent(TransilityDeviceAdminActivity.this, LoginActivity.class);
             intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -379,7 +386,8 @@ public class TransilityDeviceAdminActivity extends AppCompatActivity {
 
         @Override
         public void onErrorInForeGroundOperation(RESTResponse restResponse) {
-            Utility.logError(TransilityDeviceAdminActivity.class.getSimpleName(),"Request Code>>"+restResponse.status.getCode()+" Resposne Message>>"+restResponse.getText());
+
+
             Utility.cancelCurrentPendingIntent(TransilityDeviceAdminActivity.this);
             Intent intent1 = new Intent(TransilityDeviceAdminActivity.this, LoginActivity.class);
             intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

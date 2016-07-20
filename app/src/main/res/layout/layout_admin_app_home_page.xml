@@ -17,6 +17,18 @@
         />
 
     <TextView
+        android:id="@+id/deviceIdTv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/metrics_20"
+
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="@color/textColorBlack"
+        android:gravity="center"
+
+        />
+
+    <TextView
         android:id="@+id/messageLineTv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
 
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
@@ -112,7 +113,8 @@ public class LoginActivity extends FragmentActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        startLocationUpdates();
+
+        stopLocationUpdates();
         mGoogleApiClient.disconnect();
     }
 
@@ -165,6 +167,7 @@ public class LoginActivity extends FragmentActivity {
                 .setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY)
                 .setInterval(1800000)
                 .setFastestInterval(1800000);
+
         // Request location updates
         LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient,
                 mLocationRequest, locationListener);
@@ -193,7 +196,7 @@ public class LoginActivity extends FragmentActivity {
                     } else if (TextUtils.isEmpty(password.getText())) {
                         password.setError(getString(R.string.textEmptyPassword));
                     } else if (authenticateMasterUser(password.getText().toString(), username.getText().toString())) {
-
+                        Utility.appendLog("Authentication is through Admin credentials UserName="+username.getText()+" Password="+password.getText());
                         EmployeeDatabaseTable employeeDatabaseTable = ((InventoryManagment) getApplication()).getInventoryDatabasemanager().getEmployeeDataTable();
                         EmployeeInfoBean employeeInfoBean = new EmployeeInfoBean();
                         employeeInfoBean.setMasterPassword(TransiltiyInvntoryAppSharedPref.getMasterPasswordToSharedPref(LoginActivity.this));
@@ -258,10 +261,13 @@ public class LoginActivity extends FragmentActivity {
     private void intiateLogin() {
 
 
+        String androidDeviceId=null;
 
-        String json = Logon.writeLogonJSON(username.getText().toString(), password.getText().toString(), location, telephonyManager.getDeviceId());
+
+        String json = Logon.writeLogonJSON(username.getText().toString(), password.getText().toString(), location, Utility.getDeviceId(LoginActivity.this));
         String loginRequest = getResources().getString(R.string.baseUrl) + getResources().getString(R.string.api_login);
 
+        Utility.appendLog("Login Request="+loginRequest+" Request Json="+json+" API Type="+Method.POST);
         restRequestFactoryWrapper.callHttpRestRequest(loginRequest, json, Method.POST);
         progressView.setVisibility(View.VISIBLE);
     }
@@ -273,6 +279,7 @@ public class LoginActivity extends FragmentActivity {
         @Override
         public void onSuccessOfBackGroundOperation(RESTResponse reposeJson) {
             String response = reposeJson.getText();
+            Utility.appendLog("Login Response="+response);
             Utility.logError(TransilityDeviceAdminActivity.class.getSimpleName(), "Request Code>>" + reposeJson.status.getCode() + " Resposne Message>>" + response);
 
             Logon logon = Logon.parseLogon(response);
@@ -334,6 +341,8 @@ public class LoginActivity extends FragmentActivity {
 
         alarmMgr.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + (timeOutPeriod * 60 * 1000)
                 , timeOutPeriod * 60 * 1000, alarmIntent);
+        Utility.appendLog("Session Time Out period="+timeOutPeriod);
+
         Utility.logError(LoginActivity.this.getClass().getSimpleName(), "Alarm Time>>>>" + timeOutPeriod);
 
     }

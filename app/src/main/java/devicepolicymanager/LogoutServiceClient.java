@@ -49,10 +49,13 @@ public class LogoutServiceClient extends IntentService{
                     getSessionToken(((InventoryManagment) LogoutServiceClient.this.getApplication()).getSqliteDatabase());
             String json = Logout.writeLogoutJson(sessionToken);
             String loginRequest = getResources().getString(R.string.baseUrl) + getResources().getString(R.string.api_logout);
+            Utility.appendLog("Login Request="+loginRequest+" Json="+json+" Request Type="+RESTRequest.Method.POST);
+
             RestRequestFactoryWrapper   restRequestFactoryWrapper = new RestRequestFactoryWrapper(this, restResponseShowFeedbackInterface);
             restRequestFactoryWrapper.callHttpRestRequest(loginRequest, json, RESTRequest.Method.POST);
         }
         else{
+            Utility.appendLog("Offline Logout");
             InventoryDatabaseManager inventoryDatabaseManager = ((InventoryManagment) LogoutServiceClient.this.getApplication()).getInventoryDatabasemanager();
             inventoryDatabaseManager.getEmployeeDataTable()
                     .deleteEmployeeInfoFromDatabase(((InventoryManagment) LogoutServiceClient.this.getApplication()).getSqliteDatabase());
@@ -80,6 +83,7 @@ public class LogoutServiceClient extends IntentService{
         public void onSuccessOfBackGroundOperation(RESTResponse reposeJson) {
 
             Utility.logError(LogoutServiceClient.class.getSimpleName(),"Request Code>>"+reposeJson.status.getCode()+" Resposne Message>>"+reposeJson.getText());
+            Utility.appendLog("Response Logout API="+reposeJson.getText());
 
             isOperationCompleted=true;
             InventoryDatabaseManager inventoryDatabaseManager = ((InventoryManagment) LogoutServiceClient.this.getApplication()).getInventoryDatabasemanager();
@@ -92,6 +96,8 @@ public class LogoutServiceClient extends IntentService{
         @Override
         public void onErrorInBackgroundOperation(RESTResponse reposeJson) {
             Utility.logError(LogoutServiceClient.class.getSimpleName(),"Request Code>>"+reposeJson.status.getCode()+" Resposne Message>>"+reposeJson.getText());
+            Utility.appendLog("Response Logout API"+reposeJson.getText());
+
             isOperationCompleted=true;
             Utility.cancelCurrentPendingIntent(LogoutServiceClient.this);
 
