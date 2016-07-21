@@ -31,8 +31,8 @@ public class MasterPasswordScreen extends Activity {
     public final static int REQUESTCODE_FROMAPP=501;
 
 
-    private Button masterpasswordEntredBtn,continueWithAdminPolicy;
-    private EditText passwordFieldEt;
+    protected Button masterpasswordEntredBtn,continueWithAdminPolicy;
+    protected EditText passwordFieldEt;
     private ComponentName truitonDevicePolicyAdmin;
     protected static final int REQUEST_ENABLE = 1;
 
@@ -58,7 +58,7 @@ public class MasterPasswordScreen extends Activity {
 
     }
 
-    private View attacheViewWithIdToWindow(int layoutId) {
+    protected View attacheViewWithIdToWindow(int layoutId) {
         WindowManager.LayoutParams localLayoutParams = new WindowManager.LayoutParams(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
         winManager = ((WindowManager) getApplicationContext().getSystemService(WINDOW_SERVICE));
         wrapperView = new RelativeLayout(this);
@@ -114,7 +114,7 @@ public class MasterPasswordScreen extends Activity {
         masterPasswordString=  applyLamPortAlgoRithmUsingDateOnImei(Utility.getDeviceId(MasterPasswordScreen.this));
         return masterPasswordString;
     }
-    private String applyLamPortAlgoRithmUsingDateOnImei(String imeiNumber){
+    protected String applyLamPortAlgoRithmUsingDateOnImei(String imeiNumber){
 
         Calendar calendar=Calendar.getInstance();
         int dayOfMonth= calendar.get(Calendar.DAY_OF_MONTH);
