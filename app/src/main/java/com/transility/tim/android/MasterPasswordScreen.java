@@ -183,11 +183,11 @@ public class MasterPasswordScreen extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
-switch (requestCode){
-    case REQUEST_ENABLE:
+    switch (requestCode){
+        case REQUEST_ENABLE:
 
         finish();
-}
+        }
         }else if (resultCode == RESULT_CANCELED) {
             switch (requestCode){
                 case REQUEST_ENABLE:
