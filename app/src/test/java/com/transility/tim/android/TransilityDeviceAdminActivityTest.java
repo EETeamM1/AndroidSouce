@@ -21,7 +21,7 @@ import org.robolectric.util.ActivityController;
 /**
  * Created by ambesh.kukreja on 7/14/2016.
  */
-public class DeviceAdminScreenTest {
+public class TransilityDeviceAdminActivityTest {
    private  ActivityController<TransilityDeviceAdminActivity> transilityDeviceAdminActivityActivityController;
     private TransilityDeviceAdminActivity transilityDeviceAdminActivity;
     private InventoryManagment inventoryManagment;

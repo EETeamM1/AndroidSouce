@@ -113,21 +113,21 @@ public class Utility {
     }
 
 
-public static String getDeviceId(Context context){
+    public static String getDeviceId(Context context){
 
-    if (TextUtils.isEmpty(TransiltiyInvntoryAppSharedPref.getDeviceId(context))){
-        TelephonyManager telephonyManager= (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-        String deviceID=telephonyManager.getDeviceId();
-        if (TextUtils.isEmpty(deviceID)){
-            deviceID= Settings.Secure.getString(context.getContentResolver(),
-                    Settings.Secure.ANDROID_ID);
+        if (TextUtils.isEmpty(TransiltiyInvntoryAppSharedPref.getDeviceId(context))){
+            TelephonyManager telephonyManager= (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+            String deviceID=telephonyManager.getDeviceId();
+            if (TextUtils.isEmpty(deviceID)){
+                deviceID= Settings.Secure.getString(context.getContentResolver(),
+                        Settings.Secure.ANDROID_ID);
+            }
+            TransiltiyInvntoryAppSharedPref.setDeviceId(deviceID,context);
+            return deviceID;
         }
-        TransiltiyInvntoryAppSharedPref.setDeviceId(deviceID,context);
-        return deviceID;
-    }
-    else {
-        return TransiltiyInvntoryAppSharedPref.getDeviceId(context);
-    }
+        else {
+            return TransiltiyInvntoryAppSharedPref.getDeviceId(context);
+        }
 
 
 }

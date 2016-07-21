@@ -63,13 +63,6 @@ public class Logon implements Parcelable{
             paramObject.put("userId", username);
             paramObject.put("password", password);
 
-            /**
-             * Added this since no data is avalible on server yet.
-             */
-//            if (BuildConfig.DEBUG){
-//                imeiNumber="12345655474255";
-//            }
-
             Utility.logError("Imei Number",myAndroidDeviceId);
 
             paramObject.put("deviceId", myAndroidDeviceId);

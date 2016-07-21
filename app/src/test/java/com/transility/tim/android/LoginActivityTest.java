@@ -42,7 +42,9 @@ public class LoginActivityTest  {
 
     @After
     public void tearDown() {
-
+        context = null;
+        activityController = null;
+        mLoginActivity = null;
     }
 
     @Test
@@ -80,7 +82,6 @@ public class LoginActivityTest  {
         TransiltiyInvntoryAppSharedPref.setMasterPasswordToSharedPref(context, mLoginActivity.getString(R.string.masterPassword));
         Assert.assertTrue("Master user is not authenticate",
                 mLoginActivity.authenticateMasterUser(mLoginActivity.getString(R.string.masterPassword), mLoginActivity.getString(R.string.masterUserName)));
-
         Assert.assertFalse("Empty user is authenticate as Master", mLoginActivity.authenticateMasterUser("", ""));
    }
 

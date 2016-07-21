@@ -53,8 +53,12 @@ public class LogonTest {
         location.setLatitude(22.68);
         location.setLongitude(75.87);
         String logonJSON = Logon.writeLogonJSON(username,password,location,deviceId);
-        Assert.assertEquals("Logon JSON is not created correct", getLogonWriteJSON(),logonJSON);
+        Assert.assertEquals("Logon JSON is not created correct", getLogonWriteJSON(), logonJSON);
 
+        location = null;
+        logonJSON = Logon.writeLogonJSON(username,password,location,deviceId);
+        String expectedJSON = "{\"parameters\":{\"userId\":\"user1\",\"password\":\"impetus\",\"deviceId\":\"12345655474255\",\"osVersion\":\"5.1.1_r9\",\"latitude\":\"\",\"longitude\":\"\"}}";
+        Assert.assertEquals("Logon JSON is not created correct", expectedJSON,logonJSON);
     }
 
     private String buildLogonJSON(){
