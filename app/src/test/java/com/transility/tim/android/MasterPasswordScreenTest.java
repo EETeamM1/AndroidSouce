@@ -7,9 +7,6 @@ import android.content.Intent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
-
-import com.transility.tim.android.Utilities.Utility;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -23,6 +20,8 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowActivity;
 import org.robolectric.util.ActivityController;
+
+import java.util.Calendar;
 
 import devicepolicymanager.MyDeviceAdminReciver;
 
@@ -94,9 +93,14 @@ public class MasterPasswordScreenTest {
 
     @Test
     public void testApplyLamPortAlgoRithmUsingDateOnImei() {
-        Assert.assertEquals("Algorithm value is incorrect", "1234567900333", masterPasswordScreenActivity.applyLamPortAlgoRithmUsingDateOnImei("1234567890123"));
-        Assert.assertEquals("Algorithm value is incorrect", "123456789108199", masterPasswordScreenActivity.applyLamPortAlgoRithmUsingDateOnImei("1234567890abcd"));
-        Assert.assertEquals("Algorithm value is incorrect", "123456789108199", masterPasswordScreenActivity.applyLamPortAlgoRithmUsingDateOnImei("1234567890abcd234"));
+        Calendar mockCalendar = Mockito.mock(Calendar.class);
+        when(mockCalendar.get(Calendar.DAY_OF_MONTH)).thenReturn(10);
+        when(mockCalendar.get(Calendar.MONTH)).thenReturn(8);
+        when(mockCalendar.get(Calendar.YEAR)).thenReturn(2016);
+
+        Assert.assertEquals("Algorithm value is incorrect", "1234567900293", masterPasswordScreenActivity.applyLamPortAlgoRithmUsingDateOnImei("1234567890123", mockCalendar));
+        Assert.assertEquals("Algorithm value is incorrect", "123456789108159", masterPasswordScreenActivity.applyLamPortAlgoRithmUsingDateOnImei("1234567890abcd", mockCalendar));
+        Assert.assertEquals("Algorithm value is incorrect", "123456789108159", masterPasswordScreenActivity.applyLamPortAlgoRithmUsingDateOnImei("1234567890abcd234", mockCalendar));
     }
 
 }
