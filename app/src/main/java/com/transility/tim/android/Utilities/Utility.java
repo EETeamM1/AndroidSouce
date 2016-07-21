@@ -6,10 +6,8 @@ import android.app.Dialog;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.Build;
 import android.os.Environment;
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
@@ -20,8 +18,6 @@ import android.view.inputmethod.InputMethodManager;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
-import com.transility.tim.android.BuildConfig;
-import com.transility.tim.android.R;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -66,13 +62,8 @@ public class Utility {
     }
 
     public static void removeKeyboardfromScreen(View view){
-
-
-            InputMethodManager imm = (InputMethodManager)view.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-
-         imm.hideSoftInputFromWindow(view.getWindowToken(),0);
-
-
+        InputMethodManager imm = (InputMethodManager)view.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(view.getWindowToken(),0);
     }
 
     public static void cancelCurrentPendingIntent(Context context) {
@@ -80,7 +71,6 @@ public class Utility {
         Intent intent = new Intent(context, SessionTimeOutReciever.class);
         PendingIntent alarmIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
         alarmManager.cancel(alarmIntent);
-
         appendLog("Alarm cancelled");
     }
 
@@ -91,20 +81,15 @@ public class Utility {
      *
      * @return true if available, or false if not
      */
-    public static boolean checkGooglePlayServicesAvailable(Activity context)
-    {
+    public static boolean checkGooglePlayServicesAvailable(Activity context) {
         final int status = GooglePlayServicesUtil.isGooglePlayServicesAvailable(context);
-        if (status == ConnectionResult.SUCCESS)
-        {
+        if (status == ConnectionResult.SUCCESS) {
             return true;
         }
 
-
-        if (GooglePlayServicesUtil.isUserRecoverableError(status))
-        {
+        if (GooglePlayServicesUtil.isUserRecoverableError(status)) {
             final Dialog errorDialog = GooglePlayServicesUtil.getErrorDialog(status, context, 1);
-            if (errorDialog != null)
-            {
+            if (errorDialog != null) {
                 errorDialog.show();
             }
         }
@@ -112,9 +97,7 @@ public class Utility {
         return false;
     }
 
-
     public static String getDeviceId(Context context){
-
         if (TextUtils.isEmpty(TransiltiyInvntoryAppSharedPref.getDeviceId(context))){
             TelephonyManager telephonyManager= (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
             String deviceID=telephonyManager.getDeviceId();
@@ -128,47 +111,32 @@ public class Utility {
         else {
             return TransiltiyInvntoryAppSharedPref.getDeviceId(context);
         }
+    }
 
-
-}
-
-    public static void appendLog(String text)
-    {
-
-
-            File extStore = Environment.getExternalStoragePublicDirectory("");
-            File logFile=new File(extStore.getPath(),"logFile.txt");
-            Utility.logError(Utility.class.getSimpleName(),logFile.getPath());
-            if (!logFile.exists())
-            {
-
-                try
-                {
-                    extStore.mkdirs();
-                    logFile.createNewFile();
-                }
-                catch (IOException e)
-                {
-                    // TODO Auto-generated catch block
-                    printHandledException(e);
-                }
-            }
-            try
-            {
-                //BufferedWriter for performance, true to set append to file flag
-                BufferedWriter buf = new BufferedWriter(new FileWriter(logFile, true));
-                buf.append(text+"\n");
-                buf.newLine();
-                buf.close();
-
-            }
-            catch (IOException e)
-            {
-                // TODO Auto-generated catch block
+    public static void appendLog(String text) {
+        File extStore = Environment.getExternalStoragePublicDirectory("");
+        File logFile=new File(extStore.getPath(),"logFile.txt");
+        Utility.logError(Utility.class.getSimpleName(),logFile.getPath());
+        if (!logFile.exists()) {
+            try {
+                extStore.mkdirs();
+                logFile.createNewFile();
+            } catch (IOException e) {
+              // TODO Auto-generated catch block
                 printHandledException(e);
             }
         }
 
-
+        try {
+            //BufferedWriter for performance, true to set append to file flag
+            BufferedWriter buf = new BufferedWriter(new FileWriter(logFile, true));
+            buf.append(text+"\n");
+            buf.newLine();
+            buf.close();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            printHandledException(e);
+        }
+    }
 
 }
