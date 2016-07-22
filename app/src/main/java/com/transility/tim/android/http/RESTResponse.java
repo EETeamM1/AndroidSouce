@@ -34,6 +34,7 @@ public class RESTResponse {
         Status(int scode){
             sc = scode;
         }
+
         public boolean isSuccess() {
             boolean result = false;
             if(sc>=200 && sc <=207){
@@ -41,13 +42,16 @@ public class RESTResponse {
             }
             return result;
         }
+
         public String getCode() {
             return ""+sc;
         }
+
         public boolean isError() {
             return isClientError() || isServerError()
                     || isConnectorError();
         }
+
         public boolean isConnectorError() {
             boolean result = false;
             if(sc>=1000 && sc <=1002){

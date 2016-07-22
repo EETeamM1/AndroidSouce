@@ -38,16 +38,4 @@ public class RESTRequestTest {
 
         Assert.assertEquals("URI is not correct", expectedVaue, actualValue );
     }
-
-    private String getJSON (){
-        return  "{" + "\"parameters\":{" +
-                "\"userId\":\"user1\"," +
-                "\"password\":\"impetus\"," +
-                "\"deviceId\":\"12345655474255\"," +
-                "\"osVersion\":\"5.1.1_r9\"," +
-                "\"latitude\":22.68," +
-                "\"longitude\":75.87" +
-                "}" +
-                "}";
-    }
 }
