@@ -1,15 +1,13 @@
 package com.transility.tim.android;
 
-import android.annotation.TargetApi;
-import android.os.Build;
+import android.content.Context;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Switch;
 import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
-import com.transility.tim.android.InventoryDatabase.InventoryDatabaseManager;
-import com.transility.tim.android.bean.EmployeeInfoBean;
+import com.transility.tim.android.Utilities.TransiltiyInvntoryAppSharedPref;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -22,7 +20,6 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowApplication;
 import org.robolectric.shadows.gms.ShadowGooglePlayServicesUtil;
-import org.robolectric.shadows.gms.Shadows;
 import org.robolectric.util.ActivityController;
 
 /**
@@ -31,12 +28,16 @@ import org.robolectric.util.ActivityController;
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class)
 public class TransilityDeviceAdminActivityTest {
-   private  ActivityController<TransilityDeviceAdminActivity> transilityDeviceAdminActivityActivityController;
+
+    private  ActivityController<TransilityDeviceAdminActivity> transilityDeviceAdminActivityActivityController;
     private TransilityDeviceAdminActivity transilityDeviceAdminActivity;
     private InventoryManagment inventoryManagment;
+    private Context context;
+
     @Before
     public void setUp() {
 
+        context = RuntimeEnvironment.application.getBaseContext();
          inventoryManagment= (InventoryManagment) RuntimeEnvironment.application;
         ShadowApplication shadowApplication= org.robolectric.Shadows.shadowOf(RuntimeEnvironment.application);
 
@@ -46,6 +47,7 @@ public class TransilityDeviceAdminActivityTest {
 
     @After
     public void tearDown() {
+        context = null;
         inventoryManagment = null;
         transilityDeviceAdminActivityActivityController = null;
         transilityDeviceAdminActivity = null;
@@ -75,18 +77,12 @@ public class TransilityDeviceAdminActivityTest {
     public void test002CheckUiWhenUserHasPerfromedLogin(){
         transilityDeviceAdminActivity= transilityDeviceAdminActivityActivityController.start().resume().visible().get();
 
-        InventoryDatabaseManager inventoryDatabaseManager=inventoryManagment.getInventoryDatabasemanager();
-        EmployeeInfoBean employeeInfoBean=new EmployeeInfoBean();
-        employeeInfoBean.setMasterPassword("Test");
-        employeeInfoBean.setSessionToken("Test Session Token");
-        employeeInfoBean.setTimeOutPeriod(10);
+        TransiltiyInvntoryAppSharedPref.setMasterPasswordToSharedPref(context, "Test");
+        TransiltiyInvntoryAppSharedPref.setSessionTokenToSharedPref(context, "Test Session Token");
+        TransiltiyInvntoryAppSharedPref.setSessionTimeoutToSharedPref(context, 10);
 
-
-        inventoryDatabaseManager.getEmployeeDataTable().insertEmployeeInfoToEmployeeInfoTable(inventoryManagment.getSqliteDatabase(),employeeInfoBean);
         Switch enableDeviceApp= (Switch) transilityDeviceAdminActivity.findViewById(R.id.enableDeviceApp);
-
         Button logoutBtn= (Button) transilityDeviceAdminActivity.findViewById(R.id.logoutBtn);
-
         Button reportsBtn= (Button) transilityDeviceAdminActivity.findViewById(R.id.reportsBtn);
 
         TextView messageLineTv= (TextView) transilityDeviceAdminActivity.findViewById(R.id.messageLineTv);

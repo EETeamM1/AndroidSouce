@@ -3,19 +3,13 @@ package com.transility.tim.android;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
-
-
 import android.content.Context;
 import android.content.Intent;
-
 import android.location.Location;
 import android.os.Bundle;
-
-import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
-
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.view.View;
@@ -26,23 +20,17 @@ import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
-import com.transility.tim.android.InventoryDatabase.EmployeeDatabaseTable;
-import com.transility.tim.android.InventoryDatabase.InventoryDatabaseManager;
+import com.transility.tim.android.Utilities.RestResponseShowFeedbackInterface;
 import com.transility.tim.android.Utilities.TransiltiyInvntoryAppSharedPref;
 import com.transility.tim.android.Utilities.Utility;
-import com.transility.tim.android.Utilities.RestResponseShowFeedbackInterface;
-import com.transility.tim.android.bean.EmployeeInfoBean;
 import com.transility.tim.android.bean.Logon;
-
 import com.transility.tim.android.http.RESTRequest.Method;
 import com.transility.tim.android.http.RESTResponse;
-
 import com.transility.tim.android.http.RestRequestFactoryWrapper;
 
 import devicepolicymanager.SessionTimeOutReciever;
@@ -182,15 +170,8 @@ public class LoginActivity extends FragmentActivity {
                     } else if (TextUtils.isEmpty(password.getText())) {
                         password.setError(getString(R.string.textEmptyPassword));
                     } else if (authenticateMasterUser(password.getText().toString(), username.getText().toString())) {
-                        Utility.appendLog("Authentication is through Admin credentials UserName="+username.getText()+" Password="+password.getText());
-                        EmployeeDatabaseTable employeeDatabaseTable = ((InventoryManagment) getApplication()).getInventoryDatabasemanager().getEmployeeDataTable();
-                        EmployeeInfoBean employeeInfoBean = new EmployeeInfoBean();
-                        employeeInfoBean.setMasterPassword(TransiltiyInvntoryAppSharedPref.getMasterPasswordToSharedPref(LoginActivity.this));
-                        employeeInfoBean.setTimeOutPeriod(getResources().getInteger(R.integer.defaultSessionTimeOutPeriod));
 
-                        employeeInfoBean.setSessionToken("");
-                        employeeDatabaseTable.insertEmployeeInfoToEmployeeInfoTable(((InventoryManagment) getApplication()).getSqliteDatabase(), employeeInfoBean);
-
+                        Utility.appendLog("Authentication is through Admin credentials UserName=" + username.getText() + " Password=" + password.getText());
                         errorMessage.setText(getString(R.string.textWindowWarning));
 
                         Thread timerThread = new Thread() {
@@ -226,17 +207,8 @@ public class LoginActivity extends FragmentActivity {
      * @return
      */
     protected boolean authenticateMasterUser(String passwordStr, String usernameStr) {
-        String masterPassword=null;
-        InventoryDatabaseManager inventoryDatabaseManager=((InventoryManagment)getApplication()).getInventoryDatabasemanager();
-        if (TextUtils.isEmpty(inventoryDatabaseManager.getEmployeeDataTable().getTheInfoOfCurrentEmployee(((InventoryManagment)getApplication()).getSqliteDatabase()).getMasterPassword())){
-            masterPassword=TransiltiyInvntoryAppSharedPref.getMasterPasswordToSharedPref(LoginActivity.this);
-        }
-        else{
-            masterPassword=inventoryDatabaseManager.getEmployeeDataTable().getTheInfoOfCurrentEmployee(((InventoryManagment)getApplication()).getSqliteDatabase()).getMasterPassword();
-        }
-
-        return passwordStr.equals(masterPassword)
-                && usernameStr.equals(TransiltiyInvntoryAppSharedPref.getUserNameToSharedPref(this));
+        return passwordStr.equals(TransiltiyInvntoryAppSharedPref.getMasterPassword(this))
+                && usernameStr.equals(TransiltiyInvntoryAppSharedPref.getUserName(this));
     }
 
     /**
@@ -258,21 +230,14 @@ public class LoginActivity extends FragmentActivity {
         @Override
         public void onSuccessOfBackGroundOperation(RESTResponse reposeJson) {
             String response = reposeJson.getText();
-            Utility.appendLog("Login Response="+response);
+            Utility.appendLog("Login Response=" + response);
             Utility.logError(TransilityDeviceAdminActivity.class.getSimpleName(), "Request Code>>" + reposeJson.status.getCode() + " Resposne Message>>" + response);
 
             Logon logon = Logon.parseLogon(response);
-
-            EmployeeDatabaseTable employeeDatabaseTable = ((InventoryManagment) getApplication()).getInventoryDatabasemanager().getEmployeeDataTable();
-            EmployeeInfoBean employeeInfoBean = new EmployeeInfoBean();
-            employeeInfoBean.setMasterPassword(logon.getMasterPassword());
-            employeeInfoBean.setTimeOutPeriod(logon.getTimeout());
-
-            employeeInfoBean.setSessionToken(logon.getSessionToken());
-
             TransiltiyInvntoryAppSharedPref.setMasterPasswordToSharedPref(LoginActivity.this, logon.getMasterPassword());
+            TransiltiyInvntoryAppSharedPref.setSessionTimeoutToSharedPref(LoginActivity.this, logon.getTimeout());
+            TransiltiyInvntoryAppSharedPref.setSessionTokenToSharedPref(LoginActivity.this, logon.getSessionToken());
 
-            employeeDatabaseTable.insertEmployeeInfoToEmployeeInfoTable(((InventoryManagment) getApplication()).getSqliteDatabase(), employeeInfoBean);
             intiateAlarm(logon.getTimeout());
 
         }

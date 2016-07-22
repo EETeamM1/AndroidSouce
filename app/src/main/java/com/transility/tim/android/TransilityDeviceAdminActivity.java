@@ -6,7 +6,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
-
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -17,6 +16,7 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
+
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
@@ -28,8 +28,8 @@ import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResult;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.transility.tim.android.Dialogs.SingleButtonAlertDialog;
-import com.transility.tim.android.InventoryDatabase.InventoryDatabaseManager;
 import com.transility.tim.android.Utilities.RestResponseShowFeedbackInterface;
+import com.transility.tim.android.Utilities.TransiltiyInvntoryAppSharedPref;
 import com.transility.tim.android.Utilities.Utility;
 import com.transility.tim.android.bean.Logout;
 import com.transility.tim.android.http.RESTRequest;
@@ -66,8 +66,7 @@ public class TransilityDeviceAdminActivity extends AppCompatActivity {
 
         truitonDevicePolicyManager = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
         restRequestFactoryWrapper = new RestRequestFactoryWrapper(this, restResponseShowFeedbackInterface);
-        truitonDevicePolicyAdmin = new ComponentName(this,
-                MyDeviceAdminReciver.class);
+        truitonDevicePolicyAdmin = new ComponentName(this, MyDeviceAdminReciver.class);
         enableDeviceApp = (Switch) findViewById(R.id.enableDeviceApp);
         logoutBtn = (Button) findViewById(R.id.logoutBtn);
         reportsBtn = (Button) findViewById(R.id.reportsBtn);
@@ -85,8 +84,6 @@ public class TransilityDeviceAdminActivity extends AppCompatActivity {
                 checkLocationSettings();
             }
 
-
-
     }
 
     private void createLocationSettingsRequest() {
@@ -101,16 +98,13 @@ public class TransilityDeviceAdminActivity extends AppCompatActivity {
 
         if (Utility.checkGooglePlayServicesAvailable(this)){
 
-
-            mGoogleApiClient = new GoogleApiClient.Builder(TransilityDeviceAdminActivity.this)
+            mGoogleApiClient = new GoogleApiClient.Builder(this)
                     .addApi(LocationServices.API)
                     .addConnectionCallbacks(connectionCallbacks)
                     .addOnConnectionFailedListener(onConnectionFailedListener)
                     .build();
 
-
         }
-
 
     }
 
@@ -153,11 +147,7 @@ public class TransilityDeviceAdminActivity extends AppCompatActivity {
 
     private GoogleApiClient.OnConnectionFailedListener onConnectionFailedListener=new GoogleApiClient.OnConnectionFailedListener() {
         @Override
-        public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
-
-
-        }
+        public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {}
     };
 
     private View.OnClickListener onClickListener = new View.OnClickListener() {
@@ -166,7 +156,7 @@ public class TransilityDeviceAdminActivity extends AppCompatActivity {
             switch (v.getId()) {
                 case R.id.logoutBtn:
                     if (!Utility.checkInternetConnection(TransilityDeviceAdminActivity.this)){
-                        cleanTheDatabase();
+                        Utility.clearPrefrences();
                         Utility.cancelCurrentPendingIntent(TransilityDeviceAdminActivity.this);
                         Intent intent1 = new Intent(TransilityDeviceAdminActivity.this, LoginActivity.class);
                         intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -175,9 +165,7 @@ public class TransilityDeviceAdminActivity extends AppCompatActivity {
                         finish();
                     }
                     else{
-                        InventoryDatabaseManager inventoryDatabaseManager = ((InventoryManagment) TransilityDeviceAdminActivity.this.getApplication()).getInventoryDatabasemanager();
-                        String sessionToken = inventoryDatabaseManager.getEmployeeDataTable().
-                                getSessionToken(((InventoryManagment) TransilityDeviceAdminActivity.this.getApplication()).getSqliteDatabase());
+                        String sessionToken = TransiltiyInvntoryAppSharedPref.getSessionToken(TransilityDeviceAdminActivity.this);
                         if (!TextUtils.isEmpty(sessionToken)){
                             String json = Logout.writeLogoutJson(sessionToken);
                             String loginRequest = getResources().getString(R.string.baseUrl) + getResources().getString(R.string.api_logout);
@@ -185,7 +173,7 @@ public class TransilityDeviceAdminActivity extends AppCompatActivity {
                             Utility.appendLog("Logout API Request="+loginRequest+" json="+json+" Call Type="+RESTRequest.Method.POST);
                         }
                         else {
-                            cleanTheDatabase();
+                            Utility.clearPrefrences();
                             Utility.cancelCurrentPendingIntent(TransilityDeviceAdminActivity.this);
                             Intent intent1 = new Intent(TransilityDeviceAdminActivity.this, LoginActivity.class);
                             intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -209,15 +197,12 @@ public class TransilityDeviceAdminActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        inventoryManagment = ((InventoryManagment) TransilityDeviceAdminActivity.this.getApplication());
-        int rowCount = inventoryManagment.getInventoryDatabasemanager().getEmployeeDataTable().getEmployeeTableRowCount(inventoryManagment.getSqliteDatabase());
-
-        if (rowCount != 0) {
-            logoutBtn.setVisibility(View.VISIBLE);
-            reportsBtn.setVisibility(View.VISIBLE);
-        } else {
+        if (TextUtils.isEmpty(TransiltiyInvntoryAppSharedPref.getSessionToken(this))) {
             logoutBtn.setVisibility(View.GONE);
             reportsBtn.setVisibility(View.GONE);
+        } else {
+            logoutBtn.setVisibility(View.VISIBLE);
+            reportsBtn.setVisibility(View.VISIBLE);
         }
 
         if (isMyDevicePolicyReceiverActive()) {
@@ -232,7 +217,6 @@ public class TransilityDeviceAdminActivity extends AppCompatActivity {
 
         enableDeviceApp
                 .setOnCheckedChangeListener(onCheckedChangeListener);
-
     }
 
 
@@ -245,34 +229,25 @@ public class TransilityDeviceAdminActivity extends AppCompatActivity {
                 enableDeviceApp.setOnCheckedChangeListener(null);
                 if (!isMyDevicePolicyReceiverActive()) {
 
-
-                    int rowCount = inventoryManagment.getInventoryDatabasemanager().getEmployeeDataTable().getEmployeeTableRowCount(inventoryManagment.getSqliteDatabase());
                     if (Utility.checkInternetConnection(TransilityDeviceAdminActivity.this)) {
                         enableDeviceAdminApp();
                     } else {
 
-                        if (rowCount != 0) {
+                        if (! TextUtils.isEmpty(TransiltiyInvntoryAppSharedPref.getSessionToken(TransilityDeviceAdminActivity.this))) {
                             enableDeviceAdminApp();
                         } else {
                             enableDeviceApp.setChecked(false);
                             singleButtonAlertDialog = SingleButtonAlertDialog.newInstance(getString(R.string.textPleaseEnableNetwork));
 
                             singleButtonAlertDialog.show(getFragmentManager(), SingleButtonAlertDialog.class.getSimpleName());
-
                         }
                     }
 
-
                 }
-
             } else {
-
-
                 truitonDevicePolicyManager.removeActiveAdmin(truitonDevicePolicyAdmin);
 
-
             }
-
             enableDeviceApp.setOnCheckedChangeListener(onCheckedChangeListener);
         }
     };
@@ -342,16 +317,7 @@ public class TransilityDeviceAdminActivity extends AppCompatActivity {
      * @return is Device Admin active
      */
     private boolean isMyDevicePolicyReceiverActive() {
-        return truitonDevicePolicyManager
-                .isAdminActive(truitonDevicePolicyAdmin);
-    }
-
-    /**
-     * Method call to clean the database
-     */
-    private void cleanTheDatabase(){
-        InventoryDatabaseManager  inventoryDatabaseManager=((InventoryManagment)TransilityDeviceAdminActivity.this.getApplication()).getInventoryDatabasemanager();
-        inventoryDatabaseManager.getEmployeeDataTable().deleteEmployeeInfoFromDatabase(((InventoryManagment)TransilityDeviceAdminActivity.this.getApplication()).getSqliteDatabase());
+        return truitonDevicePolicyManager.isAdminActive(truitonDevicePolicyAdmin);
     }
 
     private RestResponseShowFeedbackInterface restResponseShowFeedbackInterface = new RestResponseShowFeedbackInterface() {
@@ -359,14 +325,14 @@ public class TransilityDeviceAdminActivity extends AppCompatActivity {
         public void onSuccessOfBackGroundOperation(RESTResponse reposeJson) {
             Utility.appendLog("Response Logout API="+reposeJson.getText());
             Utility.logError(TransilityDeviceAdminActivity.class.getSimpleName(),"Request Code>>"+reposeJson.status.getCode()+" Resposne Message>>"+reposeJson.getText());
-            cleanTheDatabase();
+            Utility.clearPrefrences();
         }
 
         @Override
         public void onErrorInBackgroundOperation(RESTResponse reposeJson) {
             Utility.appendLog("Response Logout API="+reposeJson.getText());
             Utility.logError(TransilityDeviceAdminActivity.class.getSimpleName(),"Request Code>>"+reposeJson.status.getCode()+" Resposne Message>>"+reposeJson.getText());
-            cleanTheDatabase();
+            Utility.clearPrefrences();
 
         }
 

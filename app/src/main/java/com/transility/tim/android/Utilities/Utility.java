@@ -18,6 +18,7 @@ import android.view.inputmethod.InputMethodManager;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.transility.tim.android.InventoryManagment;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -137,6 +138,13 @@ public class Utility {
             // TODO Auto-generated catch block
             printHandledException(e);
         }
+    }
+
+    /**
+     * Method call to clean the database
+     */
+    public static void clearPrefrences(){
+        TransiltiyInvntoryAppSharedPref.setSessionTokenToSharedPref(InventoryManagment.getContext(),"");
     }
 
 }

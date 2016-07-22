@@ -4,20 +4,17 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.app.admin.DeviceAdminReceiver;
 import android.content.Context;
-
 import android.content.Intent;
+import android.text.TextUtils;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.transility.tim.android.InventoryManagment;
 import com.transility.tim.android.LoginActivity;
 import com.transility.tim.android.MasterPasswordScreen;
-
 import com.transility.tim.android.Utilities.TransiltiyInvntoryAppSharedPref;
 import com.transility.tim.android.Utilities.Utility;
-import com.transility.tim.android.bean.EmployeeInfoBean;
 
 public class MyDeviceAdminReciver extends DeviceAdminReceiver {
     public static String MAHEVENT="action.com.app.tranisity.android";
@@ -30,9 +27,8 @@ public class MyDeviceAdminReciver extends DeviceAdminReceiver {
     public void onDisabled(Context context, Intent intent) {
 
         Utility.cancelCurrentPendingIntent(context);
-        ((InventoryManagment)context.getApplicationContext()).getInventoryDatabasemanager().getEmployeeDataTable()
-                .deleteEmployeeInfoFromDatabase(((InventoryManagment)context.getApplicationContext()).getSqliteDatabase());
-        Intent intent1=new Intent(context, MasterPasswordScreen.class);
+        Utility.clearPrefrences();
+        Intent intent1 = new Intent(context, MasterPasswordScreen.class);
         intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent1);
 
@@ -79,8 +75,8 @@ public class MyDeviceAdminReciver extends DeviceAdminReceiver {
 
         if (intent.getAction()!=null&&intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED)){
             Toast.makeText(context,"My Device Boot Completed",Toast.LENGTH_LONG).show();
-            if (((InventoryManagment)context.getApplicationContext()).getInventoryDatabasemanager()
-                    .getEmployeeDataTable().getEmployeeTableRowCount(((InventoryManagment)context.getApplicationContext()).getSqliteDatabase())==0){
+
+            if (TextUtils.isEmpty(TransiltiyInvntoryAppSharedPref.getSessionToken(context))){
 
                 Utility.appendLog("Boot Got Completed and in previous shut down Login Mode was enabled.");
                 Utility.logError(MyDeviceAdminReciver.class.getSimpleName(),"Inside data base check loop");
@@ -115,12 +111,12 @@ public class MyDeviceAdminReciver extends DeviceAdminReceiver {
                 Utility.appendLog("Device Got Shut down and this time user might be having valid login session.");
                 Utility.logError(MyDeviceAdminReciver.class.getSimpleName(),"Inside Action Shut Donw Screen invisible loop");
 
-                TransiltiyInvntoryAppSharedPref.setKeyDeviceLastShutdownTime(context,System.currentTimeMillis());
+                TransiltiyInvntoryAppSharedPref.setDeviceLastShutdownTime(context, System.currentTimeMillis());
             }
             else {
                 Utility.appendLog("Device Got Shut down and this time user was on login screen.");
                 Utility.logError(MyDeviceAdminReciver.class.getSimpleName(),"Inside Action Shut Donw Screen Visible loop");
-                TransiltiyInvntoryAppSharedPref.setKeyDeviceLastShutdownTime(context,0);
+                TransiltiyInvntoryAppSharedPref.setDeviceLastShutdownTime(context, 0);
             }
 
 
@@ -131,9 +127,7 @@ public class MyDeviceAdminReciver extends DeviceAdminReceiver {
 
     private void reEnableAlarm(Context context){
 
-        EmployeeInfoBean employeeInfoBean=((InventoryManagment)context.getApplicationContext())
-                .getInventoryDatabasemanager().getEmployeeDataTable()
-                .getTheInfoOfCurrentEmployee(((InventoryManagment)context.getApplicationContext()).getSqliteDatabase());
+        int timeoutPeriod = TransiltiyInvntoryAppSharedPref.getSessionTimeout(context);
 
         AlarmManager alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(context, SessionTimeOutReciever.class);
@@ -141,19 +135,19 @@ public class MyDeviceAdminReciver extends DeviceAdminReceiver {
 
         alarmMgr.cancel(alarmIntent);
 
-        if (TransiltiyInvntoryAppSharedPref.getKeyDeviceLastShutdownTime(context)==0){
-            Toast.makeText(context,"Inside Last Shut Down Time loop "+System.currentTimeMillis() + (employeeInfoBean.getTimeOutPeriod() * 60 * 1000),Toast.LENGTH_LONG).show();
-            alarmMgr.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + (employeeInfoBean.getTimeOutPeriod() * 60 * 1000)
-                    , employeeInfoBean.getTimeOutPeriod() * 60 * 1000, alarmIntent);
-            Utility.appendLog("Boot Got Completed the device will show login screen after "+employeeInfoBean.getTimeOutPeriod()+" min");
-            Utility.logError(context.getClass().getSimpleName(), "Alarm Time>>>>" + System.currentTimeMillis() + (employeeInfoBean.getTimeOutPeriod() * 60 * 1000));
+        if (TransiltiyInvntoryAppSharedPref.getDeviceLastShutdownTime(context)==0){
+            Toast.makeText(context,"Inside Last Shut Down Time loop "+System.currentTimeMillis() + (timeoutPeriod * 60 * 1000),Toast.LENGTH_LONG).show();
+            alarmMgr.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + (timeoutPeriod * 60 * 1000)
+                    , timeoutPeriod * 60 * 1000, alarmIntent);
+            Utility.appendLog("Boot Got Completed the device will show login screen after "+timeoutPeriod+" min");
+            Utility.logError(context.getClass().getSimpleName(), "Alarm Time>>>>" + System.currentTimeMillis() + (timeoutPeriod * 60 * 1000));
         }
         else
         {
-            long elapsedTime=System.currentTimeMillis()-TransiltiyInvntoryAppSharedPref.getKeyDeviceLastShutdownTime(context);
+            long elapsedTime=System.currentTimeMillis()-TransiltiyInvntoryAppSharedPref.getDeviceLastShutdownTime(context);
             Toast.makeText(context,"Inside Last Shut Down Time loop "+System.currentTimeMillis() + (elapsedTime),Toast.LENGTH_LONG).show();
             alarmMgr.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + elapsedTime
-                , employeeInfoBean.getTimeOutPeriod() * 60 * 1000, alarmIntent);
+                , timeoutPeriod * 60 * 1000, alarmIntent);
             Utility.appendLog("Boot Got Completed the device will show login screen after "+(elapsedTime/60000)+" min");
             Utility.logError(context.getClass().getSimpleName(), "Alarm Time>>>>" + System.currentTimeMillis() + (elapsedTime));
 

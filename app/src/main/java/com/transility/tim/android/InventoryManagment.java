@@ -2,10 +2,7 @@ package com.transility.tim.android;
 
 import android.app.Application;
 import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
-import android.os.StrictMode;
 
-import com.transility.tim.android.InventoryDatabase.InventoryDatabaseManager;
 import com.transility.tim.android.Utilities.TransiltiyInvntoryAppSharedPref;
 import com.transility.tim.android.Utilities.Utility;
 
@@ -15,52 +12,47 @@ import com.transility.tim.android.Utilities.Utility;
  */
 public class InventoryManagment extends Application {
 
-    public static final int SERVER_ERROR_DIALOG_ID = 1001;
-
     private static Context mContext;
-    private SQLiteDatabase sqLiteDatabase;
 
-    private InventoryDatabaseManager inventoryDatabaseManager;
     @Override
     public void onCreate() {
         super.onCreate();
-        initiateDatabase();
+        setDefaultMasterCredential();
 
     }
 
     /**
-     * Initialise the database for internal access.
+     * Set default Master username and password in shared preference.
+     *
      */
-    private void initiateDatabase() {
-        /**
-         * Currently version number is harcoded need to change it to take from build config file.
-         */
-        inventoryDatabaseManager=new InventoryDatabaseManager(this,this.getString(R.string.app_name),null,1,null);
-        sqLiteDatabase=inventoryDatabaseManager.getWritableDatabase();
-        TransiltiyInvntoryAppSharedPref.setUserNameToSharedPref(this,getString(R.string.masterUserName));
-        TransiltiyInvntoryAppSharedPref.setMasterPasswordToSharedPref(this,getString(R.string.masterPassword));
-
-        Utility.appendLog("Default Admin Password ="+TransiltiyInvntoryAppSharedPref.getMasterPasswordToSharedPref(this)
-                +"" +"and UserName="+TransiltiyInvntoryAppSharedPref.getUserNameToSharedPref(this));
-
-
+    private void setDefaultMasterCredential() {
+        TransiltiyInvntoryAppSharedPref.setUserNameToSharedPref(this, getString(R.string.masterUserName));
+        TransiltiyInvntoryAppSharedPref.setMasterPasswordToSharedPref(this, getString(R.string.masterPassword));
+        Utility.appendLog("Default Admin Password =" + TransiltiyInvntoryAppSharedPref.getMasterPassword(this)
+                + "" + "and UserName=" + TransiltiyInvntoryAppSharedPref.getUserName(this));
     }
 
 
+//==================================================================
+// Section - Context access
+//==================================================================
 
-    /**
-     * Returns the current instance of Database manager
-     * @return
-     */
-    public InventoryDatabaseManager getInventoryDatabasemanager(){
-        return  inventoryDatabaseManager;
+    private static InventoryManagment appContext = null;
+
+    public InventoryManagment() {
+        appContext = this;
     }
 
     /**
-     * Returns the object of Sqlite Database object.
-     * @return
+     * Provides access to the application context.  Handy if you need to
+     * pull a Context out of thin air.
+     * Guidelines for obtaining a Context:
+     *   (1) When in an Activity, use the "this" pointer as some UI
+     *   operations will choke if given anything else.
+     *   (2) When outside of an Activity, use this.
+     * @return - The current application context
      */
-    public SQLiteDatabase getSqliteDatabase(){
-        return sqLiteDatabase;
+    public static InventoryManagment getContext() {
+        return appContext;
     }
 }

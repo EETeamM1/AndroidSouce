@@ -36,13 +36,13 @@ public class TransiltiyInvntoryAppSharedPrefTest {
     @Test
     public void testGetMasterPasswordToSharedPref() {
         TransiltiyInvntoryAppSharedPref.setMasterPasswordToSharedPref(context,"masterpassword");
-        Assert.assertEquals("Master password is incorrect store in prefrences", "masterpassword", TransiltiyInvntoryAppSharedPref.getMasterPasswordToSharedPref(context));
+        Assert.assertEquals("Master password is incorrect store in prefrences", "masterpassword", TransiltiyInvntoryAppSharedPref.getMasterPassword(context));
     }
 
     @Test
     public void testGetUserNameToSharedPref() {
         TransiltiyInvntoryAppSharedPref.setUserNameToSharedPref(context, "impetus");
-        Assert.assertEquals("Username is incorrect store in prefrences", "impetus", TransiltiyInvntoryAppSharedPref.getUserNameToSharedPref(context));
+        Assert.assertEquals("Username is incorrect store in prefrences", "impetus", TransiltiyInvntoryAppSharedPref.getUserName(context));
     }
 
     @Test
@@ -56,8 +56,8 @@ public class TransiltiyInvntoryAppSharedPrefTest {
 
     @Test
     public void testGetKeyDeviceLastShutdownTime() {
-        TransiltiyInvntoryAppSharedPref.setKeyDeviceLastShutdownTime(context, 30);
-        Assert.assertEquals("Device last shut down time is incorrect store in prefrences", 30, TransiltiyInvntoryAppSharedPref.getKeyDeviceLastShutdownTime(context));
+        TransiltiyInvntoryAppSharedPref.setDeviceLastShutdownTime(context, 30);
+        Assert.assertEquals("Device last shut down time is incorrect store in prefrences", 30, TransiltiyInvntoryAppSharedPref.getDeviceLastShutdownTime(context));
     }
 
     @Test
