@@ -2,10 +2,9 @@ package com.transility.tim.android;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-public class TransilityApplicationSplashScreen extends Activity {
+public class SplashActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,7 +20,7 @@ public class TransilityApplicationSplashScreen extends Activity {
                 }catch(InterruptedException e){
                     e.printStackTrace();
                 }finally{
-                    Intent intent=new Intent(TransilityApplicationSplashScreen.this,TransilityDeviceAdminActivity.class);
+                    Intent intent=new Intent(SplashActivity.this,TransilityDeviceAdminActivity.class);
                     startActivity(intent);
                     finish();
                 }
