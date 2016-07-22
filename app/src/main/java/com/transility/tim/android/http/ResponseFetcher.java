@@ -16,33 +16,9 @@ import java.util.Map;
 /**
  * @auther Himanshu Bapna
  * */
-public class ResponseFetcher  extends AsyncTask<Void,RESTResponse,RESTResponse>
-        /*implements JUnitHTTPResponseFetcher*/ {
+public class ResponseFetcher  extends AsyncTask<Void,RESTResponse,RESTResponse> {
     private static int ID_GENERATOR = 1;
     private static Map<String, ResponseFetcher> activeFetchers = new HashMap<String, ResponseFetcher>();
-
-    public static ResponseFetcher getActiveResponseFecther(String fetcherId) {
-        return activeFetchers.get(fetcherId);
-    }
-
-    public static void cancelRequests(Collection<String> fetcherIds) {
-        for (String fetcherId : fetcherIds) {
-            ResponseFetcher fetcher = activeFetchers.get(fetcherId);
-            if (fetcher != null) {
-                Log.i(Constants.LOGTAG, "ResponseFetcher-" + fetcher.id + " received a cancellation.");
-                fetcher.cancel(true);
-            }
-        }
-    }
-
-    public static void cancelAllRequests() {
-        for (ResponseFetcher fetcher : activeFetchers.values()) {
-            if (fetcher != null) {
-                Log.i(Constants.LOGTAG, "ResponseFetcher-" + fetcher.id + " received a cancellation.");
-                fetcher.cancel(true);
-            }
-        }
-    }
 
     private final String id;
     private final String originalUri;
@@ -52,10 +28,6 @@ public class ResponseFetcher  extends AsyncTask<Void,RESTResponse,RESTResponse>
     private Context appContext;
     private List<? extends RESTResponseHandler> responseHandler;
     private Bundle userData;
-
-    private boolean waitForAuthorizedAnswer;
-    private boolean tryRequestAgain;
-    private com.transility.tim.android.http.RESTResponse.Status authStatus;
 
     ResponseFetcher(Context forContext, RESTRequest request, RESTResponseHandler httpRespHandler) {
         this(forContext, request, Arrays.asList(httpRespHandler), null);

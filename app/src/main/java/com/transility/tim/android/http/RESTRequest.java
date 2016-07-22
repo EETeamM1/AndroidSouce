@@ -28,13 +28,7 @@ public class RESTRequest {
     }
 
     public enum MediaType{
-        APPLICATION_FORM_URLENCODED("application/x-www-form-urlencoded"),
-        APPLICATION_JSON("application/json"),
-        APPLICATION_OCTET_STREAM("application/octet-stream"),
-        APPLICATION_XML("application/xml"),
-        MULTIPART_FORM_DATA("multipart/form-data"),
-        TEXT_PLAIN("text/plain"),
-        TEXT_XML("text/xml");
+        APPLICATION_JSON("application/json");
 
         private final String type;
         MediaType(String type) {
@@ -149,7 +143,7 @@ public class RESTRequest {
     }
 
 
-    public static  String fillOutParameters(String uri, Map<String, Object> queryParams) {
+    public String fillOutParameters(String uri, Map<String, Object> queryParams) {
         String newUri = uri;
 
         newUri = newUri.replaceAll(Constants.REGEG_QUERY_PARAMS, queryParams(queryParams));
@@ -158,7 +152,7 @@ public class RESTRequest {
         return newUri;
     }
 
-    public static String queryParams(Map<String,Object> queryParamsMap) {
+    public String queryParams(Map<String,Object> queryParamsMap) {
         StringBuffer strBufQP = new StringBuffer();
         if (queryParamsMap != null && queryParamsMap.size() > 0) {
             for (String queryParamName : queryParamsMap.keySet()) {
@@ -169,40 +163,16 @@ public class RESTRequest {
         return strBufQP.toString();
     }
 
-    private static void appendQueryParams(String paramName, Object paramValue, StringBuffer strBuf) {
+    private void appendQueryParams(String paramName, Object paramValue, StringBuffer strBuf) {
         if (paramValue == null) {
             strBuf.append('&').append(urlEncode(paramName)).append('=');
-            return;
-        }
-
-        if (paramValue.getClass().isArray()) {
-            Object[] array = (Object[])paramValue;
-            if (array.length == 0) {
-                appendQueryParams(paramName, null, strBuf);
-                return;
-            }
-            for (Object value : array) {
-                appendQueryParams(paramName, value, strBuf);
-            }
-            return;
-        }
-
-        if (paramValue instanceof Collection<?>) {
-            Collection<?> collection = (Collection<?>)paramValue;
-            if (collection.isEmpty()) {
-                appendQueryParams(paramName, null, strBuf);
-                return;
-            }
-            for (Object value : collection) {
-                appendQueryParams(paramName, value, strBuf);
-            }
             return;
         }
 
         strBuf.append('&').append(urlEncode(paramName)).append('=').append(urlEncode(paramValue.toString()));
     }
 
-    public static String urlEncode(String string) {
+    public String urlEncode(String string) {
         try {
             return URLEncoder.encode(string, "UTF-8");
         }

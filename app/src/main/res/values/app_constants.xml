@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="baseUrl">http://172.26.60.21:9000/InventoryManagement/api/user/</string>
-    <string name="api_login">login</string>
-    <string name="api_logout">logout</string>
+    <string name="baseUrl">http://172.26.60.21:9000/InventoryManagement/api/</string>
+    <string name="api_login">user/login</string>
+    <string name="api_logout">user/logout</string>
     <string name="masterUserName">Admin</string>
     <string name="masterPassword">Admin</string>
     <integer name="defaultSessionTimeOutPeriod">30</integer>
