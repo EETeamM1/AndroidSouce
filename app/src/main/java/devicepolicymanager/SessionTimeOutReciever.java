@@ -4,7 +4,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
-import com.transility.tim.android.LoginActivity;
 import com.transility.tim.android.Utilities.Utility;
 
 /**
@@ -20,8 +19,8 @@ public class SessionTimeOutReciever extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         // TODO: This method is called when the BroadcastReceiver is receiving
         // an Intent broadcast.
-        Utility.logError(SessionTimeOutReciever.class.getSimpleName(),"On Recive of SessionTImeoutReciver");
-        Intent logoutServiceIntent=new Intent(context,LogoutServiceClient.class);
+        Utility.logError(SessionTimeOutReciever.class.getSimpleName(), "On Recive of SessionTImeoutReciver");
+        Intent logoutServiceIntent = new Intent(context, LogoutServiceClient.class);
         context.startService(logoutServiceIntent);
 
     }

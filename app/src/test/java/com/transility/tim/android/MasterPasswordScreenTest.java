@@ -7,16 +7,12 @@ import android.content.Intent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
-
-import com.transility.tim.android.Utilities.Utility;
 
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.RuntimeEnvironment;
@@ -26,7 +22,6 @@ import org.robolectric.util.ActivityController;
 
 import devicepolicymanager.MyDeviceAdminReciver;
 
-import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
 
 /**
@@ -38,14 +33,14 @@ import static org.robolectric.Shadows.shadowOf;
 public class MasterPasswordScreenTest {
 
     ActivityController<MasterPasswordScreen> activityController;
-    private MasterPasswordScreen  masterPasswordScreenActivity;
     Context context;
+    private MasterPasswordScreen masterPasswordScreenActivity;
 
     @Before
     public void setUp() {
         context = RuntimeEnvironment.application.getBaseContext();
         activityController = Robolectric.buildActivity(MasterPasswordScreen.class).create();
-        masterPasswordScreenActivity= activityController.start().resume().visible().get();
+        masterPasswordScreenActivity = activityController.start().resume().visible().get();
     }
 
     @After
@@ -59,13 +54,13 @@ public class MasterPasswordScreenTest {
     public void testCheckUI() {
         View activityView = masterPasswordScreenActivity.attacheViewWithIdToWindow(R.layout.layout_master_password_screen);
 
-        Button masterpasswordEntredBtn= (Button) activityView.findViewById(R.id.masterpasswordEntredBtn);
+        Button masterpasswordEntredBtn = (Button) activityView.findViewById(R.id.masterpasswordEntredBtn);
         Assert.assertEquals("The text on master password button is incorrect.", "Submit", masterpasswordEntredBtn.getText());
 
-        Button continueWithAdminPolicy= (Button) activityView.findViewById(R.id.continueWithAdminPolicy);
+        Button continueWithAdminPolicy = (Button) activityView.findViewById(R.id.continueWithAdminPolicy);
         Assert.assertEquals("The text on admin policy button is incorrect.", "Continue with Admin Policies", continueWithAdminPolicy.getText());
 
-        EditText passwordFieldEt= (EditText) activityView.findViewById(R.id.passwordFieldEt);
+        EditText passwordFieldEt = (EditText) activityView.findViewById(R.id.passwordFieldEt);
         Assert.assertEquals("The text shown on Password is incorrect.", "Enter Master Password", passwordFieldEt.getHint());
     }
 
@@ -94,9 +89,9 @@ public class MasterPasswordScreenTest {
 
     @Test
     public void testApplyLamPortAlgoRithmUsingDateOnImei() {
-        Assert.assertEquals("Algorithm value is incorrect", "1234567900333", masterPasswordScreenActivity.applyLamPortAlgoRithmUsingDateOnImei("1234567890123"));
-        Assert.assertEquals("Algorithm value is incorrect", "123456789108199", masterPasswordScreenActivity.applyLamPortAlgoRithmUsingDateOnImei("1234567890abcd"));
-        Assert.assertEquals("Algorithm value is incorrect", "123456789108199", masterPasswordScreenActivity.applyLamPortAlgoRithmUsingDateOnImei("1234567890abcd234"));
+        Assert.assertEquals("Algorithm value is incorrect", "123467004", masterPasswordScreenActivity.applyLamPortAlgoRithmUsingDateOnImei("123456789"));
+        Assert.assertEquals("Algorithm value is incorrect", "123456789108204", masterPasswordScreenActivity.applyLamPortAlgoRithmUsingDateOnImei("1234567890abcd"));
+        Assert.assertEquals("Algorithm value is incorrect", "123456789108204", masterPasswordScreenActivity.applyLamPortAlgoRithmUsingDateOnImei("1234567890abcd234"));
     }
 
 }

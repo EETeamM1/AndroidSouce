@@ -8,7 +8,6 @@
     <string name="action_sign_in">Login</string>
 
 
-
     <string name="textAdminAppTextWhenDisabled">Please Enable application Admin privileges , after enabling it you will be bind to use the policy enforced by this application.</string>
     <string name="textAdminAppWhenEnabled">Currently device is working under policy enforced by App .\nTo remove these policies disable the app.
     </string>

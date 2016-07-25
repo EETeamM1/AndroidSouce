@@ -15,22 +15,24 @@ import java.util.Map;
 public class RESTRequestFactory {
 
     static boolean isInitialized = false;
-
+    static RESTRequestFactory DISPATCHER_FACTORY = null;
     private Context appContext;
+
+    protected RESTRequestFactory(android.content.Context context) {
+        appContext = context.getApplicationContext();
+    }
 
     /**
      * Initializes the HTTP context.
      * Set up 'global' communication settings.
      */
     static synchronized void initializeContexts(android.content.Context appContext) {
-        if (isInitialized){
+        if (isInitialized) {
             return;
         }
 
         isInitialized = true;
     }
-
-    static RESTRequestFactory DISPATCHER_FACTORY = null;
 
     /**
      * @return A HTTPRequestDispatcher factory.
@@ -46,7 +48,7 @@ public class RESTRequestFactory {
      * Replaces the {@link Constants#NAME_URI_PATH} with the specified path-string.
      */
     public static String appendPath(String uri, String path) {
-        if (uri == null || uri.length() == 0){
+        if (uri == null || uri.length() == 0) {
             return uri;
         }
 
@@ -57,30 +59,26 @@ public class RESTRequestFactory {
      * Dispatch a HTTP request to one of the given response handlers.
      *
      * @param forContext The context for which this request is dispatched.
-     * @param method The HTTP request's HTTP-method.
-     * @param uri The HTTP request's fully qualified URI.
-     * @param body Body of the request (e.g. post-parameters, xml, etc).
-     * @param handlers The response handlers.
-     * @param userData User data that can be fetched again when the dispatch returns a {@link RESTResponse}.
+     * @param method     The HTTP request's HTTP-method.
+     * @param uri        The HTTP request's fully qualified URI.
+     * @param body       Body of the request (e.g. post-parameters, xml, etc).
+     * @param handlers   The response handlers.
+     * @param userData   User data that can be fetched again when the dispatch returns a {@link RESTResponse}.
      * @return A ResponseFetcher that will handle the HTTP request as soon as it can.
      */
     public static ResponseFetcher dispatch(Context forContext, Method method, String uri, Object body, Map<String, Object> queryParams, List<? extends RESTResponseHandler> handlers, Bundle userData) {
         return factory(forContext).doDispatch(forContext, method, uri, body, queryParams, handlers, userData);
     }
 
-    protected RESTRequestFactory(android.content.Context context) {
-        appContext = context.getApplicationContext();
-    }
-
     /**
      * Dispatch a HTTP request to one of the given response handlers.
      *
      * @param forContext The context for which this request is dispatched.
-     * @param method The HTTP request's HTTP-method.
-     * @param uri The HTTP request's fully qualified URI.
-     * @param body Body of the request (e.g. post-parameters, xml, etc).
-     * @param handlers The response handlers.
-     * @param userData User data that can be fetched again when the dispatch returns a {@link RESTResponse}
+     * @param method     The HTTP request's HTTP-method.
+     * @param uri        The HTTP request's fully qualified URI.
+     * @param body       Body of the request (e.g. post-parameters, xml, etc).
+     * @param handlers   The response handlers.
+     * @param userData   User data that can be fetched again when the dispatch returns a {@link RESTResponse}
      * @return A ResponseFetcher that will handle the HTTP request as soon as it can.
      */
     protected ResponseFetcher doDispatch(Context forContext, Method method, String uri, Object body, Map<String, Object> queryParams, List<? extends RESTResponseHandler> handlers, Bundle userData) {
@@ -97,13 +95,13 @@ public class RESTRequestFactory {
      * @param method HTTP Method
      * @param uri    URI of the request.
      * @param body   POST/PUT body (if any). Can be null
-     * @return       An actual HTTPRequest
+     * @return An actual HTTPRequest
      */
     protected RESTRequest create(Method method, String uri, Object body, Map<String, Object> queryParams) {
         // This method's implementation may not get called during functional JUnit test,
         // since these tests probably mock this class and provide their own implementation.
 
-        return new RESTRequest(method, uri , body, queryParams);
+        return new RESTRequest(method, uri, body, queryParams);
 
     }
 }

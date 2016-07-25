@@ -2,8 +2,8 @@ package com.transility.tim.android.http;
 
 import android.content.Context;
 
-import com.transility.tim.android.Utilities.Utility;
 import com.transility.tim.android.Utilities.RestResponseShowFeedbackInterface;
+import com.transility.tim.android.Utilities.Utility;
 
 import java.util.Arrays;
 import java.util.List;
@@ -16,31 +16,6 @@ public class RestRequestFactoryWrapper {
 
 
     private RestResponseShowFeedbackInterface restResponseShowFeedbackInterface;
-    private Context context;
-
-    /**
-     * Creates a object for this wrapper class.
-     *
-     * @param context
-     * @param restResponseShowFeedbackInterface
-     */
-    public RestRequestFactoryWrapper(Context context, RestResponseShowFeedbackInterface restResponseShowFeedbackInterface) {
-
-        this.restResponseShowFeedbackInterface = restResponseShowFeedbackInterface;
-        this.context = context;
-    }
-
-    /**
-     * Create and intiate a Rest Request to the RequestURL passed.
-     *
-     * @param requestUrl
-     * @param requestJson
-     */
-    public void callHttpRestRequest(String requestUrl, String requestJson, RESTRequest.Method method) {
-        List<RESTResponseHandler> handlers = Arrays.asList(okhandler, errorHandler);
-        RESTRequestFactory.dispatch(context, method, requestUrl, requestJson, null, handlers, null);
-    }
-
     /**
      * Handler called when the Resquest has executed Successfully.
      */
@@ -70,7 +45,6 @@ public class RestRequestFactoryWrapper {
             return status.isSuccess();
         }
     };
-
     /**
      * Handler called when the Resquest executed with errors.
      */
@@ -99,4 +73,28 @@ public class RestRequestFactoryWrapper {
             return status.isError();
         }
     };
+    private Context context;
+
+    /**
+     * Creates a object for this wrapper class.
+     *
+     * @param context
+     * @param restResponseShowFeedbackInterface
+     */
+    public RestRequestFactoryWrapper(Context context, RestResponseShowFeedbackInterface restResponseShowFeedbackInterface) {
+
+        this.restResponseShowFeedbackInterface = restResponseShowFeedbackInterface;
+        this.context = context;
+    }
+
+    /**
+     * Create and intiate a Rest Request to the RequestURL passed.
+     *
+     * @param requestUrl
+     * @param requestJson
+     */
+    public void callHttpRestRequest(String requestUrl, String requestJson, RESTRequest.Method method) {
+        List<RESTResponseHandler> handlers = Arrays.asList(okhandler, errorHandler);
+        RESTRequestFactory.dispatch(context, method, requestUrl, requestJson, null, handlers, null);
+    }
 }

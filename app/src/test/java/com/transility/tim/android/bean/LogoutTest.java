@@ -17,14 +17,14 @@ import org.robolectric.annotation.Config;
 public class LogoutTest {
 
     @Test
-    public void testwriteLogoutJson(){
+    public void testwriteLogoutJson() {
         String logoutJSON = Logout.writeLogoutJson("user21465885257421");
-        Assert.assertEquals("Logon JSON is not created correct", getLogoutJSON(),logoutJSON);
+        Assert.assertEquals("Logon JSON is not created correct", getLogoutJSON(), logoutJSON);
 
     }
 
-    private String getLogoutJSON(){
-        return  "{" + "\"parameters\":{" +
+    private String getLogoutJSON() {
+        return "{" + "\"parameters\":{" +
                 "\"sessionToken\":\"user21465885257421\"" +
                 "}" +
                 "}";

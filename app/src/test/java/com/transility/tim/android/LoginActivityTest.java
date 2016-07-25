@@ -21,23 +21,22 @@ import org.robolectric.annotation.Config;
 import org.robolectric.util.ActivityController;
 
 /**
- *
  * This test has been created to check the various functionality fo LoginActivity.
  */
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class)
 
-public class LoginActivityTest  {
+public class LoginActivityTest {
 
     ActivityController<LoginActivity> activityController;
-    private LoginActivity  mLoginActivity;
     Context context;
+    private LoginActivity mLoginActivity;
 
     @Before
     public void setUp() {
         context = RuntimeEnvironment.application.getBaseContext();
         activityController = Robolectric.buildActivity(LoginActivity.class).create();
-        mLoginActivity= activityController.start().resume().visible().get();
+        mLoginActivity = activityController.start().resume().visible().get();
     }
 
     @After
@@ -50,18 +49,18 @@ public class LoginActivityTest  {
     @Test
     public void testCheckUI() {
 
-        View  activityView = mLoginActivity.attacheViewWithIdToWindow(R.layout.activity_login);
+        View activityView = mLoginActivity.attacheViewWithIdToWindow(R.layout.activity_login);
 
         String userNameEtText = mLoginActivity.getString(R.string.textUserName);
         EditText mUserNameEt = (EditText) activityView.findViewById(R.id.username);
         Assert.assertEquals("The text on User Name is incorrect.", userNameEtText, mUserNameEt.getHint());
 
         String passwordTvText = mLoginActivity.getString(R.string.textPassword);
-        EditText mPasswordEt= (EditText) activityView.findViewById(R.id.password);
+        EditText mPasswordEt = (EditText) activityView.findViewById(R.id.password);
         Assert.assertEquals("The text shown on Password is incorrect.", passwordTvText, mPasswordEt.getHint());
 
         String loginTxt = mLoginActivity.getString(R.string.action_sign_in);
-        Button login= (Button) activityView.findViewById(R.id.login);
+        Button login = (Button) activityView.findViewById(R.id.login);
         Assert.assertEquals("The text on login button is incorrect.", loginTxt, login.getText());
 
         ProgressBar login_progress = (ProgressBar) activityView.findViewById(R.id.login_progress);
@@ -83,21 +82,21 @@ public class LoginActivityTest  {
         Assert.assertTrue("Master user is not authenticate",
                 mLoginActivity.authenticateMasterUser(mLoginActivity.getString(R.string.masterPassword), mLoginActivity.getString(R.string.masterUserName)));
         Assert.assertFalse("Empty user is authenticate as Master", mLoginActivity.authenticateMasterUser("", ""));
-   }
+    }
 
-   @Test
+    @Test
     public void testLoginButtonOnClick() {
 
-       //TODO add test case for missing username and password after change logic
-       mLoginActivity.username.setText("user");
-       mLoginActivity.password.setText("password");
+        //TODO add test case for missing username and password after change logic
+        mLoginActivity.username.setText("user");
+        mLoginActivity.password.setText("password");
 
-       TransiltiyInvntoryAppSharedPref.setUserNameToSharedPref(context, "user");
-       TransiltiyInvntoryAppSharedPref.setMasterPasswordToSharedPref(context, "password");
+        TransiltiyInvntoryAppSharedPref.setUserNameToSharedPref(context, "user");
+        TransiltiyInvntoryAppSharedPref.setMasterPasswordToSharedPref(context, "password");
 
-       mLoginActivity.loginButton.performClick();
-       Assert.assertEquals("Error message is incorrect", mLoginActivity.getString(R.string.textWindowWarning), mLoginActivity.errorMessage.getText() );
-   }
+        mLoginActivity.loginButton.performClick();
+        Assert.assertEquals("Error message is incorrect", mLoginActivity.getString(R.string.textWindowWarning), mLoginActivity.errorMessage.getText());
+    }
 
 
 }

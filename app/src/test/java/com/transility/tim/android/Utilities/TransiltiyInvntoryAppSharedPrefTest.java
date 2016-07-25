@@ -35,7 +35,7 @@ public class TransiltiyInvntoryAppSharedPrefTest {
 
     @Test
     public void testGetMasterPasswordToSharedPref() {
-        TransiltiyInvntoryAppSharedPref.setMasterPasswordToSharedPref(context,"masterpassword");
+        TransiltiyInvntoryAppSharedPref.setMasterPasswordToSharedPref(context, "masterpassword");
         Assert.assertEquals("Master password is incorrect store in prefrences", "masterpassword", TransiltiyInvntoryAppSharedPref.getMasterPasswordToSharedPref(context));
     }
 
@@ -64,5 +64,11 @@ public class TransiltiyInvntoryAppSharedPrefTest {
     public void testGetDeviceId() {
         TransiltiyInvntoryAppSharedPref.setDeviceId("1234567890", context);
         Assert.assertEquals("Device id is incorrect store in prefrences", "1234567890", TransiltiyInvntoryAppSharedPref.getDeviceId(context));
+    }
+
+    @Test
+    public void testWasMasterPasswordScreenVisible() {
+        TransiltiyInvntoryAppSharedPref.setIsMasterPasswordScreenVisible(context, true);
+        Assert.assertTrue("Incorrect value for isMasterPasswordScreenVisible key", TransiltiyInvntoryAppSharedPref.isMasterPasswordScreenVisible(context));
     }
 }

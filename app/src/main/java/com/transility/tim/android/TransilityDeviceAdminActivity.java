@@ -6,7 +6,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
-
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -17,6 +16,7 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
+
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
@@ -39,108 +39,55 @@ import com.transility.tim.android.http.RestRequestFactoryWrapper;
 import devicepolicymanager.MyDeviceAdminReciver;
 
 public class TransilityDeviceAdminActivity extends AppCompatActivity {
-    private final static String LOG_TAG = "DevicePolicyAdmin";
-    DevicePolicyManager truitonDevicePolicyManager;
-    ComponentName truitonDevicePolicyAdmin;
-
-    private Switch enableDeviceApp;
-    private Button logoutBtn, reportsBtn;
-    private TextView messageLineTv,deviceIdTv;
-
     protected static final int REQUEST_ENABLE = 1;
-
-    private SingleButtonAlertDialog singleButtonAlertDialog;
-    private RestRequestFactoryWrapper restRequestFactoryWrapper;
-
-    private InventoryManagment inventoryManagment;
-    private GoogleApiClient mGoogleApiClient;
+    private final static String LOG_TAG = "DevicePolicyAdmin";
+    private final int REQUEST_CHECK_SETTINGS = 101;
     protected LocationRequest mLocationRequest;
     protected LocationSettingsRequest mLocationSettingsRequest;
+    DevicePolicyManager truitonDevicePolicyManager;
+    ComponentName truitonDevicePolicyAdmin;
+    ResultCallback<LocationSettingsResult> locationSettingsResultResultCallback = new ResultCallback<LocationSettingsResult>() {
+        @Override
+        public void onResult(@NonNull LocationSettingsResult locationSettingsResult) {
+            final Status status = locationSettingsResult.getStatus();
+            switch (status.getStatusCode()) {
+                case LocationSettingsStatusCodes.SUCCESS:
+                    Utility.logError(TransilityDeviceAdminActivity.class.getSimpleName(), "All location settings are satisfied.");
 
-    private final int REQUEST_CHECK_SETTINGS=101;
+                    break;
+                case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                    Utility.logError(TransilityDeviceAdminActivity.class.getSimpleName(), "Location settings are not satisfied. Show the user a dialog to" +
+                            "upgrade location settings ");
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_admin_app_home_page);
-
-        truitonDevicePolicyManager = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
-        restRequestFactoryWrapper = new RestRequestFactoryWrapper(this, restResponseShowFeedbackInterface);
-        truitonDevicePolicyAdmin = new ComponentName(this,
-                MyDeviceAdminReciver.class);
-        enableDeviceApp = (Switch) findViewById(R.id.enableDeviceApp);
-        logoutBtn = (Button) findViewById(R.id.logoutBtn);
-        reportsBtn = (Button) findViewById(R.id.reportsBtn);
-        deviceIdTv= (TextView) findViewById(R.id.deviceIdTv);
-
-        messageLineTv = (TextView) findViewById(R.id.messageLineTv);
-        logoutBtn.setOnClickListener(onClickListener);
-        reportsBtn.setOnClickListener(onClickListener);
-
-        deviceIdTv.setText(getString(R.string.textDeviceId)+Utility.getDeviceId(this));
-
-            intiateGooglePlayService();
-            createLocationSettingsRequest();
-            if(mGoogleApiClient!=null){
-                checkLocationSettings();
+                    try {
+                        // Show the dialog by calling startResolutionForResult(), and check the result
+                        // in onActivityResult().
+                        status.startResolutionForResult(TransilityDeviceAdminActivity.this, REQUEST_CHECK_SETTINGS);
+                    } catch (IntentSender.SendIntentException e) {
+                        Utility.logError(TransilityDeviceAdminActivity.class.getSimpleName(), "PendingIntent unable to execute request.");
+                    }
+                    break;
+                case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
+                    Utility.logError(TransilityDeviceAdminActivity.class.getSimpleName(), "Location settings are inadequate, and cannot be fixed here. Dialog " +
+                            "not created.");
+                    break;
             }
-
-
-
-    }
-
-    private void createLocationSettingsRequest() {
-        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder();
-        builder.addLocationRequest(new LocationRequest().setInterval(30000).setFastestInterval(30000).setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY));
-        mLocationSettingsRequest = builder.build();
-
-    }
-
-
-    private void intiateGooglePlayService() {
-
-        if (Utility.checkGooglePlayServicesAvailable(this)){
-
-
-            mGoogleApiClient = new GoogleApiClient.Builder(TransilityDeviceAdminActivity.this)
-                    .addApi(LocationServices.API)
-                    .addConnectionCallbacks(connectionCallbacks)
-                    .addOnConnectionFailedListener(onConnectionFailedListener)
-                    .build();
-
-
         }
-
-
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        if (mGoogleApiClient!=null)
-        mGoogleApiClient.connect();
-
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        if (mGoogleApiClient!=null)
-            mGoogleApiClient.disconnect();
-    }
-
-    protected void checkLocationSettings() {
-        PendingResult<LocationSettingsResult> result =
-                LocationServices.SettingsApi.checkLocationSettings(
-                        mGoogleApiClient,
-                        mLocationSettingsRequest
-                );
-        result.setResultCallback(locationSettingsResultResultCallback);
-    }
-    private GoogleApiClient.ConnectionCallbacks connectionCallbacks=new GoogleApiClient.ConnectionCallbacks() {
+    };
+    private Switch enableDeviceApp;
+    private Button logoutBtn, reportsBtn;
+    private TextView messageLineTv, deviceIdTv;
+    private SingleButtonAlertDialog singleButtonAlertDialog;
+    private RestRequestFactoryWrapper restRequestFactoryWrapper;
+    private InventoryManagment inventoryManagment;
+    private GoogleApiClient mGoogleApiClient;
+    private GoogleApiClient.ConnectionCallbacks connectionCallbacks = new GoogleApiClient.ConnectionCallbacks() {
         @Override
         public void onConnected(@Nullable Bundle bundle) {
-
+            createLocationSettingsRequest();
+            if (mGoogleApiClient != null) {
+                checkLocationSettings();
+            }
 
         }
 
@@ -150,22 +97,19 @@ public class TransilityDeviceAdminActivity extends AppCompatActivity {
 
         }
     };
-
-    private GoogleApiClient.OnConnectionFailedListener onConnectionFailedListener=new GoogleApiClient.OnConnectionFailedListener() {
+    private GoogleApiClient.OnConnectionFailedListener onConnectionFailedListener = new GoogleApiClient.OnConnectionFailedListener() {
         @Override
         public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 
 
-
         }
     };
-
     private View.OnClickListener onClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.logoutBtn:
-                    if (!Utility.checkInternetConnection(TransilityDeviceAdminActivity.this)){
+                    if (!Utility.checkInternetConnection(TransilityDeviceAdminActivity.this)) {
                         cleanTheDatabase();
                         Utility.cancelCurrentPendingIntent(TransilityDeviceAdminActivity.this);
                         Intent intent1 = new Intent(TransilityDeviceAdminActivity.this, LoginActivity.class);
@@ -173,18 +117,16 @@ public class TransilityDeviceAdminActivity extends AppCompatActivity {
                         TransilityDeviceAdminActivity.this.startActivity(intent1);
                         Utility.appendLog("Offline Logout");
                         finish();
-                    }
-                    else{
+                    } else {
                         InventoryDatabaseManager inventoryDatabaseManager = ((InventoryManagment) TransilityDeviceAdminActivity.this.getApplication()).getInventoryDatabasemanager();
                         String sessionToken = inventoryDatabaseManager.getEmployeeDataTable().
                                 getSessionToken(((InventoryManagment) TransilityDeviceAdminActivity.this.getApplication()).getSqliteDatabase());
-                        if (!TextUtils.isEmpty(sessionToken)){
+                        if (!TextUtils.isEmpty(sessionToken)) {
                             String json = Logout.writeLogoutJson(sessionToken);
                             String loginRequest = getResources().getString(R.string.baseUrl) + getResources().getString(R.string.api_logout);
                             restRequestFactoryWrapper.callHttpRestRequest(loginRequest, json, RESTRequest.Method.POST);
-                            Utility.appendLog("Logout API Request="+loginRequest+" json="+json+" Call Type="+RESTRequest.Method.POST);
-                        }
-                        else {
+                            Utility.appendLog("Logout API Request=" + loginRequest + " json=" + json + " Call Type=" + RESTRequest.Method.POST);
+                        } else {
                             cleanTheDatabase();
                             Utility.cancelCurrentPendingIntent(TransilityDeviceAdminActivity.this);
                             Intent intent1 = new Intent(TransilityDeviceAdminActivity.this, LoginActivity.class);
@@ -204,38 +146,6 @@ public class TransilityDeviceAdminActivity extends AppCompatActivity {
             }
         }
     };
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        inventoryManagment = ((InventoryManagment) TransilityDeviceAdminActivity.this.getApplication());
-        int rowCount = inventoryManagment.getInventoryDatabasemanager().getEmployeeDataTable().getEmployeeTableRowCount(inventoryManagment.getSqliteDatabase());
-
-        if (rowCount != 0) {
-            logoutBtn.setVisibility(View.VISIBLE);
-            reportsBtn.setVisibility(View.VISIBLE);
-        } else {
-            logoutBtn.setVisibility(View.GONE);
-            reportsBtn.setVisibility(View.GONE);
-        }
-
-        if (isMyDevicePolicyReceiverActive()) {
-            enableDeviceApp.setChecked(true);
-            messageLineTv.setText(getString(R.string.textAdminAppWhenEnabled));
-
-        } else {
-            enableDeviceApp.setChecked(false);
-            messageLineTv.setText(getString(R.string.textAdminAppTextWhenDisabled));
-
-        }
-
-        enableDeviceApp
-                .setOnCheckedChangeListener(onCheckedChangeListener);
-
-    }
-
-
     private CompoundButton.OnCheckedChangeListener onCheckedChangeListener = new CompoundButton.OnCheckedChangeListener() {
 
         @Override
@@ -276,9 +186,150 @@ public class TransilityDeviceAdminActivity extends AppCompatActivity {
             enableDeviceApp.setOnCheckedChangeListener(onCheckedChangeListener);
         }
     };
+    private RestResponseShowFeedbackInterface restResponseShowFeedbackInterface = new RestResponseShowFeedbackInterface() {
+        @Override
+        public void onSuccessOfBackGroundOperation(RESTResponse reposeJson) {
+            Utility.appendLog("Response Logout API=" + reposeJson.getText());
+            Utility.logError(TransilityDeviceAdminActivity.class.getSimpleName(), "Request Code>>" + reposeJson.status.getCode() + " Resposne Message>>" + reposeJson.getText());
+            cleanTheDatabase();
+        }
+
+        @Override
+        public void onErrorInBackgroundOperation(RESTResponse reposeJson) {
+            Utility.appendLog("Response Logout API=" + reposeJson.getText());
+            Utility.logError(TransilityDeviceAdminActivity.class.getSimpleName(), "Request Code>>" + reposeJson.status.getCode() + " Resposne Message>>" + reposeJson.getText());
+            cleanTheDatabase();
+
+        }
+
+        @Override
+        public void onSuccessInForeGroundOperation(RESTResponse restResponse) {
+
+
+            Utility.cancelCurrentPendingIntent(TransilityDeviceAdminActivity.this);
+            Intent intent1 = new Intent(TransilityDeviceAdminActivity.this, LoginActivity.class);
+            intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            TransilityDeviceAdminActivity.this.startActivity(intent1);
+
+            finish();
+        }
+
+        @Override
+        public void onErrorInForeGroundOperation(RESTResponse restResponse) {
+
+
+            Utility.cancelCurrentPendingIntent(TransilityDeviceAdminActivity.this);
+            Intent intent1 = new Intent(TransilityDeviceAdminActivity.this, LoginActivity.class);
+            intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            TransilityDeviceAdminActivity.this.startActivity(intent1);
+
+            finish();
+        }
+    };
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.layout_admin_app_home_page);
+
+        truitonDevicePolicyManager = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
+        restRequestFactoryWrapper = new RestRequestFactoryWrapper(this, restResponseShowFeedbackInterface);
+        truitonDevicePolicyAdmin = new ComponentName(this,
+                MyDeviceAdminReciver.class);
+        enableDeviceApp = (Switch) findViewById(R.id.enableDeviceApp);
+        logoutBtn = (Button) findViewById(R.id.logoutBtn);
+        reportsBtn = (Button) findViewById(R.id.reportsBtn);
+        deviceIdTv = (TextView) findViewById(R.id.deviceIdTv);
+
+        messageLineTv = (TextView) findViewById(R.id.messageLineTv);
+        logoutBtn.setOnClickListener(onClickListener);
+        reportsBtn.setOnClickListener(onClickListener);
+
+        deviceIdTv.setText(getString(R.string.textDeviceId) + Utility.getDeviceId(this));
+
+        intiateGooglePlayService();
 
 
 
+    }
+
+    private void createLocationSettingsRequest() {
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder();
+        builder.addLocationRequest(new LocationRequest().setInterval(30000).setFastestInterval(30000).setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY));
+        mLocationSettingsRequest = builder.build();
+
+    }
+
+    private void intiateGooglePlayService() {
+
+        if (Utility.checkGooglePlayServicesAvailable(this)) {
+
+
+            mGoogleApiClient = new GoogleApiClient.Builder(TransilityDeviceAdminActivity.this)
+                    .addApi(LocationServices.API)
+                    .addConnectionCallbacks(connectionCallbacks)
+                    .addOnConnectionFailedListener(onConnectionFailedListener)
+                    .build();
+
+
+        }
+
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (mGoogleApiClient != null)
+            mGoogleApiClient.connect();
+
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (mGoogleApiClient != null)
+            mGoogleApiClient.disconnect();
+    }
+
+    protected void checkLocationSettings() {
+        PendingResult<LocationSettingsResult> result =
+                LocationServices.SettingsApi.checkLocationSettings(
+                        mGoogleApiClient,
+                        mLocationSettingsRequest
+                );
+        result.setResultCallback(locationSettingsResultResultCallback);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        inventoryManagment = ((InventoryManagment) TransilityDeviceAdminActivity.this.getApplication());
+        int rowCount = inventoryManagment.getInventoryDatabasemanager().getEmployeeDataTable().getEmployeeTableRowCount(inventoryManagment.getSqliteDatabase());
+
+        if (rowCount != 0) {
+            logoutBtn.setVisibility(View.VISIBLE);
+            reportsBtn.setVisibility(View.VISIBLE);
+        } else {
+            logoutBtn.setVisibility(View.GONE);
+            reportsBtn.setVisibility(View.GONE);
+        }
+
+        if (isMyDevicePolicyReceiverActive()) {
+            enableDeviceApp.setChecked(true);
+            messageLineTv.setText(getString(R.string.textAdminAppWhenEnabled));
+
+        } else {
+            enableDeviceApp.setChecked(false);
+            messageLineTv.setText(getString(R.string.textAdminAppTextWhenDisabled));
+
+        }
+
+        enableDeviceApp
+                .setOnCheckedChangeListener(onCheckedChangeListener);
+
+    }
 
     /**
      * Function calls the activity that initates the enabling of the apllication as device admin app.
@@ -349,84 +400,10 @@ public class TransilityDeviceAdminActivity extends AppCompatActivity {
     /**
      * Method call to clean the database
      */
-    private void cleanTheDatabase(){
-        InventoryDatabaseManager  inventoryDatabaseManager=((InventoryManagment)TransilityDeviceAdminActivity.this.getApplication()).getInventoryDatabasemanager();
-        inventoryDatabaseManager.getEmployeeDataTable().deleteEmployeeInfoFromDatabase(((InventoryManagment)TransilityDeviceAdminActivity.this.getApplication()).getSqliteDatabase());
+    private void cleanTheDatabase() {
+        InventoryDatabaseManager inventoryDatabaseManager = ((InventoryManagment) TransilityDeviceAdminActivity.this.getApplication()).getInventoryDatabasemanager();
+        inventoryDatabaseManager.getEmployeeDataTable().deleteEmployeeInfoFromDatabase(((InventoryManagment) TransilityDeviceAdminActivity.this.getApplication()).getSqliteDatabase());
     }
-
-    private RestResponseShowFeedbackInterface restResponseShowFeedbackInterface = new RestResponseShowFeedbackInterface() {
-        @Override
-        public void onSuccessOfBackGroundOperation(RESTResponse reposeJson) {
-            Utility.appendLog("Response Logout API="+reposeJson.getText());
-            Utility.logError(TransilityDeviceAdminActivity.class.getSimpleName(),"Request Code>>"+reposeJson.status.getCode()+" Resposne Message>>"+reposeJson.getText());
-            cleanTheDatabase();
-        }
-
-        @Override
-        public void onErrorInBackgroundOperation(RESTResponse reposeJson) {
-            Utility.appendLog("Response Logout API="+reposeJson.getText());
-            Utility.logError(TransilityDeviceAdminActivity.class.getSimpleName(),"Request Code>>"+reposeJson.status.getCode()+" Resposne Message>>"+reposeJson.getText());
-            cleanTheDatabase();
-
-        }
-
-        @Override
-        public void onSuccessInForeGroundOperation(RESTResponse restResponse) {
-
-
-
-            Utility.cancelCurrentPendingIntent(TransilityDeviceAdminActivity.this);
-            Intent intent1 = new Intent(TransilityDeviceAdminActivity.this, LoginActivity.class);
-            intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            TransilityDeviceAdminActivity.this.startActivity(intent1);
-
-            finish();
-        }
-
-        @Override
-        public void onErrorInForeGroundOperation(RESTResponse restResponse) {
-
-
-            Utility.cancelCurrentPendingIntent(TransilityDeviceAdminActivity.this);
-            Intent intent1 = new Intent(TransilityDeviceAdminActivity.this, LoginActivity.class);
-            intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            TransilityDeviceAdminActivity.this.startActivity(intent1);
-
-            finish();
-        }
-    };
-
-
-
-    ResultCallback<LocationSettingsResult>  locationSettingsResultResultCallback=new ResultCallback<LocationSettingsResult>() {
-        @Override
-        public void onResult(@NonNull LocationSettingsResult locationSettingsResult) {
-            final Status status = locationSettingsResult.getStatus();
-            switch (status.getStatusCode()) {
-                case LocationSettingsStatusCodes.SUCCESS:
-                    Utility.logError(TransilityDeviceAdminActivity.class.getSimpleName(), "All location settings are satisfied.");
-
-                    break;
-                case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
-                    Utility.logError(TransilityDeviceAdminActivity.class.getSimpleName(), "Location settings are not satisfied. Show the user a dialog to" +
-                            "upgrade location settings ");
-
-                    try {
-                        // Show the dialog by calling startResolutionForResult(), and check the result
-                        // in onActivityResult().
-                        status.startResolutionForResult(TransilityDeviceAdminActivity.this, REQUEST_CHECK_SETTINGS);
-                    } catch (IntentSender.SendIntentException e) {
-                        Utility.logError(TransilityDeviceAdminActivity.class.getSimpleName(), "PendingIntent unable to execute request.");
-                    }
-                    break;
-                case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
-                    Utility.logError(TransilityDeviceAdminActivity.class.getSimpleName(), "Location settings are inadequate, and cannot be fixed here. Dialog " +
-                            "not created.");
-                    break;
-            }
-        }
-    };
-
 
 
 }

@@ -3,19 +3,13 @@ package com.transility.tim.android;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
-
-
 import android.content.Context;
 import android.content.Intent;
-
 import android.location.Location;
 import android.os.Bundle;
-
-import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
-
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.view.View;
@@ -26,23 +20,19 @@ import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.transility.tim.android.InventoryDatabase.EmployeeDatabaseTable;
-import com.transility.tim.android.InventoryDatabase.InventoryDatabaseManager;
+import com.transility.tim.android.Utilities.RestResponseShowFeedbackInterface;
 import com.transility.tim.android.Utilities.TransiltiyInvntoryAppSharedPref;
 import com.transility.tim.android.Utilities.Utility;
-import com.transility.tim.android.Utilities.RestResponseShowFeedbackInterface;
 import com.transility.tim.android.bean.EmployeeInfoBean;
 import com.transility.tim.android.bean.Logon;
-
 import com.transility.tim.android.http.RESTRequest.Method;
 import com.transility.tim.android.http.RESTResponse;
-
 import com.transility.tim.android.http.RestRequestFactoryWrapper;
 
 import devicepolicymanager.SessionTimeOutReciever;
@@ -57,13 +47,146 @@ public class LoginActivity extends FragmentActivity {
 
     protected View progressView;
     protected TextView errorMessage;
+    protected Button loginButton;
     private WindowManager winManager;
     private RelativeLayout wrapperView;
-    protected Button loginButton;
     private RestRequestFactoryWrapper restRequestFactoryWrapper;
     private TelephonyManager telephonyManager;
     private GoogleApiClient mGoogleApiClient;
     private Location location;
+    private GoogleApiClient.OnConnectionFailedListener onConnectionFailedListener = new GoogleApiClient.OnConnectionFailedListener() {
+        @Override
+        public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+            Utility.logError(LoginActivity.class.getSimpleName(), "onConnectionFailed");
+        }
+    };
+    private LocationListener locationListener = new LocationListener() {
+        @Override
+        public void onLocationChanged(Location location) {
+            LoginActivity.this.location = location;
+
+        }
+    };
+    private GoogleApiClient.ConnectionCallbacks connectionCallbacks = new GoogleApiClient.ConnectionCallbacks() {
+        @Override
+        public void onConnected(@Nullable Bundle bundle) {
+            startLocationUpdates();
+            Utility.logError(LoginActivity.class.getSimpleName(), "onConnected");
+        }
+
+        @Override
+        public void onConnectionSuspended(int i) {
+            Utility.logError(LoginActivity.class.getSimpleName(), "onConnectionSuspended");
+        }
+    };
+    private OnClickListener onClickListener = new OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            switch (v.getId()) {
+                case R.id.login:
+                    Utility.removeKeyboardfromScreen(v);
+
+                    errorMessage.setText("");
+                    //TODO Merge both missing username and password in common logic with showing error message.
+                    if (TextUtils.isEmpty(username.getText())) {
+                        username.setError(getString(R.string.textEmptyUserName));
+
+                    } else if (TextUtils.isEmpty(password.getText())) {
+                        password.setError(getString(R.string.textEmptyPassword));
+                    } else if (authenticateMasterUser(password.getText().toString(), username.getText().toString())) {
+                        Utility.appendLog("Authentication is through Admin credentials UserName=" + username.getText() + " Password=" + password.getText());
+                        EmployeeDatabaseTable employeeDatabaseTable = ((InventoryManagment) getApplication()).getInventoryDatabasemanager().getEmployeeDataTable();
+                        EmployeeInfoBean employeeInfoBean = new EmployeeInfoBean();
+
+                        employeeInfoBean.setTimeOutPeriod(getResources().getInteger(R.integer.defaultSessionTimeOutPeriod));
+
+                        employeeInfoBean.setSessionToken("");
+                        employeeDatabaseTable.insertEmployeeInfoToEmployeeInfoTable(((InventoryManagment) getApplication()).getSqliteDatabase(), employeeInfoBean);
+
+                        errorMessage.setText(getString(R.string.textWindowWarning));
+
+                        Thread timerThread = new Thread() {
+                            public void run() {
+                                try {
+                                    sleep(5000);
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                } finally {
+
+                                    intiateAlarm(LoginActivity.this.getResources().getInteger(R.integer.defaultSessionTimeOutPeriod));
+                                    Utility.logError(LoginActivity.this.getClass().getSimpleName(), "Activity is about to get finished  ");
+                                    finish();
+                                }
+                            }
+                        };
+                        timerThread.start();
+                    } else if (Utility.checkInternetConnection(LoginActivity.this)) {
+                        intiateLogin();
+                    } else {
+                        errorMessage.setText(getString(R.string.textNetworkNotAvaliable));
+                    }
+                    break;
+            }
+        }
+    };
+    /**
+     * Concrete Annotated implementation of the RestResponseShowFeedbackInterface.
+     */
+    private RestResponseShowFeedbackInterface restResponseShowFeedbackInterface = new RestResponseShowFeedbackInterface() {
+        @Override
+        public void onSuccessOfBackGroundOperation(RESTResponse reposeJson) {
+            String response = reposeJson.getText();
+            Utility.appendLog("Login Response=" + response);
+            Utility.logError(TransilityDeviceAdminActivity.class.getSimpleName(), "Request Code>>" + reposeJson.status.getCode() + " Resposne Message>>" + response);
+
+            Logon logon = Logon.parseLogon(response);
+
+            EmployeeDatabaseTable employeeDatabaseTable = ((InventoryManagment) getApplication()).getInventoryDatabasemanager().getEmployeeDataTable();
+            EmployeeInfoBean employeeInfoBean = new EmployeeInfoBean();
+
+            employeeInfoBean.setTimeOutPeriod(logon.getTimeout());
+
+            employeeInfoBean.setSessionToken(logon.getSessionToken());
+
+            TransiltiyInvntoryAppSharedPref.setMasterPasswordToSharedPref(LoginActivity.this, logon.getMasterPassword());
+
+            employeeDatabaseTable.insertEmployeeInfoToEmployeeInfoTable(((InventoryManagment) getApplication()).getSqliteDatabase(), employeeInfoBean);
+            intiateAlarm(logon.getTimeout());
+
+        }
+
+        @Override
+        public void onErrorInBackgroundOperation(RESTResponse reposeJson) {
+
+
+        }
+
+        @Override
+        public void onSuccessInForeGroundOperation(RESTResponse restResponse) {
+            progressView.setVisibility(View.GONE);
+
+            password.setText("");
+            username.setText("");
+            finish();
+        }
+
+        @Override
+        public void onErrorInForeGroundOperation(RESTResponse restResponse) {
+            progressView.setVisibility(View.GONE);
+            if (restResponse.status.isClientError()) {
+                errorMessage.setText(getString(R.string.textUnauthorisedPerson));
+            } else if (restResponse.status.isServerError()) {
+                errorMessage.setText(getString(R.string.textServerisDown));
+            } else {
+                errorMessage.setText(getString(R.string.textSomeErrorOccured));
+            }
+
+            password.setText("");
+            username.setText("");
+        }
+
+
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -124,26 +247,6 @@ public class LoginActivity extends FragmentActivity {
         return View.inflate(this, layoutId, this.wrapperView);
     }
 
-    private GoogleApiClient.ConnectionCallbacks connectionCallbacks=new GoogleApiClient.ConnectionCallbacks() {
-        @Override
-        public void onConnected(@Nullable Bundle bundle) {
-            startLocationUpdates();
-            Utility.logError(LoginActivity.class.getSimpleName(),"onConnected");
-        }
-
-        @Override
-        public void onConnectionSuspended(int i) {
-            Utility.logError(LoginActivity.class.getSimpleName(),"onConnectionSuspended");
-        }
-    };
-
-    private GoogleApiClient.OnConnectionFailedListener onConnectionFailedListener=new GoogleApiClient.OnConnectionFailedListener() {
-        @Override
-        public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-            Utility.logError(LoginActivity.class.getSimpleName(),"onConnectionFailed");
-        }
-    };
-
     /**
      * Startrs the location updates
      */
@@ -160,64 +263,6 @@ public class LoginActivity extends FragmentActivity {
 
     }
 
-    private LocationListener locationListener=new LocationListener() {
-        @Override
-        public void onLocationChanged(Location location) {
-            LoginActivity.this.location=location;
-
-        }
-    };
-    private OnClickListener onClickListener = new OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            switch (v.getId()) {
-                case R.id.login:
-                    Utility.removeKeyboardfromScreen(v);
-
-                    errorMessage.setText("");
-                    //TODO Merge both missing username and password in common logic with showing error message.
-                    if (TextUtils.isEmpty(username.getText())) {
-                        username.setError(getString(R.string.textEmptyUserName));
-
-                    } else if (TextUtils.isEmpty(password.getText())) {
-                        password.setError(getString(R.string.textEmptyPassword));
-                    } else if (authenticateMasterUser(password.getText().toString(), username.getText().toString())) {
-                        Utility.appendLog("Authentication is through Admin credentials UserName="+username.getText()+" Password="+password.getText());
-                        EmployeeDatabaseTable employeeDatabaseTable = ((InventoryManagment) getApplication()).getInventoryDatabasemanager().getEmployeeDataTable();
-                        EmployeeInfoBean employeeInfoBean = new EmployeeInfoBean();
-                        employeeInfoBean.setMasterPassword(TransiltiyInvntoryAppSharedPref.getMasterPasswordToSharedPref(LoginActivity.this));
-                        employeeInfoBean.setTimeOutPeriod(getResources().getInteger(R.integer.defaultSessionTimeOutPeriod));
-
-                        employeeInfoBean.setSessionToken("");
-                        employeeDatabaseTable.insertEmployeeInfoToEmployeeInfoTable(((InventoryManagment) getApplication()).getSqliteDatabase(), employeeInfoBean);
-
-                        errorMessage.setText(getString(R.string.textWindowWarning));
-
-                        Thread timerThread = new Thread() {
-                            public void run() {
-                                try {
-                                    sleep(5000);
-                                } catch (InterruptedException e) {
-                                    e.printStackTrace();
-                                } finally {
-
-                                    intiateAlarm(LoginActivity.this.getResources().getInteger(R.integer.defaultSessionTimeOutPeriod));
-                                    Utility.logError(LoginActivity.this.getClass().getSimpleName(), "Activity is about to get finished  ");
-                                    finish();
-                                }
-                            }
-                        };
-                        timerThread.start();
-                    } else if (Utility.checkInternetConnection(LoginActivity.this)) {
-                        intiateLogin();
-                    } else {
-                        errorMessage.setText(getString(R.string.textNetworkNotAvaliable));
-                    }
-                    break;
-            }
-        }
-    };
-
     /**
      * Function that fetch master password from local prefrences and authenticate the user.
      *
@@ -226,15 +271,8 @@ public class LoginActivity extends FragmentActivity {
      * @return
      */
     protected boolean authenticateMasterUser(String passwordStr, String usernameStr) {
-        String masterPassword=null;
-        InventoryDatabaseManager inventoryDatabaseManager=((InventoryManagment)getApplication()).getInventoryDatabasemanager();
-        if (TextUtils.isEmpty(inventoryDatabaseManager.getEmployeeDataTable().getTheInfoOfCurrentEmployee(((InventoryManagment)getApplication()).getSqliteDatabase()).getMasterPassword())){
-            masterPassword=TransiltiyInvntoryAppSharedPref.getMasterPasswordToSharedPref(LoginActivity.this);
-        }
-        else{
-            masterPassword=inventoryDatabaseManager.getEmployeeDataTable().getTheInfoOfCurrentEmployee(((InventoryManagment)getApplication()).getSqliteDatabase()).getMasterPassword();
-        }
-
+        String masterPassword = null;
+        masterPassword = TransiltiyInvntoryAppSharedPref.getMasterPasswordToSharedPref(LoginActivity.this);
         return passwordStr.equals(masterPassword)
                 && usernameStr.equals(TransiltiyInvntoryAppSharedPref.getUserNameToSharedPref(this));
     }
@@ -246,69 +284,10 @@ public class LoginActivity extends FragmentActivity {
         String json = Logon.writeLogonJSON(username.getText().toString(), password.getText().toString(), location, Utility.getDeviceId(LoginActivity.this));
         String loginRequest = getResources().getString(R.string.baseUrl) + getResources().getString(R.string.api_login);
 
-        Utility.appendLog("Login Request="+loginRequest+" Request Json="+json+" API Type="+Method.POST);
+        Utility.appendLog("Login Request=" + loginRequest + " Request Json=" + json + " API Type=" + Method.POST);
         restRequestFactoryWrapper.callHttpRestRequest(loginRequest, json, Method.POST);
         progressView.setVisibility(View.VISIBLE);
     }
-
-    /**
-     * Concrete Annotated implementation of the RestResponseShowFeedbackInterface.
-     */
-    private RestResponseShowFeedbackInterface restResponseShowFeedbackInterface = new RestResponseShowFeedbackInterface() {
-        @Override
-        public void onSuccessOfBackGroundOperation(RESTResponse reposeJson) {
-            String response = reposeJson.getText();
-            Utility.appendLog("Login Response="+response);
-            Utility.logError(TransilityDeviceAdminActivity.class.getSimpleName(), "Request Code>>" + reposeJson.status.getCode() + " Resposne Message>>" + response);
-
-            Logon logon = Logon.parseLogon(response);
-
-            EmployeeDatabaseTable employeeDatabaseTable = ((InventoryManagment) getApplication()).getInventoryDatabasemanager().getEmployeeDataTable();
-            EmployeeInfoBean employeeInfoBean = new EmployeeInfoBean();
-            employeeInfoBean.setMasterPassword(logon.getMasterPassword());
-            employeeInfoBean.setTimeOutPeriod(logon.getTimeout());
-
-            employeeInfoBean.setSessionToken(logon.getSessionToken());
-
-            TransiltiyInvntoryAppSharedPref.setMasterPasswordToSharedPref(LoginActivity.this, logon.getMasterPassword());
-
-            employeeDatabaseTable.insertEmployeeInfoToEmployeeInfoTable(((InventoryManagment) getApplication()).getSqliteDatabase(), employeeInfoBean);
-            intiateAlarm(logon.getTimeout());
-
-        }
-
-        @Override
-        public void onErrorInBackgroundOperation(RESTResponse reposeJson) {
-
-
-        }
-
-        @Override
-        public void onSuccessInForeGroundOperation(RESTResponse restResponse) {
-            progressView.setVisibility(View.GONE);
-
-            password.setText("");
-            username.setText("");
-            finish();
-        }
-
-        @Override
-        public void onErrorInForeGroundOperation(RESTResponse restResponse) {
-            progressView.setVisibility(View.GONE);
-            if (restResponse.status.isClientError()) {
-                errorMessage.setText(getString(R.string.textUnauthorisedPerson));
-            } else if (restResponse.status.isServerError()) {
-                errorMessage.setText(getString(R.string.textServerisDown));
-            } else {
-                errorMessage.setText(getString(R.string.textSomeErrorOccured));
-            }
-
-            password.setText("");
-            username.setText("");
-        }
-
-
-    };
 
     private void intiateAlarm(int timeOutPeriod) {
 
@@ -320,7 +299,7 @@ public class LoginActivity extends FragmentActivity {
 
         alarmMgr.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + (timeOutPeriod * 60 * 1000)
                 , timeOutPeriod * 60 * 1000, alarmIntent);
-        Utility.appendLog("Session Time Out period="+timeOutPeriod);
+        Utility.appendLog("Session Time Out period=" + timeOutPeriod);
 
         Utility.logError(LoginActivity.this.getClass().getSimpleName(), "Alarm Time>>>>" + timeOutPeriod);
 

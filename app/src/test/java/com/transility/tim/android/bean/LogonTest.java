@@ -6,15 +6,11 @@ import android.os.Parcel;
 
 import com.transility.tim.android.BuildConfig;
 
-import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricGradleTestRunner;
-import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowLocation;
 
 /**
  * Created by Himanshu Bapna on 18/07/16.
@@ -32,13 +28,13 @@ public class LogonTest {
     private final String deviceId = "12345655474255";
 
     @Test
-    public void testParseLogon(){
+    public void testParseLogon() {
         Logon logon = Logon.parseLogon(buildLogonJSON());
         validateData(logon);
     }
 
     @Test
-    public void testParceling(){
+    public void testParceling() {
         Logon logon = Logon.parseLogon(buildLogonJSON());
         Parcel parcel = Parcel.obtain();
         logon.writeToParcel(parcel, 0);
@@ -48,20 +44,20 @@ public class LogonTest {
     }
 
     @Test
-    public void testwriteLogonJSON(){
+    public void testwriteLogonJSON() {
         Location location = new Location(LocationManager.GPS_PROVIDER);
         location.setLatitude(22.68);
         location.setLongitude(75.87);
-        String logonJSON = Logon.writeLogonJSON(username,password,location,deviceId);
+        String logonJSON = Logon.writeLogonJSON(username, password, location, deviceId);
         Assert.assertEquals("Logon JSON is not created correct", getLogonWriteJSON(), logonJSON);
 
         location = null;
-        logonJSON = Logon.writeLogonJSON(username,password,location,deviceId);
+        logonJSON = Logon.writeLogonJSON(username, password, location, deviceId);
         String expectedJSON = "{\"parameters\":{\"userId\":\"user1\",\"password\":\"impetus\",\"deviceId\":\"12345655474255\",\"osVersion\":\"5.1.1_r9\",\"latitude\":\"\",\"longitude\":\"\"}}";
-        Assert.assertEquals("Logon JSON is not created correct", expectedJSON,logonJSON);
+        Assert.assertEquals("Logon JSON is not created correct", expectedJSON, logonJSON);
     }
 
-    private String buildLogonJSON(){
+    private String buildLogonJSON() {
         String logonJSON = "{" +
                 "  \"result\": {" +
                 "    \"sessionToken\": \"user11465378323910\"," +
@@ -76,8 +72,8 @@ public class LogonTest {
         return logonJSON;
     }
 
-    private String getLogonWriteJSON(){
-        return  "{" + "\"parameters\":{" +
+    private String getLogonWriteJSON() {
+        return "{" + "\"parameters\":{" +
                 "\"userId\":\"user1\"," +
                 "\"password\":\"impetus\"," +
                 "\"deviceId\":\"12345655474255\"," +
@@ -88,7 +84,7 @@ public class LogonTest {
                 "}";
     }
 
-    private void validateData(Logon logon){
+    private void validateData(Logon logon) {
         Assert.assertEquals("Master password is incorrect during logon parsing", masterPassword, logon.getMasterPassword());
         Assert.assertEquals("session Token is incorrect during logon parsing", sessionToken, logon.getSessionToken());
         Assert.assertEquals("Timeout is incorrect during logon parsing", timeout, logon.getTimeout());

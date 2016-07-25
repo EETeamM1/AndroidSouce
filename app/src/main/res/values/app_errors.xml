@@ -10,8 +10,9 @@
     <string name="textMaterPasswordExceedDigit">Master Password cannot be more than 15 characters of length.</string>
 
 
-<string name="textMasterPasswordIncorrect">Master Password you entered is incorrect.</string>
+    <string name="textMasterPasswordIncorrect">Master Password you entered is incorrect.</string>
     <string name="textWindowWarning">Device is to get unlocked in few seconds . You will be given window of 30 min to enable network and logout from Inventory app home screen.
         \n After 30 min device will automatically get locked.</string>
     <string name="textPleaseEnableNetwork">Please enable your network connection.</string>
+    <string name="deviceIdNotFoundIndicator">-1</string>
 </resources>

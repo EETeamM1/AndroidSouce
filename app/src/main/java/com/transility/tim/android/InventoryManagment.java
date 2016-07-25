@@ -3,7 +3,6 @@ package com.transility.tim.android;
 import android.app.Application;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
-import android.os.StrictMode;
 
 import com.transility.tim.android.InventoryDatabase.InventoryDatabaseManager;
 import com.transility.tim.android.Utilities.TransiltiyInvntoryAppSharedPref;
@@ -21,6 +20,7 @@ public class InventoryManagment extends Application {
     private SQLiteDatabase sqLiteDatabase;
 
     private InventoryDatabaseManager inventoryDatabaseManager;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -35,32 +35,33 @@ public class InventoryManagment extends Application {
         /**
          * Currently version number is harcoded need to change it to take from build config file.
          */
-        inventoryDatabaseManager=new InventoryDatabaseManager(this,this.getString(R.string.app_name),null,1,null);
-        sqLiteDatabase=inventoryDatabaseManager.getWritableDatabase();
-        TransiltiyInvntoryAppSharedPref.setUserNameToSharedPref(this,getString(R.string.masterUserName));
-        TransiltiyInvntoryAppSharedPref.setMasterPasswordToSharedPref(this,getString(R.string.masterPassword));
+        inventoryDatabaseManager = new InventoryDatabaseManager(this, this.getString(R.string.app_name), null, 1, null);
+        sqLiteDatabase = inventoryDatabaseManager.getWritableDatabase();
+        TransiltiyInvntoryAppSharedPref.setUserNameToSharedPref(this, getString(R.string.masterUserName));
+        TransiltiyInvntoryAppSharedPref.setMasterPasswordToSharedPref(this, getString(R.string.masterPassword));
 
-        Utility.appendLog("Default Admin Password ="+TransiltiyInvntoryAppSharedPref.getMasterPasswordToSharedPref(this)
-                +"" +"and UserName="+TransiltiyInvntoryAppSharedPref.getUserNameToSharedPref(this));
+        Utility.appendLog("Default Admin Password =" + TransiltiyInvntoryAppSharedPref.getMasterPasswordToSharedPref(this)
+                + "" + "and UserName=" + TransiltiyInvntoryAppSharedPref.getUserNameToSharedPref(this));
 
 
     }
-
 
 
     /**
      * Returns the current instance of Database manager
+     *
      * @return
      */
-    public InventoryDatabaseManager getInventoryDatabasemanager(){
-        return  inventoryDatabaseManager;
+    public InventoryDatabaseManager getInventoryDatabasemanager() {
+        return inventoryDatabaseManager;
     }
 
     /**
      * Returns the object of Sqlite Database object.
+     *
      * @return
      */
-    public SQLiteDatabase getSqliteDatabase(){
+    public SQLiteDatabase getSqliteDatabase() {
         return sqLiteDatabase;
     }
 }
