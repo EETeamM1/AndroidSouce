@@ -15,25 +15,24 @@ import java.util.Map;
 
 /**
  * @auther Himanshu Bapna
- */
-public class ResponseFetcher extends AsyncTask<Void, RESTResponse, RESTResponse>
-        /*implements JUnitHTTPResponseFetcher*/ {
+ * */
+public class ResponseFetcher  extends AsyncTask<Void,RESTResponse,RESTResponse> {
     private static int ID_GENERATOR = 1;
     private static Map<String, ResponseFetcher> activeFetchers = new HashMap<String, ResponseFetcher>();
+
     private final String id;
     private final String originalUri;
     private final Class<? extends Context> forContextType;
     private final RESTRequest request;
+
     private Context appContext;
     private List<? extends RESTResponseHandler> responseHandler;
     private Bundle userData;
-    private boolean waitForAuthorizedAnswer;
-    private boolean tryRequestAgain;
-    private com.transility.tim.android.http.RESTResponse.Status authStatus;
 
     ResponseFetcher(Context forContext, RESTRequest request, RESTResponseHandler httpRespHandler) {
         this(forContext, request, Arrays.asList(httpRespHandler), null);
     }
+
     ResponseFetcher(Context forContext, RESTRequest request, List<? extends RESTResponseHandler> handlers,
                     Bundle userData) {
         this.id = Integer.toString(ID_GENERATOR++);
@@ -46,29 +45,6 @@ public class ResponseFetcher extends AsyncTask<Void, RESTResponse, RESTResponse>
 
         activeFetchers.put(this.id, this);
         Log.i(Constants.LOGTAG, "ResponseFetcher-" + id + " created for " + originalUri);
-    }
-
-    public static ResponseFetcher getActiveResponseFecther(String fetcherId) {
-        return activeFetchers.get(fetcherId);
-    }
-
-    public static void cancelRequests(Collection<String> fetcherIds) {
-        for (String fetcherId : fetcherIds) {
-            ResponseFetcher fetcher = activeFetchers.get(fetcherId);
-            if (fetcher != null) {
-                Log.i(Constants.LOGTAG, "ResponseFetcher-" + fetcher.id + " received a cancellation.");
-                fetcher.cancel(true);
-            }
-        }
-    }
-
-    public static void cancelAllRequests() {
-        for (ResponseFetcher fetcher : activeFetchers.values()) {
-            if (fetcher != null) {
-                Log.i(Constants.LOGTAG, "ResponseFetcher-" + fetcher.id + " received a cancellation.");
-                fetcher.cancel(true);
-            }
-        }
     }
 
     @Override
@@ -87,22 +63,22 @@ public class ResponseFetcher extends AsyncTask<Void, RESTResponse, RESTResponse>
         Log.i(Constants.LOGTAG, "ResponseFetcher-" + id + " starts.");
         RESTResponse result = null;
 
-        if (result != null) {
-            result.release();
-        }
-
-        if (!isCancelled()) {
-            final long start = System.currentTimeMillis();
-            try {
-                result = request.dispatch();
-            } catch (Throwable t) {
-                result = new RESTResponse(com.transility.tim.android.http.RESTResponse.Status.CONNECTOR_ERROR_INTERNAL, null, request);
+            if (result != null) {
+                result.release();
             }
-            Log.v(Constants.LOGTAG, "Server response took " + (System.currentTimeMillis() - start) + " millisecs.");
-        } else {
-            result = null;
 
-        }
+            if (!isCancelled()) {
+                final long start = System.currentTimeMillis();
+                try {
+                    result = request.dispatch();
+                } catch (Throwable t) {
+                    result = new RESTResponse(com.transility.tim.android.http.RESTResponse.Status.CONNECTOR_ERROR_INTERNAL,null, request);
+                }
+                Log.v(Constants.LOGTAG, "Server response took " + (System.currentTimeMillis() - start) + " millisecs.");
+            } else {
+                result = null;
+
+            }
 
 
         if (result != null) {

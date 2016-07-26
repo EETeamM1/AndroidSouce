@@ -6,7 +6,7 @@
 
 
     android:gravity="center"
-    tools:context="com.transility.tim.android.TransilityApplicationSplashScreen">
+    tools:context=".SplashActivity">
 
     <ImageView
         android:layout_width="wrap_content"

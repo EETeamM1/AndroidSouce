@@ -14,7 +14,6 @@ import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.transility.tim.android.Utilities.TransiltiyInvntoryAppSharedPref;
 import com.transility.tim.android.Utilities.Utility;
 
 import java.util.Calendar;
@@ -25,47 +24,66 @@ import devicepolicymanager.MyDeviceAdminReciver;
 
 public class MasterPasswordScreen extends Activity {
 
-    public final static int REQUESTCODE_FROMAPP = 501;
-    protected static final int REQUEST_ENABLE = 1;
-    protected Button masterpasswordEntredBtn, continueWithAdminPolicy;
+    public final static int REQUESTCODE_FROMAPP=501;
+    protected Button masterpasswordEntredBtn,continueWithAdminPolicy;
     protected EditText passwordFieldEt;
     private ComponentName truitonDevicePolicyAdmin;
+    protected static final int REQUEST_ENABLE = 1;
+
     private WindowManager winManager;
     private ViewGroup wrapperView;
     private TextView error_message;
-    private View.OnClickListener onClickListener = new View.OnClickListener() {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        View activityView=attacheViewWithIdToWindow(R.layout.layout_master_password_screen);
+        masterpasswordEntredBtn= (Button) activityView.findViewById(R.id.masterpasswordEntredBtn);
+        continueWithAdminPolicy= (Button) activityView.findViewById(R.id.continueWithAdminPolicy);
+        passwordFieldEt= (EditText) activityView.findViewById(R.id.passwordFieldEt);
+        error_message= (TextView) activityView.findViewById(R.id.error_message);
+        truitonDevicePolicyAdmin = new ComponentName(this,
+                MyDeviceAdminReciver.class);
+        masterpasswordEntredBtn.setOnClickListener(onClickListener);
+        continueWithAdminPolicy.setOnClickListener(onClickListener);
+    }
+
+    protected View attacheViewWithIdToWindow(int layoutId) {
+        WindowManager.LayoutParams localLayoutParams = new WindowManager.LayoutParams(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
+        winManager = ((WindowManager) getApplicationContext().getSystemService(WINDOW_SERVICE));
+        wrapperView = new RelativeLayout(this);
+        wrapperView.setBackgroundColor(this.getResources().getColor(R.color.backWhite));
+        this.winManager.addView(wrapperView, localLayoutParams);
+        return View.inflate(this, layoutId, wrapperView);
+    }
+
+    private View.OnClickListener onClickListener=new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            Utility.removeKeyboardfromScreen(v);
-            switch (v.getId()) {
-                case R.id.continueWithAdminPolicy:
-                    enableDeviceAdminApp();
-                    setResult(RESULT_CANCELED);
-                    break;
-                case R.id.masterpasswordEntredBtn:
-                    error_message.setText("");
-                    if (TextUtils.isEmpty(passwordFieldEt.getText())) {
-                        passwordFieldEt.setError(getString(R.string.textEmptyPassword));
-
-
-                        return;
-                    }
-                    if (passwordFieldEt.getText().length() > 15) {
-                        passwordFieldEt.setError(getString(R.string.textMaterPasswordExceedDigit));
-                        return;
-                    }
-                    if (calclualteMasterPassword().equals(passwordFieldEt.getText().toString())) {
-
-                        setResult(RESULT_OK);
-                        finish();
-
-                    } else {
-                        error_message.setText(getString(R.string.textMasterPasswordIncorrect));
-                    }
-
-                    break;
-
-            }
+        switch (v.getId()){
+            case R.id.continueWithAdminPolicy:
+                enableDeviceAdminApp();
+                setResult(RESULT_CANCELED);
+                break;
+            case R.id.masterpasswordEntredBtn:
+                error_message.setText("");
+                if (TextUtils.isEmpty(passwordFieldEt.getText())){
+                    passwordFieldEt.setError(getString(R.string.textEmptyPassword));
+                    return;
+                }
+                if (passwordFieldEt.getText().length()>15){
+                    passwordFieldEt.setError(getString(R.string.textMaterPasswordExceedDigit));
+                    return;
+                }
+                if (calclualteMasterPassword().equals(passwordFieldEt.getText())){
+                 setResult(RESULT_OK);
+                 finish();
+                } else{
+                    error_message.setText(getString(R.string.textMasterPasswordIncorrect));
+                }
+                break;
+        }
         }
     };
 
@@ -97,44 +115,36 @@ public class MasterPasswordScreen extends Activity {
     }
 
     @Override
-    public void onBackPressed() {
+    public void onBackPressed() {}
 
-    }
-
-    private String calclualteMasterPassword() {
-        String masterPasswordString = null;
-        masterPasswordString = applyLamPortAlgoRithmUsingDateOnImei(Utility.getDeviceId(MasterPasswordScreen.this));
+    private String calclualteMasterPassword(){
+        String masterPasswordString=null;
+        masterPasswordString=  applyLamPortAlgoRithmUsingDateOnImei(Utility.getDeviceId(MasterPasswordScreen.this), Calendar.getInstance());
         return masterPasswordString;
     }
 
-    protected String applyLamPortAlgoRithmUsingDateOnImei(String imeiNumber) {
-
-        Calendar calendar = Calendar.getInstance();
-        int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
-        int monthNumber = calendar.get(Calendar.MONTH);
-        int year = calendar.get(Calendar.YEAR);
-        long imeiNumberNumeric = 0;
-
+    protected String applyLamPortAlgoRithmUsingDateOnImei(String imeiNumber, Calendar calendar){
+        int dayOfMonth= calendar.get(Calendar.DAY_OF_MONTH);
+        int monthNumber=calendar.get(Calendar.MONTH);
+        int year=calendar.get(Calendar.YEAR);
+        long imeiNumberNumeric=0;
         if (!TextUtils.isDigitsOnly(imeiNumber)) {
-            Pattern pattern = Pattern.compile("\\D");
-            Matcher matcher = pattern.matcher(imeiNumber);
+            Pattern pattern=Pattern.compile("\\D");
+            Matcher matcher=pattern.matcher(imeiNumber);
             String temp;
 
-
             while (matcher.find()) {
-
-
-                temp = imeiNumber.replace(matcher.group(), ((int) matcher.group().charAt(0)) + "");
-                imeiNumber = temp;
+                temp=imeiNumber.replace(matcher.group(),((int)matcher.group().charAt(0))+"");
+                imeiNumber=temp;
             }
-
-
         }
-        if (imeiNumber.length() > 15) {
-            imeiNumber = imeiNumber.substring(0, 15);
+
+        if (imeiNumber.length()>15) {
+            imeiNumber=imeiNumber.substring(0,15);
         }
-        imeiNumberNumeric = Long.parseLong(imeiNumber);
-        Utility.logError(MasterPasswordScreen.class.getSimpleName(), "Imei Number>>>" + imeiNumberNumeric + "");
+        imeiNumberNumeric=Long.parseLong(imeiNumber);
+        Utility.logError(MasterPasswordScreen.class.getSimpleName(),"Imei Number>>>"+imeiNumberNumeric+"");
+
 
         for (int i = 0; i < 5; i++) {
             long temp;
@@ -156,19 +166,11 @@ public class MasterPasswordScreen extends Activity {
     /**
      * Function calls the activity that initates the enabling of the apllication as device admin app.
      */
-    private void enableDeviceAdminApp() {
-        Intent intent = new Intent(
-
-                DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
-        intent.putExtra(
-                DevicePolicyManager.EXTRA_DEVICE_ADMIN,
-                truitonDevicePolicyAdmin);
-        intent.putExtra(
-                DevicePolicyManager.EXTRA_ADD_EXPLANATION,
-                "");
+    private void enableDeviceAdminApp(){
+        Intent intent = new Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
+        intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, truitonDevicePolicyAdmin);
+        intent.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION, "");
         startActivityForResult(intent, REQUEST_ENABLE);
-
-
     }
 
     @Override

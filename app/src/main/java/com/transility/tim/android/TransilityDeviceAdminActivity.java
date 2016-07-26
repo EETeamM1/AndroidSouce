@@ -6,6 +6,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
+
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -28,8 +29,8 @@ import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResult;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.transility.tim.android.Dialogs.SingleButtonAlertDialog;
-import com.transility.tim.android.InventoryDatabase.InventoryDatabaseManager;
 import com.transility.tim.android.Utilities.RestResponseShowFeedbackInterface;
+import com.transility.tim.android.Utilities.TransiltiyInvntoryAppSharedPref;
 import com.transility.tim.android.Utilities.Utility;
 import com.transility.tim.android.bean.Logout;
 import com.transility.tim.android.http.RESTRequest;
@@ -39,41 +40,10 @@ import com.transility.tim.android.http.RestRequestFactoryWrapper;
 import devicepolicymanager.MyDeviceAdminReciver;
 
 public class TransilityDeviceAdminActivity extends AppCompatActivity {
-    protected static final int REQUEST_ENABLE = 1;
     private final static String LOG_TAG = "DevicePolicyAdmin";
-    private final int REQUEST_CHECK_SETTINGS = 101;
-    protected LocationRequest mLocationRequest;
-    protected LocationSettingsRequest mLocationSettingsRequest;
     DevicePolicyManager truitonDevicePolicyManager;
     ComponentName truitonDevicePolicyAdmin;
-    ResultCallback<LocationSettingsResult> locationSettingsResultResultCallback = new ResultCallback<LocationSettingsResult>() {
-        @Override
-        public void onResult(@NonNull LocationSettingsResult locationSettingsResult) {
-            final Status status = locationSettingsResult.getStatus();
-            switch (status.getStatusCode()) {
-                case LocationSettingsStatusCodes.SUCCESS:
-                    Utility.logError(TransilityDeviceAdminActivity.class.getSimpleName(), "All location settings are satisfied.");
 
-                    break;
-                case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
-                    Utility.logError(TransilityDeviceAdminActivity.class.getSimpleName(), "Location settings are not satisfied. Show the user a dialog to" +
-                            "upgrade location settings ");
-
-                    try {
-                        // Show the dialog by calling startResolutionForResult(), and check the result
-                        // in onActivityResult().
-                        status.startResolutionForResult(TransilityDeviceAdminActivity.this, REQUEST_CHECK_SETTINGS);
-                    } catch (IntentSender.SendIntentException e) {
-                        Utility.logError(TransilityDeviceAdminActivity.class.getSimpleName(), "PendingIntent unable to execute request.");
-                    }
-                    break;
-                case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
-                    Utility.logError(TransilityDeviceAdminActivity.class.getSimpleName(), "Location settings are inadequate, and cannot be fixed here. Dialog " +
-                            "not created.");
-                    break;
-            }
-        }
-    };
     private Switch enableDeviceApp;
     private Button logoutBtn, reportsBtn;
     private TextView messageLineTv, deviceIdTv;
@@ -234,8 +204,7 @@ public class TransilityDeviceAdminActivity extends AppCompatActivity {
 
         truitonDevicePolicyManager = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
         restRequestFactoryWrapper = new RestRequestFactoryWrapper(this, restResponseShowFeedbackInterface);
-        truitonDevicePolicyAdmin = new ComponentName(this,
-                MyDeviceAdminReciver.class);
+        truitonDevicePolicyAdmin = new ComponentName(this, MyDeviceAdminReciver.class);
         enableDeviceApp = (Switch) findViewById(R.id.enableDeviceApp);
         logoutBtn = (Button) findViewById(R.id.logoutBtn);
         reportsBtn = (Button) findViewById(R.id.reportsBtn);
@@ -249,8 +218,6 @@ public class TransilityDeviceAdminActivity extends AppCompatActivity {
 
         intiateGooglePlayService();
 
-
-
     }
 
     private void createLocationSettingsRequest() {
@@ -260,20 +227,18 @@ public class TransilityDeviceAdminActivity extends AppCompatActivity {
 
     }
 
+
     private void intiateGooglePlayService() {
 
         if (Utility.checkGooglePlayServicesAvailable(this)) {
 
-
-            mGoogleApiClient = new GoogleApiClient.Builder(TransilityDeviceAdminActivity.this)
+            mGoogleApiClient = new GoogleApiClient.Builder(this)
                     .addApi(LocationServices.API)
                     .addConnectionCallbacks(connectionCallbacks)
                     .addOnConnectionFailedListener(onConnectionFailedListener)
                     .build();
 
-
         }
-
 
     }
 
@@ -305,15 +270,12 @@ public class TransilityDeviceAdminActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        inventoryManagment = ((InventoryManagment) TransilityDeviceAdminActivity.this.getApplication());
-        int rowCount = inventoryManagment.getInventoryDatabasemanager().getEmployeeDataTable().getEmployeeTableRowCount(inventoryManagment.getSqliteDatabase());
-
-        if (rowCount != 0) {
-            logoutBtn.setVisibility(View.VISIBLE);
-            reportsBtn.setVisibility(View.VISIBLE);
-        } else {
+        if (TextUtils.isEmpty(TransiltiyInvntoryAppSharedPref.getSessionToken(this))) {
             logoutBtn.setVisibility(View.GONE);
             reportsBtn.setVisibility(View.GONE);
+        } else {
+            logoutBtn.setVisibility(View.VISIBLE);
+            reportsBtn.setVisibility(View.VISIBLE);
         }
 
         if (isMyDevicePolicyReceiverActive()) {
@@ -328,8 +290,43 @@ public class TransilityDeviceAdminActivity extends AppCompatActivity {
 
         enableDeviceApp
                 .setOnCheckedChangeListener(onCheckedChangeListener);
-
     }
+
+
+    private CompoundButton.OnCheckedChangeListener onCheckedChangeListener = new CompoundButton.OnCheckedChangeListener() {
+
+        @Override
+        public void onCheckedChanged(CompoundButton buttonView,
+                                     boolean isChecked) {
+            if (isChecked) {
+                enableDeviceApp.setOnCheckedChangeListener(null);
+                if (!isMyDevicePolicyReceiverActive()) {
+
+                    if (Utility.checkInternetConnection(TransilityDeviceAdminActivity.this)) {
+                        enableDeviceAdminApp();
+                    } else {
+
+                        if (! TextUtils.isEmpty(TransiltiyInvntoryAppSharedPref.getSessionToken(TransilityDeviceAdminActivity.this))) {
+                            enableDeviceAdminApp();
+                        } else {
+                            enableDeviceApp.setChecked(false);
+                            singleButtonAlertDialog = SingleButtonAlertDialog.newInstance(getString(R.string.textPleaseEnableNetwork));
+
+                            singleButtonAlertDialog.show(getFragmentManager(), SingleButtonAlertDialog.class.getSimpleName());
+                        }
+                    }
+
+                }
+            } else {
+                truitonDevicePolicyManager.removeActiveAdmin(truitonDevicePolicyAdmin);
+
+            }
+            enableDeviceApp.setOnCheckedChangeListener(onCheckedChangeListener);
+        }
+    };
+
+
+
 
     /**
      * Function calls the activity that initates the enabling of the apllication as device admin app.
@@ -393,17 +390,82 @@ public class TransilityDeviceAdminActivity extends AppCompatActivity {
      * @return is Device Admin active
      */
     private boolean isMyDevicePolicyReceiverActive() {
-        return truitonDevicePolicyManager
-                .isAdminActive(truitonDevicePolicyAdmin);
+        return truitonDevicePolicyManager.isAdminActive(truitonDevicePolicyAdmin);
     }
 
-    /**
-     * Method call to clean the database
-     */
-    private void cleanTheDatabase() {
-        InventoryDatabaseManager inventoryDatabaseManager = ((InventoryManagment) TransilityDeviceAdminActivity.this.getApplication()).getInventoryDatabasemanager();
-        inventoryDatabaseManager.getEmployeeDataTable().deleteEmployeeInfoFromDatabase(((InventoryManagment) TransilityDeviceAdminActivity.this.getApplication()).getSqliteDatabase());
-    }
+    private RestResponseShowFeedbackInterface restResponseShowFeedbackInterface = new RestResponseShowFeedbackInterface() {
+        @Override
+        public void onSuccessOfBackGroundOperation(RESTResponse reposeJson) {
+            Utility.appendLog("Response Logout API="+reposeJson.getText());
+            Utility.logError(TransilityDeviceAdminActivity.class.getSimpleName(),"Request Code>>"+reposeJson.status.getCode()+" Resposne Message>>"+reposeJson.getText());
+            Utility.clearPrefrences();
+        }
+
+        @Override
+        public void onErrorInBackgroundOperation(RESTResponse reposeJson) {
+            Utility.appendLog("Response Logout API="+reposeJson.getText());
+            Utility.logError(TransilityDeviceAdminActivity.class.getSimpleName(),"Request Code>>"+reposeJson.status.getCode()+" Resposne Message>>"+reposeJson.getText());
+            Utility.clearPrefrences();
+
+        }
+
+        @Override
+        public void onSuccessInForeGroundOperation(RESTResponse restResponse) {
+
+
+
+            Utility.cancelCurrentPendingIntent(TransilityDeviceAdminActivity.this);
+            Intent intent1 = new Intent(TransilityDeviceAdminActivity.this, LoginActivity.class);
+            intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            TransilityDeviceAdminActivity.this.startActivity(intent1);
+
+            finish();
+        }
+
+        @Override
+        public void onErrorInForeGroundOperation(RESTResponse restResponse) {
+
+
+            Utility.cancelCurrentPendingIntent(TransilityDeviceAdminActivity.this);
+            Intent intent1 = new Intent(TransilityDeviceAdminActivity.this, LoginActivity.class);
+            intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            TransilityDeviceAdminActivity.this.startActivity(intent1);
+
+            finish();
+        }
+    };
+
+
+
+    ResultCallback<LocationSettingsResult>  locationSettingsResultResultCallback=new ResultCallback<LocationSettingsResult>() {
+        @Override
+        public void onResult(@NonNull LocationSettingsResult locationSettingsResult) {
+            final Status status = locationSettingsResult.getStatus();
+            switch (status.getStatusCode()) {
+                case LocationSettingsStatusCodes.SUCCESS:
+                    Utility.logError(TransilityDeviceAdminActivity.class.getSimpleName(), "All location settings are satisfied.");
+
+                    break;
+                case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                    Utility.logError(TransilityDeviceAdminActivity.class.getSimpleName(), "Location settings are not satisfied. Show the user a dialog to" +
+                            "upgrade location settings ");
+
+                    try {
+                        // Show the dialog by calling startResolutionForResult(), and check the result
+                        // in onActivityResult().
+                        status.startResolutionForResult(TransilityDeviceAdminActivity.this, REQUEST_CHECK_SETTINGS);
+                    } catch (IntentSender.SendIntentException e) {
+                        Utility.logError(TransilityDeviceAdminActivity.class.getSimpleName(), "PendingIntent unable to execute request.");
+                    }
+                    break;
+                case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
+                    Utility.logError(TransilityDeviceAdminActivity.class.getSimpleName(), "Location settings are inadequate, and cannot be fixed here. Dialog " +
+                            "not created.");
+                    break;
+            }
+        }
+    };
+
 
 
 }
