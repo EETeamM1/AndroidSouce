@@ -3,19 +3,13 @@ package com.transility.tim.android;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
-
-
 import android.content.Context;
 import android.content.Intent;
-
 import android.location.Location;
 import android.os.Bundle;
-
-import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
-
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.view.View;
@@ -25,7 +19,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -59,29 +52,117 @@ public class LoginActivity extends FragmentActivity {
     private TelephonyManager telephonyManager;
     private GoogleApiClient mGoogleApiClient;
     private Location location;
-    private GoogleApiClient.OnConnectionFailedListener onConnectionFailedListener = new GoogleApiClient.OnConnectionFailedListener() {
-        @Override
-        public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-            Utility.logError(LoginActivity.class.getSimpleName(), "onConnectionFailed");
-        }
-    };
-    private LocationListener locationListener = new LocationListener() {
-        @Override
-        public void onLocationChanged(Location location) {
-            LoginActivity.this.location = location;
 
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // Set up the login form.
+        Utility.logError(LoginActivity.this.getClass().getSimpleName(), "onCreate");
+
+        View activityView = attacheViewWithIdToWindow(R.layout.activity_login);
+
+        restRequestFactoryWrapper = new RestRequestFactoryWrapper(this, restResponseShowFeedbackInterface);
+        telephonyManager = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
+
+        loginButton = (Button) activityView.findViewById(R.id.login);
+        errorMessage = (TextView) activityView.findViewById(R.id.error_message);
+        password = (EditText) activityView.findViewById(R.id.password);
+        username = (EditText) activityView.findViewById(R.id.username);
+        progressView = activityView.findViewById(R.id.login_progress);
+
+        loginButton.setOnClickListener(onClickListener);
+        TransiltiyInvntoryAppSharedPref.setWasLoginScreenVisible(LoginActivity.this, true);
+        if(Utility.checkGooglePlayServicesAvailable(this)){
+            intiateGooglePlayService();
         }
-    };
-    private GoogleApiClient.ConnectionCallbacks connectionCallbacks = new GoogleApiClient.ConnectionCallbacks() {
+
+
+    }
+
+    private void intiateGooglePlayService() {
+
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addApi(LocationServices.API)
+                .addConnectionCallbacks(connectionCallbacks)
+                .addOnConnectionFailedListener(onConnectionFailedListener)
+                .build();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (mGoogleApiClient!=null){
+            mGoogleApiClient.connect();
+        }
+
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        if (mGoogleApiClient!=null){
+            stopLocationUpdates();
+            mGoogleApiClient.disconnect();
+        }
+
+    }
+
+    protected void stopLocationUpdates() {
+        LocationServices.FusedLocationApi.removeLocationUpdates(
+                mGoogleApiClient, locationListener);
+    }
+
+    protected View attacheViewWithIdToWindow(int layoutId) {
+        WindowManager.LayoutParams localLayoutParams = new WindowManager.LayoutParams(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
+        winManager = ((WindowManager) getApplicationContext().getSystemService(WINDOW_SERVICE));
+        wrapperView = new RelativeLayout(this);
+        wrapperView.setBackgroundColor(this.getResources().getColor(R.color.backWhite));
+        this.winManager.addView(wrapperView, localLayoutParams);
+        return View.inflate(this, layoutId, this.wrapperView);
+    }
+
+    private GoogleApiClient.ConnectionCallbacks connectionCallbacks=new GoogleApiClient.ConnectionCallbacks() {
         @Override
         public void onConnected(@Nullable Bundle bundle) {
             startLocationUpdates();
-            Utility.logError(LoginActivity.class.getSimpleName(), "onConnected");
+            Utility.logError(LoginActivity.class.getSimpleName(),"onConnected");
         }
 
         @Override
         public void onConnectionSuspended(int i) {
-            Utility.logError(LoginActivity.class.getSimpleName(), "onConnectionSuspended");
+            Utility.logError(LoginActivity.class.getSimpleName(),"onConnectionSuspended");
+        }
+    };
+
+    private GoogleApiClient.OnConnectionFailedListener onConnectionFailedListener=new GoogleApiClient.OnConnectionFailedListener() {
+        @Override
+        public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+            Utility.logError(LoginActivity.class.getSimpleName(),"onConnectionFailed");
+        }
+    };
+
+    /**
+     * Startrs the location updates
+     */
+    protected void startLocationUpdates() {
+        // Create the location request
+        LocationRequest mLocationRequest = LocationRequest.create()
+                .setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY)
+                .setInterval(1800000)
+                .setFastestInterval(1800000);
+
+        // Request location updates
+        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient,
+                mLocationRequest, locationListener);
+
+    }
+
+    private LocationListener locationListener=new LocationListener() {
+        @Override
+        public void onLocationChanged(Location location) {
+            LoginActivity.this.location=location;
+
         }
     };
     private OnClickListener onClickListener = new OnClickListener() {
@@ -167,7 +248,6 @@ public class LoginActivity extends FragmentActivity {
             TransiltiyInvntoryAppSharedPref.setSessionTimeoutToSharedPref(LoginActivity.this, logon.getTimeout());
             TransiltiyInvntoryAppSharedPref.setSessionTokenToSharedPref(LoginActivity.this, logon.getSessionToken());
 
-            employeeDatabaseTable.insertEmployeeInfoToEmployeeInfoTable(((InventoryManagment) getApplication()).getSqliteDatabase(), employeeInfoBean);
             intiateAlarm(logon.getTimeout());
 
         }
@@ -205,107 +285,6 @@ public class LoginActivity extends FragmentActivity {
 
     };
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        // Set up the login form.
-        Utility.logError(LoginActivity.this.getClass().getSimpleName(), "onCreate");
-
-        View activityView = attacheViewWithIdToWindow(R.layout.activity_login);
-
-        restRequestFactoryWrapper = new RestRequestFactoryWrapper(this, restResponseShowFeedbackInterface);
-        telephonyManager = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
-
-        loginButton = (Button) activityView.findViewById(R.id.login);
-        errorMessage = (TextView) activityView.findViewById(R.id.error_message);
-        password = (EditText) activityView.findViewById(R.id.password);
-        username = (EditText) activityView.findViewById(R.id.username);
-        progressView = activityView.findViewById(R.id.login_progress);
-
-        loginButton.setOnClickListener(onClickListener);
-        TransiltiyInvntoryAppSharedPref.setWasLoginScreenVisible(LoginActivity.this, true);
-        intiateGooglePlayService();
-
-    }
-
-    private void intiateGooglePlayService() {
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addApi(LocationServices.API)
-                .addConnectionCallbacks(connectionCallbacks)
-                .addOnConnectionFailedListener(onConnectionFailedListener)
-                .build();
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        mGoogleApiClient.connect();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-
-        stopLocationUpdates();
-        mGoogleApiClient.disconnect();
-    }
-
-    protected void stopLocationUpdates() {
-        LocationServices.FusedLocationApi.removeLocationUpdates(
-                mGoogleApiClient, locationListener);
-    }
-
-    protected View attacheViewWithIdToWindow(int layoutId) {
-        WindowManager.LayoutParams localLayoutParams = new WindowManager.LayoutParams(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
-        winManager = ((WindowManager) getApplicationContext().getSystemService(WINDOW_SERVICE));
-        wrapperView = new RelativeLayout(this);
-        wrapperView.setBackgroundColor(this.getResources().getColor(R.color.backWhite));
-        this.winManager.addView(wrapperView, localLayoutParams);
-        return View.inflate(this, layoutId, this.wrapperView);
-    }
-
-    /**
-     * Startrs the location updates
-     */
-    protected void startLocationUpdates() {
-        // Create the location request
-        LocationRequest mLocationRequest = LocationRequest.create()
-                .setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY)
-                .setInterval(1800000)
-                .setFastestInterval(1800000);
-
-        // Request location updates
-        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient,
-                mLocationRequest, locationListener);
-
-    }
-
-    /**
-     * Function that fetch master password from local prefrences and authenticate the user.
-     *
-     * @param passwordStr
-     * @param usernameStr
-     * @return
-     */
-    protected boolean authenticateMasterUser(String passwordStr, String usernameStr) {
-        String masterPassword = null;
-        masterPassword = TransiltiyInvntoryAppSharedPref.getMasterPasswordToSharedPref(LoginActivity.this);
-        return passwordStr.equals(masterPassword)
-                && usernameStr.equals(TransiltiyInvntoryAppSharedPref.getUserNameToSharedPref(this));
-    }
-
-    /**
-     * Intiate the login Request to server.
-     */
-    private void intiateLogin() {
-        String json = Logon.writeLogonJSON(username.getText().toString(), password.getText().toString(), location, Utility.getDeviceId(LoginActivity.this));
-        String loginRequest = getResources().getString(R.string.baseUrl) + getResources().getString(R.string.api_login);
-
-        Utility.appendLog("Login Request=" + loginRequest + " Request Json=" + json + " API Type=" + Method.POST);
-        restRequestFactoryWrapper.callHttpRestRequest(loginRequest, json, Method.POST);
-        progressView.setVisibility(View.VISIBLE);
-    }
-
     private void intiateAlarm(int timeOutPeriod) {
 
         AlarmManager alarmMgr = (AlarmManager) LoginActivity.this.getSystemService(Context.ALARM_SERVICE);
@@ -316,7 +295,7 @@ public class LoginActivity extends FragmentActivity {
 
         alarmMgr.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + (timeOutPeriod * 60 * 1000)
                 , timeOutPeriod * 60 * 1000, alarmIntent);
-        Utility.appendLog("Session Time Out period=" + timeOutPeriod);
+        Utility.appendLog("Session Time Out period="+timeOutPeriod);
 
         Utility.logError(LoginActivity.this.getClass().getSimpleName(), "Alarm Time>>>>" + timeOutPeriod);
 
@@ -348,4 +327,3 @@ public class LoginActivity extends FragmentActivity {
 
     }
 }
-

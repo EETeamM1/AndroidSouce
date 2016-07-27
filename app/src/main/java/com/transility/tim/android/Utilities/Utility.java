@@ -15,6 +15,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -87,13 +88,17 @@ public class Utility {
         if (status == ConnectionResult.SUCCESS) {
             return true;
         }
-
-        if (GooglePlayServicesUtil.isUserRecoverableError(status)) {
-            final Dialog errorDialog = GooglePlayServicesUtil.getErrorDialog(status, context, 1);
-            if (errorDialog != null) {
-                errorDialog.show();
-            }
+        else {
+            Toast.makeText(context,"Please install or update google play services",Toast.LENGTH_LONG).show();
         }
+
+//        if (GooglePlayServicesUtil.isUserRecoverableError(status)) {
+//            final Dialog errorDialog = GooglePlayServicesUtil.getErrorDialog(status, context, 1);
+//            if (errorDialog != null) {
+//                errorDialog.show();
+//            }
+//        }
+
 
         return false;
     }

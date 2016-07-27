@@ -18,7 +18,7 @@ public class TransiltiyInvntoryAppSharedPref  {
     private static String KEY_DEVICE_ID="deviceId";
     private static String KEY_SESSION_TIMEOUT = "key_session_timeout";
     private static String KEY_SESSION_TOKEN = "key_session_token";
-
+    private static String KEY_IS_MASTER_PASSWORD_SCREEN_VISIBLE="isMasterPasswordScreenVisible";
 
     public static void setMasterPasswordToSharedPref(Context context,String masterPassword){
         SharedPreferences  sp=context.getSharedPreferences(TRANSILITY_INVENTORY_SHARED_PREF,Context.MODE_PRIVATE);
@@ -103,4 +103,16 @@ public class TransiltiyInvntoryAppSharedPref  {
         SharedPreferences sp=context.getSharedPreferences(TRANSILITY_INVENTORY_SHARED_PREF,Context.MODE_PRIVATE);
         return  sp.getString(KEY_SESSION_TOKEN,"");
     }
+    public static void setIsMasterPasswordScreenVisible(Context context,boolean isMasterPasswordScreenVisible){
+
+        SharedPreferences sp=context.getSharedPreferences(TRANSILITY_INVENTORY_SHARED_PREF,Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor=sp.edit();
+        editor.putBoolean(KEY_IS_MASTER_PASSWORD_SCREEN_VISIBLE,isMasterPasswordScreenVisible);
+        editor.apply();
+
+    }
+public static boolean isMasterPasswordScreenVisible(Context context){
+    SharedPreferences sp=context.getSharedPreferences(TRANSILITY_INVENTORY_SHARED_PREF,Context.MODE_PRIVATE);
+    return  sp.getBoolean(KEY_IS_MASTER_PASSWORD_SCREEN_VISIBLE,false);
+}
 }

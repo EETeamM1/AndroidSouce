@@ -3,6 +3,8 @@ package devicepolicymanager;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.app.admin.DeviceAdminReceiver;
+import android.app.admin.DevicePolicyManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
@@ -25,6 +27,7 @@ public class MyDeviceAdminReciver extends DeviceAdminReceiver {
 
     @Override
     public void onDisabled(Context context, Intent intent) {
+
 
         Utility.cancelCurrentPendingIntent(context);
         Utility.clearPrefrences();
@@ -75,35 +78,43 @@ public class MyDeviceAdminReciver extends DeviceAdminReceiver {
 
         if (intent.getAction()!=null&&intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED)){
             Toast.makeText(context,"My Device Boot Completed",Toast.LENGTH_LONG).show();
+           DevicePolicyManager truitonDevicePolicyManager = (DevicePolicyManager) context.getSystemService(Context.DEVICE_POLICY_SERVICE);
 
-            if (TextUtils.isEmpty(TransiltiyInvntoryAppSharedPref.getSessionToken(context))){
-
-                Utility.appendLog("Boot Got Completed and in previous shut down Login Mode was enabled.");
-                Utility.logError(MyDeviceAdminReciver.class.getSimpleName(),"Inside data base check loop");
-                Utility.cancelCurrentPendingIntent(context);
-                Intent intent1=new Intent(context, LoginActivity.class);
-                intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                context.startActivity(intent1);
-            }
-            else {
-                if (TransiltiyInvntoryAppSharedPref.getWasLoginScreenVisible(context)){
+            if (truitonDevicePolicyManager.isAdminActive(new ComponentName(context,MyDeviceAdminReciver.class))){
+                if (TextUtils.isEmpty(TransiltiyInvntoryAppSharedPref.getSessionToken(context))){
 
                     Utility.appendLog("Boot Got Completed and in previous shut down Login Mode was enabled.");
-                    Utility.logError(MyDeviceAdminReciver.class.getSimpleName(),"Inside Login Screen Visible loop");
+                    Utility.logError(MyDeviceAdminReciver.class.getSimpleName(),"Inside data base check loop");
                     Utility.cancelCurrentPendingIntent(context);
                     Intent intent1=new Intent(context, LoginActivity.class);
                     intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(intent1);
-
                 }
                 else {
-                    Utility.appendLog("Boot Got Completed and in previous shut down User was having a valid session. ");
-                    Utility.logError(MyDeviceAdminReciver.class.getSimpleName(),"Inside Login Screen invisible loop");
-                    TransiltiyInvntoryAppSharedPref.setWasLoginScreenVisible(context,false);
-                    reEnableAlarm(context);
-                }
-            }
+                    if (TransiltiyInvntoryAppSharedPref.getWasLoginScreenVisible(context)){
 
+                        Utility.appendLog("Boot Got Completed and in previous shut down Login Mode was enabled.");
+                        Utility.logError(MyDeviceAdminReciver.class.getSimpleName(),"Inside Login Screen Visible loop");
+                        Utility.cancelCurrentPendingIntent(context);
+                        Intent intent1=new Intent(context, LoginActivity.class);
+                        intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        context.startActivity(intent1);
+
+                    }
+                    else {
+                        Utility.appendLog("Boot Got Completed and in previous shut down User was having a valid session. ");
+                        Utility.logError(MyDeviceAdminReciver.class.getSimpleName(),"Inside Login Screen invisible loop");
+                        TransiltiyInvntoryAppSharedPref.setWasLoginScreenVisible(context,false);
+                        reEnableAlarm(context);
+                    }
+                }
+
+            }
+            else if (TransiltiyInvntoryAppSharedPref.isMasterPasswordScreenVisible(context)){
+                Intent intent1=new Intent(context, MasterPasswordScreen.class);
+                intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(intent1);
+            }
         }
         else  if (intent.getAction()!=null&&intent.getAction().equals(Intent.ACTION_SHUTDOWN)){
 

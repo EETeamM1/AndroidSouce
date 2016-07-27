@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="baseUrl">http://172.26.60.21:9000/InventoryManagement/api/</string>
+    <string name="baseUrl">http://172.26.60.25:8080/InventoryManagement/api/</string>
     <string name="api_login">user/login</string>
     <string name="api_logout">user/logout</string>
     <string name="masterUserName">Admin</string>
     <string name="masterPassword">Admin</string>
+    <string name="deviceReports">deviceReport?deviceId=</string>
     <integer name="defaultSessionTimeOutPeriod">30</integer>
+
 </resources>

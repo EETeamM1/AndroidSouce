@@ -46,10 +46,13 @@ public class TransilityDeviceAdminActivity extends AppCompatActivity {
 
     private Switch enableDeviceApp;
     private Button logoutBtn, reportsBtn;
-    private TextView messageLineTv, deviceIdTv;
+    private TextView messageLineTv;
     private SingleButtonAlertDialog singleButtonAlertDialog;
     private RestRequestFactoryWrapper restRequestFactoryWrapper;
-    private InventoryManagment inventoryManagment;
+    protected LocationSettingsRequest mLocationSettingsRequest;
+    private final int REQUEST_CHECK_SETTINGS=101;
+    protected static final int REQUEST_ENABLE = 1;
+
     private GoogleApiClient mGoogleApiClient;
     private GoogleApiClient.ConnectionCallbacks connectionCallbacks = new GoogleApiClient.ConnectionCallbacks() {
         @Override
@@ -79,123 +82,47 @@ public class TransilityDeviceAdminActivity extends AppCompatActivity {
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.logoutBtn:
-                    if (!Utility.checkInternetConnection(TransilityDeviceAdminActivity.this)) {
-                        cleanTheDatabase();
-                        Utility.cancelCurrentPendingIntent(TransilityDeviceAdminActivity.this);
-                        Intent intent1 = new Intent(TransilityDeviceAdminActivity.this, LoginActivity.class);
-                        intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        TransilityDeviceAdminActivity.this.startActivity(intent1);
-                        Utility.appendLog("Offline Logout");
-                        finish();
-                    } else {
-                        InventoryDatabaseManager inventoryDatabaseManager = ((InventoryManagment) TransilityDeviceAdminActivity.this.getApplication()).getInventoryDatabasemanager();
-                        String sessionToken = inventoryDatabaseManager.getEmployeeDataTable().
-                                getSessionToken(((InventoryManagment) TransilityDeviceAdminActivity.this.getApplication()).getSqliteDatabase());
-                        if (!TextUtils.isEmpty(sessionToken)) {
+                    if (!Utility.checkInternetConnection(TransilityDeviceAdminActivity.this)){
+                        clearPrefAndLogoutFromApp();
+                    }
+                    else{
+                        String sessionToken = TransiltiyInvntoryAppSharedPref.getSessionToken(TransilityDeviceAdminActivity.this);
+                        if (!TextUtils.isEmpty(sessionToken)){
                             String json = Logout.writeLogoutJson(sessionToken);
                             String loginRequest = getResources().getString(R.string.baseUrl) + getResources().getString(R.string.api_logout);
                             restRequestFactoryWrapper.callHttpRestRequest(loginRequest, json, RESTRequest.Method.POST);
-                            Utility.appendLog("Logout API Request=" + loginRequest + " json=" + json + " Call Type=" + RESTRequest.Method.POST);
-                        } else {
-                            cleanTheDatabase();
-                            Utility.cancelCurrentPendingIntent(TransilityDeviceAdminActivity.this);
-                            Intent intent1 = new Intent(TransilityDeviceAdminActivity.this, LoginActivity.class);
-                            intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                            TransilityDeviceAdminActivity.this.startActivity(intent1);
-                            Utility.appendLog("Logout with no Previous Session Token");
-
-                            finish();
-
+                            Utility.appendLog("Logout API Request="+loginRequest+" json="+json+" Call Type="+RESTRequest.Method.POST);
+                        }
+                        else {
+                            clearPrefAndLogoutFromApp();
                         }
                     }
 
 
                     break;
                 case R.id.reportsBtn:
+                    Intent reportsIntent=new Intent(TransilityDeviceAdminActivity.this,ReportsActivity.class);
+                    startActivity(reportsIntent);
+
                     break;
             }
         }
     };
-    private CompoundButton.OnCheckedChangeListener onCheckedChangeListener = new CompoundButton.OnCheckedChangeListener() {
-
-        @Override
-        public void onCheckedChanged(CompoundButton buttonView,
-                                     boolean isChecked) {
-            if (isChecked) {
-                enableDeviceApp.setOnCheckedChangeListener(null);
-                if (!isMyDevicePolicyReceiverActive()) {
 
 
-                    int rowCount = inventoryManagment.getInventoryDatabasemanager().getEmployeeDataTable().getEmployeeTableRowCount(inventoryManagment.getSqliteDatabase());
-                    if (Utility.checkInternetConnection(TransilityDeviceAdminActivity.this)) {
-                        enableDeviceAdminApp();
-                    } else {
+    /**
+     * Clear the pref and logout from device.
+     */
+    private void clearPrefAndLogoutFromApp(){
+        Utility.clearPrefrences();
+        Utility.cancelCurrentPendingIntent(TransilityDeviceAdminActivity.this);
+        Intent intent1 = new Intent(TransilityDeviceAdminActivity.this, LoginActivity.class);
+        intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        TransilityDeviceAdminActivity.this.startActivity(intent1);
+        Utility.appendLog("Offline Logout");
+        finish();
+    }
 
-                        if (rowCount != 0) {
-                            enableDeviceAdminApp();
-                        } else {
-                            enableDeviceApp.setChecked(false);
-                            singleButtonAlertDialog = SingleButtonAlertDialog.newInstance(getString(R.string.textPleaseEnableNetwork));
-
-                            singleButtonAlertDialog.show(getFragmentManager(), SingleButtonAlertDialog.class.getSimpleName());
-
-                        }
-                    }
-
-
-                }
-
-            } else {
-
-
-                truitonDevicePolicyManager.removeActiveAdmin(truitonDevicePolicyAdmin);
-
-
-            }
-
-            enableDeviceApp.setOnCheckedChangeListener(onCheckedChangeListener);
-        }
-    };
-    private RestResponseShowFeedbackInterface restResponseShowFeedbackInterface = new RestResponseShowFeedbackInterface() {
-        @Override
-        public void onSuccessOfBackGroundOperation(RESTResponse reposeJson) {
-            Utility.appendLog("Response Logout API=" + reposeJson.getText());
-            Utility.logError(TransilityDeviceAdminActivity.class.getSimpleName(), "Request Code>>" + reposeJson.status.getCode() + " Resposne Message>>" + reposeJson.getText());
-            cleanTheDatabase();
-        }
-
-        @Override
-        public void onErrorInBackgroundOperation(RESTResponse reposeJson) {
-            Utility.appendLog("Response Logout API=" + reposeJson.getText());
-            Utility.logError(TransilityDeviceAdminActivity.class.getSimpleName(), "Request Code>>" + reposeJson.status.getCode() + " Resposne Message>>" + reposeJson.getText());
-            cleanTheDatabase();
-
-        }
-
-        @Override
-        public void onSuccessInForeGroundOperation(RESTResponse restResponse) {
-
-
-            Utility.cancelCurrentPendingIntent(TransilityDeviceAdminActivity.this);
-            Intent intent1 = new Intent(TransilityDeviceAdminActivity.this, LoginActivity.class);
-            intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            TransilityDeviceAdminActivity.this.startActivity(intent1);
-
-            finish();
-        }
-
-        @Override
-        public void onErrorInForeGroundOperation(RESTResponse restResponse) {
-
-
-            Utility.cancelCurrentPendingIntent(TransilityDeviceAdminActivity.this);
-            Intent intent1 = new Intent(TransilityDeviceAdminActivity.this, LoginActivity.class);
-            intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            TransilityDeviceAdminActivity.this.startActivity(intent1);
-
-            finish();
-        }
-    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -208,13 +135,12 @@ public class TransilityDeviceAdminActivity extends AppCompatActivity {
         enableDeviceApp = (Switch) findViewById(R.id.enableDeviceApp);
         logoutBtn = (Button) findViewById(R.id.logoutBtn);
         reportsBtn = (Button) findViewById(R.id.reportsBtn);
-        deviceIdTv = (TextView) findViewById(R.id.deviceIdTv);
 
         messageLineTv = (TextView) findViewById(R.id.messageLineTv);
         logoutBtn.setOnClickListener(onClickListener);
         reportsBtn.setOnClickListener(onClickListener);
 
-        deviceIdTv.setText(getString(R.string.textDeviceId) + Utility.getDeviceId(this));
+
 
         intiateGooglePlayService();
 
