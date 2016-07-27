@@ -1,6 +1,5 @@
 package com.transility.tim.android;
 
-import android.content.Context;
 import android.content.Intent;
 
 import org.junit.After;
@@ -10,10 +9,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricGradleTestRunner;
-import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowActivity;
-import org.robolectric.util.ActivityController;
 
 import static org.robolectric.Shadows.shadowOf;
 
@@ -46,7 +43,7 @@ public class SplashActivityTest {
         }
         ShadowActivity shadowActivity = shadowOf(activity);
         Intent startedIntent = shadowActivity.getNextStartedActivity();
-        Assert.assertEquals("Expected activity is not started",TransilityDeviceAdminActivity.class.getCanonicalName(), startedIntent.getComponent().getClassName());
+        Assert.assertEquals("Expected activity is not started",DeviceAdminActivity.class.getCanonicalName(), startedIntent.getComponent().getClassName());
         Assert.assertTrue("Splash screen is not finish", activity.isFinishing());
 
     }

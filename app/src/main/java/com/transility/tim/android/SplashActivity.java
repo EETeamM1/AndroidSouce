@@ -20,7 +20,7 @@ public class SplashActivity extends Activity {
                 }catch(InterruptedException e){
                     e.printStackTrace();
                 }finally{
-                    Intent intent=new Intent(SplashActivity.this,TransilityDeviceAdminActivity.class);
+                    Intent intent=new Intent(SplashActivity.this,DeviceAdminActivity.class);
                     startActivity(intent);
                     finish();
                 }

@@ -241,7 +241,7 @@ public class LoginActivity extends FragmentActivity {
         public void onSuccessOfBackGroundOperation(RESTResponse reposeJson) {
             String response = reposeJson.getText();
             Utility.appendLog("Login Response=" + response);
-            Utility.logError(TransilityDeviceAdminActivity.class.getSimpleName(), "Request Code>>" + reposeJson.status.getCode() + " Resposne Message>>" + response);
+            Utility.logError(DeviceAdminActivity.class.getSimpleName(), "Request Code>>" + reposeJson.status.getCode() + " Resposne Message>>" + response);
 
             Logon logon = Logon.parseLogon(response);
             TransiltiyInvntoryAppSharedPref.setMasterPasswordToSharedPref(LoginActivity.this, logon.getMasterPassword());
