@@ -8,12 +8,14 @@ import android.util.Log;
 import com.transility.tim.android.Constants;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
+ * This implements an AsyncTask that issues REST requests
+ * and dispatches the REST responses to the correct response-handlers.
+ * This class should only be used by the RESTRequestFactory class.
  * @auther Himanshu Bapna
  * */
 public class ResponseFetcher  extends AsyncTask<Void,RESTResponse,RESTResponse> {

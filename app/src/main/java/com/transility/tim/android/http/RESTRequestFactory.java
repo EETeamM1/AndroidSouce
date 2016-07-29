@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * This class creates and dispatches REST requests and makes sure the correct RESTResponseHandlers are called
+ * back upon the server's response.
  * Created by Himanshu Bapna
  */
 public class RESTRequestFactory {

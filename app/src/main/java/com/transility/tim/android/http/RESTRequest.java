@@ -16,6 +16,7 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
+ * This class send a HttpURLConnection and handle response of it.
  * @author Himanshu Bapna
  */
 public class RESTRequest {
