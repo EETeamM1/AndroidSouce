@@ -7,5 +7,6 @@
     <string name="masterPassword">Admin</string>
     <string name="deviceReports">deviceReport?</string>
     <integer name="defaultSessionTimeOutPeriod">30</integer>
+    <string name="admin_session_token_constant">user_session_admin</string>
 
 </resources>

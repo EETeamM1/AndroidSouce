@@ -95,6 +95,7 @@ public class LoginActivity extends FragmentActivity {
 
                         Utility.appendLog("Authentication is through Admin credentials UserName=" + username.getText() + " Password=" + password.getText());
                         errorMessage.setText(getString(R.string.textWindowWarning));
+                        TransiltiyInvntoryAppSharedPref.setSessionTokenToSharedPref(LoginActivity.this,getString(R.string.admin_session_token_constant));
 
                         Thread timerThread = new Thread() {
                             public void run() {
