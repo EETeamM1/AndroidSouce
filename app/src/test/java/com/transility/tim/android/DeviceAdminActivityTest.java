@@ -27,10 +27,10 @@ import org.robolectric.util.ActivityController;
  */
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class)
-public class TransilityDeviceAdminActivityTest {
+public class DeviceAdminActivityTest {
 
-    private  ActivityController<TransilityDeviceAdminActivity> transilityDeviceAdminActivityActivityController;
-    private TransilityDeviceAdminActivity transilityDeviceAdminActivity;
+    private  ActivityController<DeviceAdminActivity> transilityDeviceAdminActivityActivityController;
+    private DeviceAdminActivity deviceAdminActivity;
     private InventoryManagment inventoryManagment;
     private Context context;
 
@@ -41,7 +41,7 @@ public class TransilityDeviceAdminActivityTest {
          inventoryManagment= (InventoryManagment) RuntimeEnvironment.application;
         ShadowApplication shadowApplication= org.robolectric.Shadows.shadowOf(RuntimeEnvironment.application);
 
-        transilityDeviceAdminActivityActivityController = Robolectric.buildActivity(TransilityDeviceAdminActivity.class).create();
+        transilityDeviceAdminActivityActivityController = Robolectric.buildActivity(DeviceAdminActivity.class).create();
         ShadowGooglePlayServicesUtil.setIsGooglePlayServicesAvailable(ConnectionResult.SUCCESS);
     }
 
@@ -50,47 +50,47 @@ public class TransilityDeviceAdminActivityTest {
         context = null;
         inventoryManagment = null;
         transilityDeviceAdminActivityActivityController = null;
-        transilityDeviceAdminActivity = null;
+        deviceAdminActivity = null;
     }
 
     @Test
     public void test001CheckUiWhenUserFirstLaunchTheApplication(){
-        transilityDeviceAdminActivity= transilityDeviceAdminActivityActivityController.start().resume().visible().get();
+        deviceAdminActivity = transilityDeviceAdminActivityActivityController.start().resume().visible().get();
 
 
-         Switch enableDeviceApp= (Switch) transilityDeviceAdminActivity.findViewById(R.id.enableDeviceApp);
+         Switch enableDeviceApp= (Switch) deviceAdminActivity.findViewById(R.id.enableDeviceApp);
 
-         Button logoutBtn= (Button) transilityDeviceAdminActivity.findViewById(R.id.logoutBtn);
+         Button logoutBtn= (Button) deviceAdminActivity.findViewById(R.id.logoutBtn);
 
-           Button reportsBtn= (Button) transilityDeviceAdminActivity.findViewById(R.id.reportsBtn);
+           Button reportsBtn= (Button) deviceAdminActivity.findViewById(R.id.reportsBtn);
 
-        TextView messageLineTv= (TextView) transilityDeviceAdminActivity.findViewById(R.id.messageLineTv);
+        TextView messageLineTv= (TextView) deviceAdminActivity.findViewById(R.id.messageLineTv);
 
         Assert.assertTrue("Enable Admin app swith is not visisble",enableDeviceApp.getVisibility()==View.VISIBLE);
         Assert.assertFalse("Enable Admin app should be disable by default",enableDeviceApp.isChecked());
         Assert.assertTrue("Logut button should not be visible",logoutBtn.getVisibility()==View.GONE);
         Assert.assertTrue("Reports button should not be visible",reportsBtn.getVisibility()==View.GONE);
-        Assert.assertEquals("Message is incorrect",messageLineTv.getText(),transilityDeviceAdminActivity.getString(R.string.textAdminAppTextWhenDisabled));
+        Assert.assertEquals("Message is incorrect",messageLineTv.getText(), deviceAdminActivity.getString(R.string.textAdminAppTextWhenDisabled));
 
     }
     @Test
     public void test002CheckUiWhenUserHasPerfromedLogin(){
-        transilityDeviceAdminActivity= transilityDeviceAdminActivityActivityController.start().resume().visible().get();
+        deviceAdminActivity = transilityDeviceAdminActivityActivityController.start().resume().visible().get();
 
         TransiltiyInvntoryAppSharedPref.setMasterPasswordToSharedPref(context, "Test");
         TransiltiyInvntoryAppSharedPref.setSessionTokenToSharedPref(context, "Test Session Token");
         TransiltiyInvntoryAppSharedPref.setSessionTimeoutToSharedPref(context, 10);
 
-        Switch enableDeviceApp= (Switch) transilityDeviceAdminActivity.findViewById(R.id.enableDeviceApp);
-        Button logoutBtn= (Button) transilityDeviceAdminActivity.findViewById(R.id.logoutBtn);
-        Button reportsBtn= (Button) transilityDeviceAdminActivity.findViewById(R.id.reportsBtn);
+        Switch enableDeviceApp= (Switch) deviceAdminActivity.findViewById(R.id.enableDeviceApp);
+        Button logoutBtn= (Button) deviceAdminActivity.findViewById(R.id.logoutBtn);
+        Button reportsBtn= (Button) deviceAdminActivity.findViewById(R.id.reportsBtn);
 
-        TextView messageLineTv= (TextView) transilityDeviceAdminActivity.findViewById(R.id.messageLineTv);
+        TextView messageLineTv= (TextView) deviceAdminActivity.findViewById(R.id.messageLineTv);
 
         Assert.assertTrue("Enable Admin app swith is not visisble",enableDeviceApp.getVisibility()==View.VISIBLE);
         Assert.assertTrue("Logut button should not be visible",logoutBtn.getVisibility()==View.GONE);
         Assert.assertTrue("Reports button should not be visible",reportsBtn.getVisibility()==View.GONE);
-//        Assert.assertEquals("Message is incorrect",messageLineTv.getText(),transilityDeviceAdminActivity.getString(R.string.textAdminAppWhenEnabled));
+//        Assert.assertEquals("Message is incorrect",messageLineTv.getText(),deviceAdminActivity.getString(R.string.textAdminAppWhenEnabled));
     }
 
 
@@ -98,7 +98,7 @@ public class TransilityDeviceAdminActivityTest {
 //    @Test
 //    public void test003ChekIfUserIsLogoutFromScreenWhenInternetIsConnected(){
 //
-//        transilityDeviceAdminActivity= transilityDeviceAdminActivityActivityController.start().resume().visible().get();
+//        deviceAdminActivity= transilityDeviceAdminActivityActivityController.start().resume().visible().get();
 //        InventoryDatabaseManager inventoryDatabaseManager=inventoryManagment.getInventoryDatabasemanager();
 //        EmployeeInfoBean employeeInfoBean=new EmployeeInfoBean();
 //        employeeInfoBean.setMasterPassword("Test");
@@ -112,13 +112,13 @@ public class TransilityDeviceAdminActivityTest {
 //    @Test
 //    public void test004CheckIfUserLogoutFromScreenWhenInternetIsConnected(){
 //
-//        transilityDeviceAdminActivity= transilityDeviceAdminActivityActivityController.start().resume().visible().get();
+//        deviceAdminActivity= transilityDeviceAdminActivityActivityController.start().resume().visible().get();
 //        InventoryDatabaseManager inventoryDatabaseManager=inventoryManagment.getInventoryDatabasemanager();
 //        EmployeeInfoBean employeeInfoBean=new EmployeeInfoBean();
 //        employeeInfoBean.setMasterPassword("Test");
 //        employeeInfoBean.setSessionToken("Test Session Token");
 //        employeeInfoBean.setTimeOutPeriod(10);
 //        inventoryDatabaseManager.getEmployeeDataTable().insertEmployeeInfoToEmployeeInfoTable(inventoryManagment.getSqliteDatabase(),employeeInfoBean);
-//        Assert.assertTrue("Device Admin activity should get destroyed",transilityDeviceAdminActivity.isDestroyed());
+//        Assert.assertTrue("Device Admin activity should get destroyed",deviceAdminActivity.isDestroyed());
 //    }
 }

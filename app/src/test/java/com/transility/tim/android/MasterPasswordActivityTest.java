@@ -34,29 +34,29 @@ import static org.robolectric.Shadows.shadowOf;
 
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class)
-public class MasterPasswordScreenTest {
+public class MasterPasswordActivityTest {
 
-    ActivityController<MasterPasswordScreen> activityController;
-    private MasterPasswordScreen  masterPasswordScreenActivity;
+    ActivityController<MasterPasswordActivity> activityController;
+    private MasterPasswordActivity masterPasswordActivityActivity;
     Context context;
 
     @Before
     public void setUp() {
         context = RuntimeEnvironment.application.getBaseContext();
-        activityController = Robolectric.buildActivity(MasterPasswordScreen.class).create();
-        masterPasswordScreenActivity= activityController.start().resume().visible().get();
+        activityController = Robolectric.buildActivity(MasterPasswordActivity.class).create();
+        masterPasswordActivityActivity = activityController.start().resume().visible().get();
     }
 
     @After
     public void tearDown() {
         context = null;
         activityController = null;
-        masterPasswordScreenActivity = null;
+        masterPasswordActivityActivity = null;
     }
 
     @Test
     public void testCheckUI() {
-        View activityView = masterPasswordScreenActivity.attacheViewWithIdToWindow(R.layout.layout_master_password_screen);
+        View activityView = masterPasswordActivityActivity.attacheViewWithIdToWindow(R.layout.layout_master_password_screen);
 
         Button masterpasswordEntredBtn= (Button) activityView.findViewById(R.id.masterpasswordEntredBtn);
         Assert.assertEquals("The text on master password button is incorrect.", "Submit", masterpasswordEntredBtn.getText());
@@ -71,8 +71,8 @@ public class MasterPasswordScreenTest {
     @Test
     public void testAdminPolicyButtonOnClick() {
 
-        masterPasswordScreenActivity.continueWithAdminPolicy.performClick();
-        ShadowActivity shadowActivity = shadowOf(masterPasswordScreenActivity);
+        masterPasswordActivityActivity.continueWithAdminPolicy.performClick();
+        ShadowActivity shadowActivity = shadowOf(masterPasswordActivityActivity);
         Intent startedIntent = shadowActivity.getNextStartedActivity();
         Assert.assertEquals("Intent action is incorrect", DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN, startedIntent.getAction());
         ComponentName truitonDevicePolicyAdmin = startedIntent.getParcelableExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN);
@@ -81,13 +81,13 @@ public class MasterPasswordScreenTest {
 
     @Test
     public void testMasterPasswordButtonOnClick() {
-        masterPasswordScreenActivity.passwordFieldEt.setText("");
-        masterPasswordScreenActivity.masterpasswordEntredBtn.performClick();
-        Assert.assertEquals("Invalid error message", "Password cannot be empty.", masterPasswordScreenActivity.passwordFieldEt.getError());
+        masterPasswordActivityActivity.passwordFieldEt.setText("");
+        masterPasswordActivityActivity.masterpasswordEntredBtn.performClick();
+        Assert.assertEquals("Invalid error message", "Password cannot be empty.", masterPasswordActivityActivity.passwordFieldEt.getError());
 
-        masterPasswordScreenActivity.passwordFieldEt.setText("1234567890abcdefg");
-        masterPasswordScreenActivity.masterpasswordEntredBtn.performClick();
-        Assert.assertEquals("Invalid error message", "Master Password cannot be more than 15 characters of length.", masterPasswordScreenActivity.passwordFieldEt.getError());
+        masterPasswordActivityActivity.passwordFieldEt.setText("1234567890abcdefg");
+        masterPasswordActivityActivity.masterpasswordEntredBtn.performClick();
+        Assert.assertEquals("Invalid error message", "Master Password cannot be more than 15 characters of length.", masterPasswordActivityActivity.passwordFieldEt.getError());
 
     }
 
@@ -98,9 +98,9 @@ public class MasterPasswordScreenTest {
         when(mockCalendar.get(Calendar.MONTH)).thenReturn(8);
         when(mockCalendar.get(Calendar.YEAR)).thenReturn(2016);
 
-        Assert.assertEquals("Algorithm value is incorrect", "1234567900293", masterPasswordScreenActivity.applyLamPortAlgoRithmUsingDateOnImei("1234567890123", mockCalendar));
-        Assert.assertEquals("Algorithm value is incorrect", "123456789108159", masterPasswordScreenActivity.applyLamPortAlgoRithmUsingDateOnImei("1234567890abcd", mockCalendar));
-        Assert.assertEquals("Algorithm value is incorrect", "123456789108159", masterPasswordScreenActivity.applyLamPortAlgoRithmUsingDateOnImei("1234567890abcd234", mockCalendar));
+        Assert.assertEquals("Algorithm value is incorrect", "1234567900293", masterPasswordActivityActivity.applyLamPortAlgoRithmUsingDateOnImei("1234567890123", mockCalendar));
+        Assert.assertEquals("Algorithm value is incorrect", "123456789108159", masterPasswordActivityActivity.applyLamPortAlgoRithmUsingDateOnImei("1234567890abcd", mockCalendar));
+        Assert.assertEquals("Algorithm value is incorrect", "123456789108159", masterPasswordActivityActivity.applyLamPortAlgoRithmUsingDateOnImei("1234567890abcd234", mockCalendar));
     }
 
 }

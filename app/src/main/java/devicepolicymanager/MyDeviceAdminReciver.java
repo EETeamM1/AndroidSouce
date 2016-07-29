@@ -14,7 +14,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.transility.tim.android.LoginActivity;
-import com.transility.tim.android.MasterPasswordScreen;
+import com.transility.tim.android.MasterPasswordActivity;
 import com.transility.tim.android.Utilities.TransiltiyInvntoryAppSharedPref;
 import com.transility.tim.android.Utilities.Utility;
 
@@ -31,7 +31,7 @@ public class MyDeviceAdminReciver extends DeviceAdminReceiver {
 
         Utility.cancelCurrentPendingIntent(context);
         Utility.clearPrefrences();
-        Intent intent1 = new Intent(context, MasterPasswordScreen.class);
+        Intent intent1 = new Intent(context, MasterPasswordActivity.class);
         intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent1);
 
@@ -80,7 +80,7 @@ public class MyDeviceAdminReciver extends DeviceAdminReceiver {
             Toast.makeText(context,"My Device Boot Completed",Toast.LENGTH_LONG).show();
            DevicePolicyManager truitonDevicePolicyManager = (DevicePolicyManager) context.getSystemService(Context.DEVICE_POLICY_SERVICE);
 
-            if (truitonDevicePolicyManager.isAdminActive(new ComponentName(context,MyDeviceAdminReciver.class))){
+            if (truitonDevicePolicyManager.isAdminActive(new ComponentName(context, MyDeviceAdminReciver.class))){
                 if (TextUtils.isEmpty(TransiltiyInvntoryAppSharedPref.getSessionToken(context))){
 
                     Utility.appendLog("Boot Got Completed and in previous shut down Login Mode was enabled.");
@@ -111,7 +111,7 @@ public class MyDeviceAdminReciver extends DeviceAdminReceiver {
 
             }
             else if (TransiltiyInvntoryAppSharedPref.isMasterPasswordScreenVisible(context)){
-                Intent intent1=new Intent(context, MasterPasswordScreen.class);
+                Intent intent1=new Intent(context, MasterPasswordActivity.class);
                 intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(intent1);
             }

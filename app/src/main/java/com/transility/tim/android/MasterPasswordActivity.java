@@ -26,7 +26,7 @@ import java.util.regex.Pattern;
 
 import devicepolicymanager.MyDeviceAdminReciver;
 
-public class MasterPasswordScreen extends Activity {
+public class MasterPasswordActivity extends Activity {
 
     public final static int REQUESTCODE_FROMAPP=501;
     protected Button masterpasswordEntredBtn,continueWithAdminPolicy;
@@ -108,7 +108,7 @@ public class MasterPasswordScreen extends Activity {
 
     private String calclualteMasterPassword(){
         String masterPasswordString=null;
-        masterPasswordString=  applyLamPortAlgoRithmUsingDateOnImei(Utility.getDeviceId(MasterPasswordScreen.this), Calendar.getInstance());
+        masterPasswordString=  applyLamPortAlgoRithmUsingDateOnImei(Utility.getDeviceId(MasterPasswordActivity.this), Calendar.getInstance());
         return masterPasswordString;
     }
 
@@ -132,7 +132,7 @@ public class MasterPasswordScreen extends Activity {
             imeiNumber=imeiNumber.substring(0,15);
         }
         imeiNumberNumeric=Long.parseLong(imeiNumber);
-        Utility.logError(MasterPasswordScreen.class.getSimpleName(),"Imei Number>>>"+imeiNumberNumeric+"");
+        Utility.logError(MasterPasswordActivity.class.getSimpleName(),"Imei Number>>>"+imeiNumberNumeric+"");
 
 
         for (int i = 0; i < 5; i++) {
@@ -143,7 +143,7 @@ public class MasterPasswordScreen extends Activity {
             imeiNumberNumeric = temp;
         }
         String masterPassword = imeiNumberNumeric + "";
-        Utility.logError(MasterPasswordScreen.class.getSimpleName(), "Master Password>>>" + masterPassword + "");
+        Utility.logError(MasterPasswordActivity.class.getSimpleName(), "Master Password>>>" + masterPassword + "");
         if (masterPassword.length() >=15) {
 
             return masterPassword.substring(0, 14).substring(6, 14);

@@ -39,7 +39,7 @@ import com.transility.tim.android.http.RestRequestFactoryWrapper;
 
 import devicepolicymanager.MyDeviceAdminReciver;
 
-public class TransilityDeviceAdminActivity extends AppCompatActivity {
+public class DeviceAdminActivity extends AppCompatActivity {
     private final static String LOG_TAG = "DevicePolicyAdmin";
     DevicePolicyManager truitonDevicePolicyManager;
     ComponentName truitonDevicePolicyAdmin;
@@ -82,11 +82,11 @@ public class TransilityDeviceAdminActivity extends AppCompatActivity {
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.logoutBtn:
-                    if (!Utility.checkInternetConnection(TransilityDeviceAdminActivity.this)){
+                    if (!Utility.checkInternetConnection(DeviceAdminActivity.this)){
                         clearPrefAndLogoutFromApp();
                     }
                     else{
-                        String sessionToken = TransiltiyInvntoryAppSharedPref.getSessionToken(TransilityDeviceAdminActivity.this);
+                        String sessionToken = TransiltiyInvntoryAppSharedPref.getSessionToken(DeviceAdminActivity.this);
                         if (!TextUtils.isEmpty(sessionToken)){
                             String json = Logout.writeLogoutJson(sessionToken);
                             String loginRequest = getResources().getString(R.string.baseUrl) + getResources().getString(R.string.api_logout);
@@ -101,7 +101,7 @@ public class TransilityDeviceAdminActivity extends AppCompatActivity {
 
                     break;
                 case R.id.reportsBtn:
-                    Intent reportsIntent=new Intent(TransilityDeviceAdminActivity.this,ReportsActivity.class);
+                    Intent reportsIntent=new Intent(DeviceAdminActivity.this,ReportsActivity.class);
                     startActivity(reportsIntent);
 
                     break;
@@ -115,10 +115,10 @@ public class TransilityDeviceAdminActivity extends AppCompatActivity {
      */
     private void clearPrefAndLogoutFromApp(){
         Utility.clearPrefrences();
-        Utility.cancelCurrentPendingIntent(TransilityDeviceAdminActivity.this);
-        Intent intent1 = new Intent(TransilityDeviceAdminActivity.this, LoginActivity.class);
+        Utility.cancelCurrentPendingIntent(DeviceAdminActivity.this);
+        Intent intent1 = new Intent(DeviceAdminActivity.this, LoginActivity.class);
         intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        TransilityDeviceAdminActivity.this.startActivity(intent1);
+        DeviceAdminActivity.this.startActivity(intent1);
         Utility.appendLog("Offline Logout");
         finish();
     }
@@ -228,11 +228,11 @@ public class TransilityDeviceAdminActivity extends AppCompatActivity {
                 enableDeviceApp.setOnCheckedChangeListener(null);
                 if (!isMyDevicePolicyReceiverActive()) {
 
-                    if (Utility.checkInternetConnection(TransilityDeviceAdminActivity.this)) {
+                    if (Utility.checkInternetConnection(DeviceAdminActivity.this)) {
                         enableDeviceAdminApp();
                     } else {
 
-                        if (! TextUtils.isEmpty(TransiltiyInvntoryAppSharedPref.getSessionToken(TransilityDeviceAdminActivity.this))) {
+                        if (! TextUtils.isEmpty(TransiltiyInvntoryAppSharedPref.getSessionToken(DeviceAdminActivity.this))) {
                             enableDeviceAdminApp();
                         } else {
                             enableDeviceApp.setChecked(false);
@@ -275,7 +275,7 @@ public class TransilityDeviceAdminActivity extends AppCompatActivity {
         if (resultCode == RESULT_OK) {
             switch (requestCode) {
 
-                case MasterPasswordScreen.REQUESTCODE_FROMAPP:
+                case MasterPasswordActivity.REQUESTCODE_FROMAPP:
                     enableDeviceApp.setOnCheckedChangeListener(null);
                     enableDeviceApp.setChecked(false);
                     enableDeviceApp.setOnCheckedChangeListener(onCheckedChangeListener);
@@ -292,7 +292,7 @@ public class TransilityDeviceAdminActivity extends AppCompatActivity {
         } else if (resultCode == RESULT_CANCELED) {
             switch (requestCode) {
 
-                case MasterPasswordScreen.REQUESTCODE_FROMAPP:
+                case MasterPasswordActivity.REQUESTCODE_FROMAPP:
                     enableDeviceApp.setOnCheckedChangeListener(null);
                     enableDeviceApp.setChecked(true);
                     enableDeviceApp.setOnCheckedChangeListener(onCheckedChangeListener);
@@ -323,14 +323,14 @@ public class TransilityDeviceAdminActivity extends AppCompatActivity {
         @Override
         public void onSuccessOfBackGroundOperation(RESTResponse reposeJson) {
             Utility.appendLog("Response Logout API="+reposeJson.getText());
-            Utility.logError(TransilityDeviceAdminActivity.class.getSimpleName(),"Request Code>>"+reposeJson.status.getCode()+" Resposne Message>>"+reposeJson.getText());
+            Utility.logError(DeviceAdminActivity.class.getSimpleName(),"Request Code>>"+reposeJson.status.getCode()+" Resposne Message>>"+reposeJson.getText());
             Utility.clearPrefrences();
         }
 
         @Override
         public void onErrorInBackgroundOperation(RESTResponse reposeJson) {
             Utility.appendLog("Response Logout API="+reposeJson.getText());
-            Utility.logError(TransilityDeviceAdminActivity.class.getSimpleName(),"Request Code>>"+reposeJson.status.getCode()+" Resposne Message>>"+reposeJson.getText());
+            Utility.logError(DeviceAdminActivity.class.getSimpleName(),"Request Code>>"+reposeJson.status.getCode()+" Resposne Message>>"+reposeJson.getText());
             Utility.clearPrefrences();
 
         }
@@ -340,10 +340,10 @@ public class TransilityDeviceAdminActivity extends AppCompatActivity {
 
 
 
-            Utility.cancelCurrentPendingIntent(TransilityDeviceAdminActivity.this);
-            Intent intent1 = new Intent(TransilityDeviceAdminActivity.this, LoginActivity.class);
+            Utility.cancelCurrentPendingIntent(DeviceAdminActivity.this);
+            Intent intent1 = new Intent(DeviceAdminActivity.this, LoginActivity.class);
             intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            TransilityDeviceAdminActivity.this.startActivity(intent1);
+            DeviceAdminActivity.this.startActivity(intent1);
 
             finish();
         }
@@ -352,10 +352,10 @@ public class TransilityDeviceAdminActivity extends AppCompatActivity {
         public void onErrorInForeGroundOperation(RESTResponse restResponse) {
 
 
-            Utility.cancelCurrentPendingIntent(TransilityDeviceAdminActivity.this);
-            Intent intent1 = new Intent(TransilityDeviceAdminActivity.this, LoginActivity.class);
+            Utility.cancelCurrentPendingIntent(DeviceAdminActivity.this);
+            Intent intent1 = new Intent(DeviceAdminActivity.this, LoginActivity.class);
             intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            TransilityDeviceAdminActivity.this.startActivity(intent1);
+            DeviceAdminActivity.this.startActivity(intent1);
 
             finish();
         }
@@ -369,23 +369,23 @@ public class TransilityDeviceAdminActivity extends AppCompatActivity {
             final Status status = locationSettingsResult.getStatus();
             switch (status.getStatusCode()) {
                 case LocationSettingsStatusCodes.SUCCESS:
-                    Utility.logError(TransilityDeviceAdminActivity.class.getSimpleName(), "All location settings are satisfied.");
+                    Utility.logError(DeviceAdminActivity.class.getSimpleName(), "All location settings are satisfied.");
 
                     break;
                 case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
-                    Utility.logError(TransilityDeviceAdminActivity.class.getSimpleName(), "Location settings are not satisfied. Show the user a dialog to" +
+                    Utility.logError(DeviceAdminActivity.class.getSimpleName(), "Location settings are not satisfied. Show the user a dialog to" +
                             "upgrade location settings ");
 
                     try {
                         // Show the dialog by calling startResolutionForResult(), and check the result
                         // in onActivityResult().
-                        status.startResolutionForResult(TransilityDeviceAdminActivity.this, REQUEST_CHECK_SETTINGS);
+                        status.startResolutionForResult(DeviceAdminActivity.this, REQUEST_CHECK_SETTINGS);
                     } catch (IntentSender.SendIntentException e) {
-                        Utility.logError(TransilityDeviceAdminActivity.class.getSimpleName(), "PendingIntent unable to execute request.");
+                        Utility.logError(DeviceAdminActivity.class.getSimpleName(), "PendingIntent unable to execute request.");
                     }
                     break;
                 case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
-                    Utility.logError(TransilityDeviceAdminActivity.class.getSimpleName(), "Location settings are inadequate, and cannot be fixed here. Dialog " +
+                    Utility.logError(DeviceAdminActivity.class.getSimpleName(), "Location settings are inadequate, and cannot be fixed here. Dialog " +
                             "not created.");
                     break;
             }

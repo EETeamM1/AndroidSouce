@@ -40,7 +40,7 @@
         </receiver>
 
         <activity
-            android:name=".TransilityDeviceAdminActivity"
+            android:name=".DeviceAdminActivity"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"></activity>
         <activity
@@ -48,7 +48,7 @@
             android:launchMode="singleTask"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".MasterPasswordScreen"
+            android:name=".MasterPasswordActivity"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
@@ -72,11 +72,11 @@
         <activity
             android:name=".ReportsActivity"
             android:label="@string/title_activity_reports_screen"
-            android:parentActivityName=".TransilityDeviceAdminActivity"
+            android:parentActivityName=".DeviceAdminActivity"
             android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.transility.tim.android.TransilityDeviceAdminActivity" />
+                android:value=".DeviceAdminActivity" />
         </activity>
     </application>
 
