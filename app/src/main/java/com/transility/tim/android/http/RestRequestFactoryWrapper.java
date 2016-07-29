@@ -7,6 +7,7 @@ import com.transility.tim.android.Utilities.Utility;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Customized Wrapper class to interact with Rest Framework.
@@ -96,5 +97,16 @@ public class RestRequestFactoryWrapper {
     public void callHttpRestRequest(String requestUrl, String requestJson, RESTRequest.Method method) {
         List<RESTResponseHandler> handlers = Arrays.asList(okhandler, errorHandler);
         RESTRequestFactory.dispatch(context, method, requestUrl, requestJson, null, handlers, null);
+    }
+
+    /**
+     * Create and initate the Rest Request Passing the Query Params to it.
+     * @param requestUrl
+     * @param queryParmas
+     * @param method
+     */
+    public void callHttpRestRequest(String requestUrl,String requestJson, Map<String,Object> queryParmas, RESTRequest.Method method){
+        List<RESTResponseHandler> handlers = Arrays.asList(okhandler, errorHandler);
+        RESTRequestFactory.dispatch(context, method, requestUrl, requestJson, queryParmas, handlers, null);
     }
 }

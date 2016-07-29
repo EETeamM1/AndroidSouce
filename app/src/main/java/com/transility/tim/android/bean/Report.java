@@ -2,9 +2,11 @@ package com.transility.tim.android.bean;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.transility.tim.android.Constants;
+import com.transility.tim.android.Utilities.Utility;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -14,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Parser Bean class for Device Reports.
  * Created by Himanshu Bapna on 26/07/16.
  */
 public class Report implements Parcelable {
@@ -32,38 +35,46 @@ public class Report implements Parcelable {
 
     private Report (){}
 
-    private List<DeviceReport> deviceReportList;
+    private ArrayList<DeviceReport> deviceReportList;
 
     public static Report parseDeviceReport (String jsonResponse){
         Report report = new Report();
 
         try {
             JSONObject jsonObject = new JSONObject(jsonResponse);
-            JSONObject result  = jsonObject.getJSONObject("result");
+            JSONObject result  = jsonObject.optJSONObject("result");
 
-            JSONArray reportList = result.getJSONArray("deviceReportDtoList");
 
-            report.deviceReportList = new ArrayList<>();
-            for (int i=0; i<reportList.length(); i++){
-                JSONObject reportObject = reportList.getJSONObject(i);
+            if (result!=null){
+                JSONArray reportList = result.optJSONArray("deviceReportDtoList");
+                if (reportList!=null){
 
-                DeviceReport deviceReport = new DeviceReport();
-                deviceReport.setInTime(reportObject.optString("loginTIme"));
-                deviceReport.setOutTime(reportObject.optString("logOutTime"));
-                deviceReport.setUserId(reportObject.optString("userId"));
-                deviceReport.setUserName(reportObject.optString("userName"));
+                    report.deviceReportList = new ArrayList<>();
+                    for (int i=0; i<reportList.length(); i++){
+                        JSONObject reportObject = reportList.getJSONObject(i);
 
-                report.deviceReportList.add(deviceReport);
+                        DeviceReport deviceReport = new DeviceReport();
+                        deviceReport.setInTime(reportObject.optString("loginTIme"));
+                        deviceReport.setOutTime(reportObject.optString("logOutTime"));
+                        deviceReport.setUserId(reportObject.optString("userId"));
+                        deviceReport.setUserName(reportObject.optString("userName"));
+
+                        report.deviceReportList.add(deviceReport);
+                    }
+
+                }
+
             }
 
+
         } catch (JSONException e) {
-            Log.e(Constants.LOGTAG, "Unable to parse JSON: " + jsonResponse, e);
+            Utility.printHandledException(e);
             report = null;
         }
         return  report;
     }
 
-    public List<DeviceReport> getDeviceReportList(){
+    public ArrayList<DeviceReport> getDeviceReportList(){
         return deviceReportList;
     }
 
@@ -71,7 +82,7 @@ public class Report implements Parcelable {
         final Object[] values = source.readArray(getClass().getClassLoader());
         int i = 0;
 
-        deviceReportList = (List<DeviceReport>)values[i++];
+        deviceReportList = (ArrayList<DeviceReport>)values[i++];
     }
 
     @Override

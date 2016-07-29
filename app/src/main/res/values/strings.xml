@@ -31,4 +31,9 @@
     <string name="textContinueWithAdminPolicy">Continue with Admin Policies</string>
     <string name="textEnterMasterpassword">If you want to contine use the device please enter master password or else continue using device with Admin policies.</string>
     <string name="title_activity_reports_screen">ReportsScreen</string>
+    <string name="textNoReportAvaliable">No Reports Avaliable</string>
+    <string name="textErrorOccured">Sorry! some error occurred.</string>
+    <string name="textUseName">User Name</string>
+    <string name="textInTime">In Time</string>
+    <string name="textOutTime">Out Time</string>
 </resources>

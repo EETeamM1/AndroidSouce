@@ -15,6 +15,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.transility.tim.android.Utilities.TransiltiyInvntoryAppSharedPref;
 import com.transility.tim.android.Utilities.Utility;
@@ -42,8 +43,10 @@ public class MasterPasswordScreen extends Activity {
     private View.OnClickListener onClickListener=new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+            Utility.removeKeyboardfromScreen(v);
         switch (v.getId()){
             case R.id.continueWithAdminPolicy:
+                winManager.removeView(wrapperView);
                 enableDeviceAdminApp();
                 setResult(RESULT_CANCELED);
                 break;
@@ -72,7 +75,21 @@ public class MasterPasswordScreen extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        View activityView = attacheViewWithIdToWindow(R.layout.layout_master_password_screen);
+       attacheViewWithIdToWindowAndIntialiseViews(R.layout.layout_master_password_screen);
+
+        TransiltiyInvntoryAppSharedPref.setIsMasterPasswordScreenVisible(this, true);
+
+
+    }
+
+    protected void attacheViewWithIdToWindowAndIntialiseViews(int layoutId) {
+
+        WindowManager.LayoutParams localLayoutParams = new WindowManager.LayoutParams(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
+        winManager = ((WindowManager) getApplicationContext().getSystemService(WINDOW_SERVICE));
+        wrapperView = new RelativeLayout(this);
+        wrapperView.setBackgroundColor(this.getResources().getColor(R.color.backWhite));
+        this.winManager.addView(wrapperView, localLayoutParams);
+        View activityView= View.inflate(this, layoutId, wrapperView);
         masterpasswordEntredBtn = (Button) activityView.findViewById(R.id.masterpasswordEntredBtn);
         continueWithAdminPolicy = (Button) activityView.findViewById(R.id.continueWithAdminPolicy);
         passwordFieldEt = (EditText) activityView.findViewById(R.id.passwordFieldEt);
@@ -83,18 +100,7 @@ public class MasterPasswordScreen extends Activity {
         deviceIdTv.setText(getString(R.string.textDeviceId) + Utility.getDeviceId(this));
         masterpasswordEntredBtn.setOnClickListener(onClickListener);
         continueWithAdminPolicy.setOnClickListener(onClickListener);
-        TransiltiyInvntoryAppSharedPref.setIsMasterPasswordScreenVisible(this, true);
 
-
-    }
-
-    protected View attacheViewWithIdToWindow(int layoutId) {
-        WindowManager.LayoutParams localLayoutParams = new WindowManager.LayoutParams(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
-        winManager = ((WindowManager) getApplicationContext().getSystemService(WINDOW_SERVICE));
-        wrapperView = new RelativeLayout(this);
-        wrapperView.setBackgroundColor(this.getResources().getColor(R.color.backWhite));
-        this.winManager.addView(wrapperView, localLayoutParams);
-        return View.inflate(this, layoutId, wrapperView);
     }
 
     @Override
@@ -138,14 +144,41 @@ public class MasterPasswordScreen extends Activity {
         }
         String masterPassword = imeiNumberNumeric + "";
         Utility.logError(MasterPasswordScreen.class.getSimpleName(), "Master Password>>>" + masterPassword + "");
-        if (masterPassword.length() > 15) {
-            return masterPassword.substring(0, 15).substring(6, 15);
+        if (masterPassword.length() >=15) {
+
+            return masterPassword.substring(0, 14).substring(6, 14);
         } else {
             return masterPassword;
         }
 
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            switch (requestCode) {
+
+                case REQUEST_ENABLE:
+
+                    finish();
+                    break;
+
+            }
+        } else if (resultCode == RESULT_CANCELED) {
+            switch (requestCode) {
+
+                case REQUEST_ENABLE:
+                   attacheViewWithIdToWindowAndIntialiseViews(R.layout.layout_master_password_screen);
+
+                    break;
+
+            }
+
+        }
+
+
+    }
 
     /**
      * Function calls the activity that initates the enabling of the apllication as device admin app.
@@ -161,6 +194,12 @@ public class MasterPasswordScreen extends Activity {
     protected void onDestroy() {
         super.onDestroy();
         TransiltiyInvntoryAppSharedPref.setIsMasterPasswordScreenVisible(this, false);
-        winManager.removeView(wrapperView);
+        try{
+            winManager.removeView(wrapperView);
+        }
+        catch (RuntimeException w){
+        w.printStackTrace();
+        }
+
     }
 }

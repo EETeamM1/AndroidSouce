@@ -1,22 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-
-    android:layout_height="match_parent">
-
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
     <android.support.v7.widget.Toolbar
         android:id="@+id/reportScreenTb"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
         android:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-
+        android:layout_gravity="top"
         />
+<LinearLayout
+    android:id="@+id/parentContainerLv"
+    android:orientation="vertical" android:layout_width="match_parent"
+
+    android:layout_height="match_parent">
+
+
     <View
         android:layout_width="match_parent"
         android:layout_height="@dimen/metrics_1"
         android:background="@color/backMaroon"
         />
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:weightSum="8"
+        >
+
+        <TextView
+            android:id="@+id/userNameTv"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:maxLength="1"
+            android:layout_weight="4"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:text="@string/textUserName"
+            android:textStyle="bold"
+            android:background="@drawable/drawable_reports"
+            />
+
+        <TextView
+            android:id="@+id/intTimeTv"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:maxLength="1"
+            android:ellipsize="end"
+            android:text="@string/textInTime"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:background="@drawable/drawable_reports"
+            />
+        <TextView
+            android:id="@+id/outTimeTv"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:maxLength="1"
+            android:ellipsize="end"
+            android:text="@string/textOutTime"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:background="@drawable/drawable_reports"
+            />
+
+    </LinearLayout>
 
     <android.support.v7.widget.RecyclerView
         android:padding="@dimen/metrics_10"
@@ -25,4 +79,17 @@
         android:layout_height="match_parent"
         />
 
+
+
 </LinearLayout>
+    <TextView
+        android:id="@+id/errorMessageTv"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:visibility="gone"
+        android:layout_gravity="center"
+        android:textColor="@color/textColorMaron"
+        />
+</FrameLayout>
