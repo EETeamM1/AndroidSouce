@@ -145,7 +145,6 @@ public class MasterPasswordActivity extends Activity {
         String masterPassword = imeiNumberNumeric + "";
         Utility.logError(MasterPasswordActivity.class.getSimpleName(), "Master Password>>>" + masterPassword + "");
         if (masterPassword.length() >=15) {
-
             return masterPassword.substring(0, 14).substring(6, 14);
         } else {
             return masterPassword;

@@ -44,8 +44,8 @@ public class DeviceAdminActivity extends AppCompatActivity {
     DevicePolicyManager truitonDevicePolicyManager;
     ComponentName truitonDevicePolicyAdmin;
 
-    private Switch enableDeviceApp;
-    private Button logoutBtn, reportsBtn;
+    protected Switch enableDeviceApp;
+    protected Button logoutBtn, reportsBtn;
     private TextView messageLineTv;
     private SingleButtonAlertDialog singleButtonAlertDialog;
     private RestRequestFactoryWrapper restRequestFactoryWrapper;
@@ -54,6 +54,7 @@ public class DeviceAdminActivity extends AppCompatActivity {
     protected static final int REQUEST_ENABLE = 1;
 
     private GoogleApiClient mGoogleApiClient;
+
     private GoogleApiClient.ConnectionCallbacks connectionCallbacks = new GoogleApiClient.ConnectionCallbacks() {
         @Override
         public void onConnected(@Nullable Bundle bundle) {
@@ -61,7 +62,6 @@ public class DeviceAdminActivity extends AppCompatActivity {
             if (mGoogleApiClient != null) {
                 checkLocationSettings();
             }
-
         }
 
         @Override
@@ -72,11 +72,9 @@ public class DeviceAdminActivity extends AppCompatActivity {
     };
     private GoogleApiClient.OnConnectionFailedListener onConnectionFailedListener = new GoogleApiClient.OnConnectionFailedListener() {
         @Override
-        public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
-
-        }
+        public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {}
     };
+
     private View.OnClickListener onClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -97,9 +95,8 @@ public class DeviceAdminActivity extends AppCompatActivity {
                             clearPrefAndLogoutFromApp();
                         }
                     }
-
-
                     break;
+
                 case R.id.reportsBtn:
                     Intent reportsIntent=new Intent(DeviceAdminActivity.this,ReportsActivity.class);
                     startActivity(reportsIntent);
@@ -258,14 +255,9 @@ public class DeviceAdminActivity extends AppCompatActivity {
      * Function calls the activity that initates the enabling of the apllication as device admin app.
      */
     private void enableDeviceAdminApp() {
-        Intent intent = new Intent(
-                DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
-        intent.putExtra(
-                DevicePolicyManager.EXTRA_DEVICE_ADMIN,
-                truitonDevicePolicyAdmin);
-        intent.putExtra(
-                DevicePolicyManager.EXTRA_ADD_EXPLANATION,
-                "");
+        Intent intent = new Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
+        intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, truitonDevicePolicyAdmin);
+        intent.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION, "");
         startActivityForResult(intent, REQUEST_ENABLE);
     }
 

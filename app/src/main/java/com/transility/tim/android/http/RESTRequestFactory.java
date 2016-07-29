@@ -16,24 +16,11 @@ import java.util.Map;
  */
 public class RESTRequestFactory {
 
-    static boolean isInitialized = false;
     static RESTRequestFactory DISPATCHER_FACTORY = null;
     private Context appContext;
 
     protected RESTRequestFactory(android.content.Context context) {
         appContext = context.getApplicationContext();
-    }
-
-    /**
-     * Initializes the HTTP context.
-     * Set up 'global' communication settings.
-     */
-    static synchronized void initializeContexts(android.content.Context appContext) {
-        if (isInitialized) {
-            return;
-        }
-
-        isInitialized = true;
     }
 
     /**
