@@ -15,10 +15,11 @@ import com.transility.tim.android.http.RestRequestFactoryWrapper;
  * Created the service to perform logout operation in background.
  * Created by ambesh.kukreja on 7/6/2016.
  */
-public class LogoutServiceClient extends IntentService{
+public class LogoutServiceClient extends IntentService {
 
 
-    private boolean isOperationCompleted=false;
+    private boolean isOperationCompleted = false;
+
     /**
      * Creates an IntentService.  Invoked by your subclass's constructor.
      *
@@ -29,7 +30,7 @@ public class LogoutServiceClient extends IntentService{
 
     }
 
-    public LogoutServiceClient(){
+    public LogoutServiceClient() {
         super(LogoutServiceClient.class.getSimpleName());
     }
 
@@ -40,15 +41,15 @@ public class LogoutServiceClient extends IntentService{
         String sessionToken = TransiltiyInvntoryAppSharedPref.getSessionToken(this);
         String json = Logout.writeLogoutJson(sessionToken);
         String logoutRequest = getResources().getString(R.string.baseUrl) + getResources().getString(R.string.api_logout);
-        Utility.appendLog("Logout Request="+logoutRequest+" Json="+json+" Request Type="+RESTRequest.Method.POST);
+        Utility.appendLog("Logout Request=" + logoutRequest + " Json=" + json + " Request Type=" + RESTRequest.Method.POST);
 
-        RestRequestFactoryWrapper   restRequestFactoryWrapper = new RestRequestFactoryWrapper(this, null);
+        RestRequestFactoryWrapper restRequestFactoryWrapper = new RestRequestFactoryWrapper(this, null);
         restRequestFactoryWrapper.callHttpRestRequest(logoutRequest, json, RESTRequest.Method.POST);
 
         Utility.cancelCurrentPendingIntent(LogoutServiceClient.this);
         Utility.clearPrefrences();
 
-        Intent intent1=new Intent(this, LoginActivity.class);
+        Intent intent1 = new Intent(this, LoginActivity.class);
         intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent1);
     }

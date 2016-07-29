@@ -37,5 +37,4 @@ dependencies {
     compile 'com.android.support:recyclerview-v7:22.0.0'
 
 
-
 }

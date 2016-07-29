@@ -65,7 +65,7 @@ public class RESTResponseTest {
         RESTResponse response = new RESTResponse(RESTResponse.Status.SUCCESS_OK, new ByteArrayInputStream(getJSON().getBytes()), null);
         Assert.assertEquals("Response value is not correct", getJSON(), response.getText());
     }
-    
+
     private String getJSON (){
         return  "{" + "\"parameters\":{" +
                 "\"userId\":\"user1\"," +
