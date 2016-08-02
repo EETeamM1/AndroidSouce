@@ -4,7 +4,7 @@
 
 
     <stroke
-        android:width="@dimen/metrics_1"
+        android:width=".5dp"
         android:color="@color/backMaroon"
 
         />

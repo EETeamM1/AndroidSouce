@@ -39,7 +39,7 @@ public class DeviceAdminActivityTest {
 
         context = RuntimeEnvironment.application.getBaseContext();
          inventoryManagment= (InventoryManagment) RuntimeEnvironment.application;
-        ShadowApplication shadowApplication= org.robolectric.Shadows.shadowOf(RuntimeEnvironment.application);
+
 
         transilityDeviceAdminActivityActivityController = Robolectric.buildActivity(DeviceAdminActivity.class).create();
         ShadowGooglePlayServicesUtil.setIsGooglePlayServicesAvailable(ConnectionResult.SUCCESS);
@@ -85,40 +85,14 @@ public class DeviceAdminActivityTest {
         Button logoutBtn= (Button) deviceAdminActivity.findViewById(R.id.logoutBtn);
         Button reportsBtn= (Button) deviceAdminActivity.findViewById(R.id.reportsBtn);
 
-        TextView messageLineTv= (TextView) deviceAdminActivity.findViewById(R.id.messageLineTv);
+
 
         Assert.assertTrue("Enable Admin app swith is not visisble",enableDeviceApp.getVisibility()==View.VISIBLE);
         Assert.assertTrue("Logut button should not be visible",logoutBtn.getVisibility()==View.GONE);
         Assert.assertTrue("Reports button should not be visible",reportsBtn.getVisibility()==View.GONE);
-//        Assert.assertEquals("Message is incorrect",messageLineTv.getText(),deviceAdminActivity.getString(R.string.textAdminAppWhenEnabled));
+
     }
 
 
-//    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
-//    @Test
-//    public void test003ChekIfUserIsLogoutFromScreenWhenInternetIsConnected(){
-//
-//        deviceAdminActivity= transilityDeviceAdminActivityActivityController.start().resume().visible().get();
-//        InventoryDatabaseManager inventoryDatabaseManager=inventoryManagment.getInventoryDatabasemanager();
-//        EmployeeInfoBean employeeInfoBean=new EmployeeInfoBean();
-//        employeeInfoBean.setMasterPassword("Test");
-//        employeeInfoBean.setSessionToken("Test Session Token");
-//        employeeInfoBean.setTimeOutPeriod(10);
-//        inventoryDatabaseManager.getEmployeeDataTable().insertEmployeeInfoToEmployeeInfoTable(inventoryManagment.getSqliteDatabase(),employeeInfoBean);
-//
-//    }
-//
-//    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
-//    @Test
-//    public void test004CheckIfUserLogoutFromScreenWhenInternetIsConnected(){
-//
-//        deviceAdminActivity= transilityDeviceAdminActivityActivityController.start().resume().visible().get();
-//        InventoryDatabaseManager inventoryDatabaseManager=inventoryManagment.getInventoryDatabasemanager();
-//        EmployeeInfoBean employeeInfoBean=new EmployeeInfoBean();
-//        employeeInfoBean.setMasterPassword("Test");
-//        employeeInfoBean.setSessionToken("Test Session Token");
-//        employeeInfoBean.setTimeOutPeriod(10);
-//        inventoryDatabaseManager.getEmployeeDataTable().insertEmployeeInfoToEmployeeInfoTable(inventoryManagment.getSqliteDatabase(),employeeInfoBean);
-//        Assert.assertTrue("Device Admin activity should get destroyed",deviceAdminActivity.isDestroyed());
-//    }
+
 }

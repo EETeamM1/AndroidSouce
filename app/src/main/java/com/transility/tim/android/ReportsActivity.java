@@ -1,6 +1,7 @@
 package com.transility.tim.android;
 
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -8,6 +9,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.transility.tim.android.Adapters.ReportsAdapter;
@@ -27,20 +29,28 @@ public class ReportsActivity extends AppCompatActivity {
     private RecyclerView reportsScreenRv;
     private LinearLayout parentContainerLv;
     private TextView errorMessageTv;
+    private ProgressBar reportPb;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_reports_screen);
         Toolbar toolbar = (Toolbar) findViewById(R.id.reportScreenTb);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle(R.string.textReportScreen);
+        ActionBar actionBar=getSupportActionBar();
+        if (actionBar!=null){
+            actionBar.setTitle(R.string.textReportScreen);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            toolbar.setTitleTextColor(getResources().getColor(R.color.textColorMaron));
+        }
 
-        toolbar.setTitleTextColor(getResources().getColor(R.color.textColorMaron));
+
+
         restRequestFactoryWrapper=new RestRequestFactoryWrapper(this,restResponseShowFeedbackInterface);
         reportsScreenRv= (RecyclerView) findViewById(R.id.reportsScreenRv);
         parentContainerLv= (LinearLayout) findViewById(R.id.parentContainerLv);
         errorMessageTv= (TextView) findViewById(R.id.errorMessageTv);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        reportPb= (ProgressBar) findViewById(R.id.reportPb);
+
         callGetRequestAndFetchReportsOfDevice();
     }
 
@@ -50,14 +60,15 @@ public class ReportsActivity extends AppCompatActivity {
      */
     private void callGetRequestAndFetchReportsOfDevice(){
         if (Utility.checkInternetConnection(this)){
+            parentContainerLv.setVisibility(View.GONE);
             Map<String,Object> queryParams=new HashMap<>();
             queryParams.put("deviceId",Utility.getDeviceId(this));
-            restRequestFactoryWrapper.callHttpRestRequest(getString(R.string.baseUrl)+getString(R.string.deviceReports),null,queryParams, RESTRequest.Method.GET);
+            restRequestFactoryWrapper.callHttpRestRequest(getString(R.string.baseUrl)+getString(R.string.deviceReports),queryParams, RESTRequest.Method.GET);
+            reportPb.setVisibility(View.VISIBLE);
         }
         else
         {
-            parentContainerLv.setVisibility(View.GONE);
-            errorMessageTv.setText(getString(R.string.textNetworkNotAvaliable));
+            updateUiOnFailure(getString(R.string.textNetworkNotAvaliable));
         }
     }
 
@@ -69,7 +80,7 @@ public class ReportsActivity extends AppCompatActivity {
     /**
      * Events which will get called when reports API completed the execution.
      */
-    private RestResponseShowFeedbackInterface restResponseShowFeedbackInterface=new RestResponseShowFeedbackInterface() {
+    private final RestResponseShowFeedbackInterface restResponseShowFeedbackInterface=new RestResponseShowFeedbackInterface() {
         @Override
         public void onSuccessOfBackGroundOperation(RESTResponse reposeJson) {
 
@@ -85,16 +96,18 @@ public class ReportsActivity extends AppCompatActivity {
 
         @Override
         public void onSuccessInForeGroundOperation(RESTResponse restResponse) {
-
-            if (report != null && !report.getDeviceReportList().isEmpty()) {
+            reportPb.setVisibility(View.GONE);
+            if (report != null &&(report.getDeviceReportList()!=null)&& !report.getDeviceReportList().isEmpty()) {
+                parentContainerLv.setVisibility(View.VISIBLE);
 
                 ReportsAdapter reportsAdapter = new ReportsAdapter(report.getDeviceReportList());
-                RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
-                reportsScreenRv.setLayoutManager(layoutManager);
+                LinearLayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
                 reportsScreenRv.setAdapter(reportsAdapter);
+                reportsScreenRv.setLayoutManager(layoutManager);
+
             } else {
-                parentContainerLv.setVisibility(View.GONE);
-                errorMessageTv.setText(getString(R.string.textNoReportAvaliable));
+
+                updateUiOnFailure(getString(R.string.textNoReportAvaliable));
 
             }
 
@@ -103,9 +116,17 @@ public class ReportsActivity extends AppCompatActivity {
 
         @Override
         public void onErrorInForeGroundOperation(RESTResponse restResponse) {
-            parentContainerLv.setVisibility(View.GONE);
-            errorMessageTv.setText(getString(R.string.textErrorOccured));
+           updateUiOnFailure(getString(R.string.textErrorOccured));
         }
     };
 
+    /**
+     * Shows the error feedback to user.
+     * @param message The error message that needs to be shown to user.
+     */
+    private void updateUiOnFailure(String message){
+        parentContainerLv.setVisibility(View.GONE);
+        errorMessageTv.setVisibility(View.VISIBLE);
+        errorMessageTv.setText(message);
+    }
 }

@@ -2,10 +2,8 @@ package com.transility.tim.android.bean;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.text.TextUtils;
-import android.util.Log;
 
-import com.transility.tim.android.Constants;
+
 import com.transility.tim.android.Utilities.Utility;
 
 import org.json.JSONArray;
@@ -13,7 +11,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.List;
+
 
 /**
  * Parser Bean class for Device Reports.

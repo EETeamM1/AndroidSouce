@@ -6,8 +6,7 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.view.Menu;
-import android.view.MenuItem;
+
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -15,7 +14,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
+
 
 import com.transility.tim.android.Utilities.TransiltiyInvntoryAppSharedPref;
 import com.transility.tim.android.Utilities.Utility;
@@ -40,7 +39,7 @@ public class MasterPasswordActivity extends Activity {
     private TextView deviceIdTv;
 
 
-    private View.OnClickListener onClickListener=new View.OnClickListener() {
+    private final View.OnClickListener onClickListener=new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             Utility.removeKeyboardfromScreen(v);
@@ -75,21 +74,24 @@ public class MasterPasswordActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-       attacheViewWithIdToWindowAndIntialiseViews(R.layout.layout_master_password_screen);
+       attacheViewWithIdToWindowAndIntialiseViews();
 
         TransiltiyInvntoryAppSharedPref.setIsMasterPasswordScreenVisible(this, true);
 
 
     }
 
-    protected void attacheViewWithIdToWindowAndIntialiseViews(int layoutId) {
+    /**
+     * Attach the current device window with view of Master Password
+     */
+    protected View attacheViewWithIdToWindowAndIntialiseViews() {
 
         WindowManager.LayoutParams localLayoutParams = new WindowManager.LayoutParams(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
         winManager = ((WindowManager) getApplicationContext().getSystemService(WINDOW_SERVICE));
         wrapperView = new RelativeLayout(this);
         wrapperView.setBackgroundColor(this.getResources().getColor(R.color.backWhite));
         this.winManager.addView(wrapperView, localLayoutParams);
-        View activityView= View.inflate(this, layoutId, wrapperView);
+        View activityView= View.inflate(this, R.layout.layout_master_password_screen, wrapperView);
         masterpasswordEntredBtn = (Button) activityView.findViewById(R.id.masterpasswordEntredBtn);
         continueWithAdminPolicy = (Button) activityView.findViewById(R.id.continueWithAdminPolicy);
         passwordFieldEt = (EditText) activityView.findViewById(R.id.passwordFieldEt);
@@ -101,14 +103,15 @@ public class MasterPasswordActivity extends Activity {
         masterpasswordEntredBtn.setOnClickListener(onClickListener);
         continueWithAdminPolicy.setOnClickListener(onClickListener);
 
+        return activityView;
+
     }
 
     @Override
     public void onBackPressed() {}
 
     private String calclualteMasterPassword(){
-        String masterPasswordString=null;
-        masterPasswordString=  applyLamPortAlgoRithmUsingDateOnImei(Utility.getDeviceId(MasterPasswordActivity.this), Calendar.getInstance());
+        String masterPasswordString=  applyLamPortAlgoRithmUsingDateOnImei(Utility.getDeviceId(MasterPasswordActivity.this), Calendar.getInstance());
         return masterPasswordString;
     }
 
@@ -116,7 +119,7 @@ public class MasterPasswordActivity extends Activity {
         int dayOfMonth= calendar.get(Calendar.DAY_OF_MONTH);
         int monthNumber=calendar.get(Calendar.MONTH);
         int year=calendar.get(Calendar.YEAR);
-        long imeiNumberNumeric=0;
+        long imeiNumberNumeric;
         if (!TextUtils.isDigitsOnly(imeiNumber)) {
             Pattern pattern=Pattern.compile("\\D");
             Matcher matcher=pattern.matcher(imeiNumber);
@@ -169,7 +172,7 @@ public class MasterPasswordActivity extends Activity {
             switch (requestCode) {
 
                 case REQUEST_ENABLE:
-                   attacheViewWithIdToWindowAndIntialiseViews(R.layout.layout_master_password_screen);
+                   attacheViewWithIdToWindowAndIntialiseViews();
 
                     break;
 

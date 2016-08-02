@@ -3,8 +3,8 @@
 
     <string name="textUnauthorisedPerson">Username or Password is incorrect.</string>
     <string name="textServerisDown">Server is down please contact your inventory manager.</string>
-    <string name="textSomeErrorOccured">Some error occured please contact your inventory manager.</string>
-    <string name="textNetworkNotAvaliable">Network Not Avaliable please contact your inventory manager.</string>
+    <string name="textSomeErrorOccured">Some error occurred please contact your inventory manager.</string>
+    <string name="textNetworkNotAvaliable">Network Not Available please contact your inventory manager.</string>
     <string name="textEmptyUserName">UserName cannot be empty.</string>
     <string name="textEmptyPassword">Password cannot be empty.</string>
     <string name="textMaterPasswordExceedDigit">Master Password cannot be more than 15 characters of length.</string>

@@ -9,16 +9,16 @@ import android.content.SharedPreferences;
  */
 public class TransiltiyInvntoryAppSharedPref  {
 
-    private static String TRANSILITY_INVENTORY_SHARED_PREF="tranility_inventory_shared_pref";
-    private static String KEY_MASTER_PASSWORD="key_master_password";
-    private static String KEY_USER_NAME="key_user_name";
-    private static String KEY_WAS_LOGIN_SCREEN_VISIBLE="wasLoginScreenVisible";
-    private static String KEY_DEVICE_LAST_SHUTDOWN_TIME="deviceLastShuDownTime";
-    private static String KEY_USER_PREF_TAKEN="userPrefTaken";
-    private static String KEY_DEVICE_ID="deviceId";
-    private static String KEY_SESSION_TIMEOUT = "key_session_timeout";
-    private static String KEY_SESSION_TOKEN = "key_session_token";
-    private static String KEY_IS_MASTER_PASSWORD_SCREEN_VISIBLE="isMasterPasswordScreenVisible";
+    private final static String TRANSILITY_INVENTORY_SHARED_PREF="tranility_inventory_shared_pref";
+    private final static String KEY_MASTER_PASSWORD="key_master_password";
+    private final static String KEY_USER_NAME="key_user_name";
+    private final static String KEY_WAS_LOGIN_SCREEN_VISIBLE="wasLoginScreenVisible";
+    private final static String KEY_DEVICE_LAST_SHUTDOWN_TIME="deviceLastShuDownTime";
+    private final static String KEY_USER_PREF_TAKEN="userPrefTaken";
+    private final static String KEY_DEVICE_ID="deviceId";
+    private final static String KEY_SESSION_TIMEOUT = "key_session_timeout";
+    private final static String KEY_SESSION_TOKEN = "key_session_token";
+    private final static String KEY_IS_MASTER_PASSWORD_SCREEN_VISIBLE="isMasterPasswordScreenVisible";
 
     public static void setMasterPasswordToSharedPref(Context context,String masterPassword){
         SharedPreferences  sp=context.getSharedPreferences(TRANSILITY_INVENTORY_SHARED_PREF,Context.MODE_PRIVATE);

@@ -56,7 +56,7 @@ public class MasterPasswordActivityTest {
 
     @Test
     public void testCheckUI() {
-        View activityView = masterPasswordActivityActivity.attacheViewWithIdToWindow(R.layout.layout_master_password_screen);
+        View activityView = masterPasswordActivityActivity.attacheViewWithIdToWindowAndIntialiseViews();
 
         Button masterpasswordEntredBtn= (Button) activityView.findViewById(R.id.masterpasswordEntredBtn);
         Assert.assertEquals("The text on master password button is incorrect.", "Submit", masterpasswordEntredBtn.getText());

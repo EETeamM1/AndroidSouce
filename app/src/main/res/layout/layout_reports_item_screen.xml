@@ -9,27 +9,38 @@
         android:id="@+id/userNameTv"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="4"
+        android:layout_weight="3"
+        android:textAppearance="?android:attr/textAppearanceSmall"
         android:background="@drawable/drawable_reports"
+        android:padding="@dimen/metrics_5"
+        android:textColor="@color/textColorBlack"
         android:ellipsize="end"
-        android:maxLength="1" />
+        android:maxLines="1" />
 
     <TextView
         android:id="@+id/intTimeTv"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="2"
+        android:layout_weight="2.5"
         android:background="@drawable/drawable_reports"
+        android:padding="@dimen/metrics_5"
+        android:textColor="@color/textColorBlack"
+
         android:ellipsize="end"
-        android:maxLength="1" />
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:maxLines="1" />
 
     <TextView
         android:id="@+id/outTimeTv"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="2"
+        android:layout_weight="2.5"
         android:background="@drawable/drawable_reports"
+        android:padding="@dimen/metrics_5"
+        android:textColor="@color/textColorBlack"
+
         android:ellipsize="end"
-        android:maxLength="1" />
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:maxLines="1" />
 
 </LinearLayout>

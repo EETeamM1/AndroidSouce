@@ -12,7 +12,7 @@ import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.util.Collection;
+
 import java.util.Map;
 
 /**
@@ -20,7 +20,7 @@ import java.util.Map;
  */
 public class RESTRequest {
 
-    static final int CONNECTION_TIMEOUT = 20000;
+    static final int CONNECTION_TIMEOUT = 10000;
 
     public enum Method{
         POST,
@@ -77,7 +77,7 @@ public class RESTRequest {
 
             final String encodedURI = fillOutParameters(uri, queryParams);
 
-            HttpURLConnection connection = null;
+            HttpURLConnection connection;
 
             InputStream inputStream = null;
             try {
@@ -124,7 +124,7 @@ public class RESTRequest {
                 response = new RESTResponse(status, inputStream, this);
             }
             catch (IOException re) {
-                response = new RESTResponse(Status.CONNECTOR_ERROR_INTERNAL, inputStream, this);
+                response = new RESTResponse(Status.CONNECTOR_ERROR_INTERNAL, null, this);
                 String text = response.getText();
                 if (text != null && text.length() > 0){
                     Log.w(Constants.LOGTAG, "ResourceException occurred with response:\n"+text);
@@ -146,7 +146,7 @@ public class RESTRequest {
     public String fillOutParameters(String uri, Map<String, Object> queryParams) {
         String newUri = uri;
 
-        newUri = newUri.replaceAll(Constants.REGEG_QUERY_PARAMS, queryParams(queryParams));
+        newUri = newUri+queryParams(queryParams);
 
         newUri = newUri.replaceFirst("\\?&", "?");
         return newUri;

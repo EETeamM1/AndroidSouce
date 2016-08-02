@@ -8,17 +8,18 @@ import android.util.Log;
 import com.transility.tim.android.Constants;
 
 import java.util.Arrays;
-import java.util.Collection;
+
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
- * @auther Himanshu Bapna
+ * @author Himanshu Bapna
  * */
 public class ResponseFetcher  extends AsyncTask<Void,RESTResponse,RESTResponse> {
     private static int ID_GENERATOR = 1;
-    private static Map<String, ResponseFetcher> activeFetchers = new HashMap<String, ResponseFetcher>();
+    private  static Map<String, ResponseFetcher> activeFetchers = new HashMap<>();
 
     private final String id;
     private final String originalUri;
@@ -30,7 +31,7 @@ public class ResponseFetcher  extends AsyncTask<Void,RESTResponse,RESTResponse> 
     private Bundle userData;
 
     ResponseFetcher(Context forContext, RESTRequest request, RESTResponseHandler httpRespHandler) {
-        this(forContext, request, Arrays.asList(httpRespHandler), null);
+        this(forContext, request, Collections.singletonList(httpRespHandler), null);
     }
 
     ResponseFetcher(Context forContext, RESTRequest request, List<? extends RESTResponseHandler> handlers,
@@ -63,9 +64,7 @@ public class ResponseFetcher  extends AsyncTask<Void,RESTResponse,RESTResponse> 
         Log.i(Constants.LOGTAG, "ResponseFetcher-" + id + " starts.");
         RESTResponse result = null;
 
-            if (result != null) {
-                result.release();
-            }
+            
 
             if (!isCancelled()) {
                 final long start = System.currentTimeMillis();

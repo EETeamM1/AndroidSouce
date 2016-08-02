@@ -16,7 +16,7 @@ import com.transility.tim.android.R;
 public class SingleButtonAlertDialog extends DialogFragment {
 
 
-    private static String TITLE = "title";
+    private final static String TITLE = "title";
     private SingleButtonAlertDialogInterface singleButtonAlertDialogInterface;
 
     public static SingleButtonAlertDialog newInstance(String title) {

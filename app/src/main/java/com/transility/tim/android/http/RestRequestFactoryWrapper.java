@@ -23,6 +23,7 @@ public class RestRequestFactoryWrapper {
     RESTResponseHandler okhandler = new RESTResponseHandler() {
         @Override
         public void handleResponseInBackground(Context context, Class<? extends Context> forContextType, RESTResponse response) {
+            if (restResponseShowFeedbackInterface!=null)
             restResponseShowFeedbackInterface.onSuccessOfBackGroundOperation(response);
             Utility.logError(this.getClass().getSimpleName(), "handleResponseInBackground");
 
@@ -31,7 +32,7 @@ public class RestRequestFactoryWrapper {
         @Override
         public void handleResponseInUI(Context context, Class<? extends Context> forContextType, RESTResponse response) {
             Utility.logError(this.getClass().getSimpleName(), "handleResponseInUI");
-
+            if (restResponseShowFeedbackInterface!=null)
             restResponseShowFeedbackInterface.onSuccessInForeGroundOperation(response);
         }
 
@@ -53,6 +54,7 @@ public class RestRequestFactoryWrapper {
         @Override
         public void handleResponseInBackground(Context context, Class<? extends Context> forContextType, RESTResponse response) {
             Utility.logError(this.getClass().getSimpleName(), "handleResponseInBackground");
+            if (restResponseShowFeedbackInterface!=null)
             restResponseShowFeedbackInterface.onErrorInBackgroundOperation(response);
 
         }
@@ -60,6 +62,7 @@ public class RestRequestFactoryWrapper {
         @Override
         public void handleResponseInUI(Context context, Class<? extends Context> forContextType, RESTResponse response) {
             Utility.logError(this.getClass().getSimpleName(), "handleResponseInUI");
+            if (restResponseShowFeedbackInterface!=null)
             restResponseShowFeedbackInterface.onErrorInForeGroundOperation(response);
         }
 
@@ -79,8 +82,8 @@ public class RestRequestFactoryWrapper {
     /**
      * Creates a object for this wrapper class.
      *
-     * @param context
-     * @param restResponseShowFeedbackInterface
+     * @param context Current context of the application.
+     * @param restResponseShowFeedbackInterface instance of the object that implements  RestResponseShowFeedbackInterface interface.
      */
     public RestRequestFactoryWrapper(Context context, RestResponseShowFeedbackInterface restResponseShowFeedbackInterface) {
 
@@ -89,10 +92,10 @@ public class RestRequestFactoryWrapper {
     }
 
     /**
-     * Create and intiate a Rest Request to the RequestURL passed.
+     * Create and initiate a Rest Request to the RequestURL passed.
      *
-     * @param requestUrl
-     * @param requestJson
+     * @param requestUrl Api Url
+     * @param requestJson It is the Request json.
      */
     public void callHttpRestRequest(String requestUrl, String requestJson, RESTRequest.Method method) {
         List<RESTResponseHandler> handlers = Arrays.asList(okhandler, errorHandler);
@@ -101,12 +104,12 @@ public class RestRequestFactoryWrapper {
 
     /**
      * Create and initate the Rest Request Passing the Query Params to it.
-     * @param requestUrl
-     * @param queryParmas
-     * @param method
+     * @param requestUrl Api Url
+     * @param queryParmas Additional Query Params in case of GET request
+     * @param method Type of request Either GET or POST.
      */
-    public void callHttpRestRequest(String requestUrl,String requestJson, Map<String,Object> queryParmas, RESTRequest.Method method){
+    public void callHttpRestRequest(String requestUrl, Map<String,Object> queryParmas, RESTRequest.Method method){
         List<RESTResponseHandler> handlers = Arrays.asList(okhandler, errorHandler);
-        RESTRequestFactory.dispatch(context, method, requestUrl, requestJson, queryParmas, handlers, null);
+        RESTRequestFactory.dispatch(context, method, requestUrl, null, queryParmas, handlers, null);
     }
 }

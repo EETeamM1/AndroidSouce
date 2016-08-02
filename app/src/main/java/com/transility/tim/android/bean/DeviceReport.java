@@ -27,7 +27,7 @@ public class DeviceReport implements Parcelable {
 
     public  DeviceReport(){}
 
-    protected DeviceReport(Parcel source) {
+    private DeviceReport(Parcel source) {
         final Object[] values = source.readArray(getClass().getClassLoader());
         int i = 0;
 

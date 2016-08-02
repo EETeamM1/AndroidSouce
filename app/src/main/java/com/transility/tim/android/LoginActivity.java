@@ -52,20 +52,20 @@ public class LoginActivity extends FragmentActivity {
     private TelephonyManager telephonyManager;
     private GoogleApiClient mGoogleApiClient;
     private Location location;
-    private GoogleApiClient.OnConnectionFailedListener onConnectionFailedListener = new GoogleApiClient.OnConnectionFailedListener() {
+    private final GoogleApiClient.OnConnectionFailedListener onConnectionFailedListener = new GoogleApiClient.OnConnectionFailedListener() {
         @Override
         public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
             Utility.logError(LoginActivity.class.getSimpleName(), "onConnectionFailed");
         }
     };
-    private LocationListener locationListener = new LocationListener() {
+    private final LocationListener locationListener = new LocationListener() {
         @Override
         public void onLocationChanged(Location location) {
             LoginActivity.this.location = location;
 
         }
     };
-    private GoogleApiClient.ConnectionCallbacks connectionCallbacks=new GoogleApiClient.ConnectionCallbacks() {
+    private final GoogleApiClient.ConnectionCallbacks connectionCallbacks=new GoogleApiClient.ConnectionCallbacks() {
         @Override
         public void onConnected(@Nullable Bundle bundle) {
             startLocationUpdates();
@@ -77,7 +77,7 @@ public class LoginActivity extends FragmentActivity {
             Utility.logError(LoginActivity.class.getSimpleName(),"onConnectionSuspended");
         }
     };
-    private OnClickListener onClickListener = new OnClickListener() {
+    private final OnClickListener onClickListener = new OnClickListener() {
         @Override
         public void onClick(View v) {
             switch (v.getId()) {
@@ -124,7 +124,7 @@ public class LoginActivity extends FragmentActivity {
     /**
      * Concrete Annotated implementation of the RestResponseShowFeedbackInterface.
      */
-    private RestResponseShowFeedbackInterface restResponseShowFeedbackInterface = new RestResponseShowFeedbackInterface() {
+    private final RestResponseShowFeedbackInterface restResponseShowFeedbackInterface = new RestResponseShowFeedbackInterface() {
         @Override
         public void onSuccessOfBackGroundOperation(RESTResponse reposeJson) {
             String response = reposeJson.getText();
@@ -179,7 +179,7 @@ public class LoginActivity extends FragmentActivity {
         // Set up the login form.
         Utility.logError(LoginActivity.this.getClass().getSimpleName(), "onCreate");
 
-        View activityView = attacheViewWithIdToWindow(R.layout.activity_login);
+        View activityView = attacheViewWithIdToWindow();
 
         restRequestFactoryWrapper = new RestRequestFactoryWrapper(this, restResponseShowFeedbackInterface);
         telephonyManager = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
@@ -233,19 +233,23 @@ public class LoginActivity extends FragmentActivity {
                 mGoogleApiClient, locationListener);
     }
 
-    protected View attacheViewWithIdToWindow(int layoutId) {
+    /**
+     * Attach the Login View to current window object through windows manager
+     * @return view that is inflated to device window.
+     */
+    protected View attacheViewWithIdToWindow() {
         WindowManager.LayoutParams localLayoutParams = new WindowManager.LayoutParams(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
         winManager = ((WindowManager) getApplicationContext().getSystemService(WINDOW_SERVICE));
         wrapperView = new RelativeLayout(this);
         wrapperView.setBackgroundColor(this.getResources().getColor(R.color.backWhite));
         this.winManager.addView(wrapperView, localLayoutParams);
-        return View.inflate(this, layoutId, this.wrapperView);
+        return View.inflate(this, R.layout.activity_login, this.wrapperView);
     }
 
     /**
      * Startrs the location updates
      */
-    protected void startLocationUpdates() {
+    private void startLocationUpdates() {
         // Create the location request
         LocationRequest mLocationRequest = LocationRequest.create()
                 .setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY)
@@ -261,9 +265,9 @@ public class LoginActivity extends FragmentActivity {
     /**
      * Function that fetch master password from local prefrences and authenticate the user.
      *
-     * @param passwordStr
-     * @param usernameStr
-     * @return
+     * @param passwordStr Admin Password string Entered
+     * @param usernameStr Admin User Name Entered
+     * @return true if the Admin Credentials entered are valid else false.
      */
     protected boolean authenticateMasterUser(String passwordStr, String usernameStr) {
         return passwordStr.equals(TransiltiyInvntoryAppSharedPref.getMasterPassword(this))

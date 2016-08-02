@@ -29,32 +29,32 @@ import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResult;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.transility.tim.android.Dialogs.SingleButtonAlertDialog;
-import com.transility.tim.android.Utilities.RestResponseShowFeedbackInterface;
+
 import com.transility.tim.android.Utilities.TransiltiyInvntoryAppSharedPref;
 import com.transility.tim.android.Utilities.Utility;
 import com.transility.tim.android.bean.Logout;
 import com.transility.tim.android.http.RESTRequest;
-import com.transility.tim.android.http.RESTResponse;
+
 import com.transility.tim.android.http.RestRequestFactoryWrapper;
 
 import devicepolicymanager.MyDeviceAdminReciver;
 
 public class DeviceAdminActivity extends AppCompatActivity {
     private final static String LOG_TAG = "DevicePolicyAdmin";
-    DevicePolicyManager truitonDevicePolicyManager;
-    ComponentName truitonDevicePolicyAdmin;
+   private DevicePolicyManager truitonDevicePolicyManager;
+   private ComponentName truitonDevicePolicyAdmin;
 
     private Switch enableDeviceApp;
     private Button logoutBtn, reportsBtn;
     private TextView messageLineTv;
     private SingleButtonAlertDialog singleButtonAlertDialog;
     private RestRequestFactoryWrapper restRequestFactoryWrapper;
-    protected LocationSettingsRequest mLocationSettingsRequest;
+    private LocationSettingsRequest mLocationSettingsRequest;
     private final int REQUEST_CHECK_SETTINGS=101;
-    protected static final int REQUEST_ENABLE = 1;
+    private static final int REQUEST_ENABLE = 1;
 
     private GoogleApiClient mGoogleApiClient;
-    private GoogleApiClient.ConnectionCallbacks connectionCallbacks = new GoogleApiClient.ConnectionCallbacks() {
+    private final GoogleApiClient.ConnectionCallbacks connectionCallbacks = new GoogleApiClient.ConnectionCallbacks() {
         @Override
         public void onConnected(@Nullable Bundle bundle) {
             createLocationSettingsRequest();
@@ -70,14 +70,14 @@ public class DeviceAdminActivity extends AppCompatActivity {
 
         }
     };
-    private GoogleApiClient.OnConnectionFailedListener onConnectionFailedListener = new GoogleApiClient.OnConnectionFailedListener() {
+    private final GoogleApiClient.OnConnectionFailedListener onConnectionFailedListener = new GoogleApiClient.OnConnectionFailedListener() {
         @Override
         public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 
 
         }
     };
-    private View.OnClickListener onClickListener = new View.OnClickListener() {
+    private final View.OnClickListener onClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             switch (v.getId()) {
@@ -93,9 +93,7 @@ public class DeviceAdminActivity extends AppCompatActivity {
                             restRequestFactoryWrapper.callHttpRestRequest(loginRequest, json, RESTRequest.Method.POST);
                             Utility.appendLog("Logout API Request="+loginRequest+" json="+json+" Call Type="+RESTRequest.Method.POST);
                         }
-                        else {
-                            clearPrefAndLogoutFromApp();
-                        }
+                        clearPrefAndLogoutFromApp();
                     }
 
 
@@ -130,7 +128,7 @@ public class DeviceAdminActivity extends AppCompatActivity {
         setContentView(R.layout.layout_admin_app_home_page);
 
         truitonDevicePolicyManager = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
-        restRequestFactoryWrapper = new RestRequestFactoryWrapper(this, restResponseShowFeedbackInterface);
+        restRequestFactoryWrapper = new RestRequestFactoryWrapper(this, null);
         truitonDevicePolicyAdmin = new ComponentName(this, MyDeviceAdminReciver.class);
         enableDeviceApp = (Switch) findViewById(R.id.enableDeviceApp);
         logoutBtn = (Button) findViewById(R.id.logoutBtn);
@@ -183,7 +181,7 @@ public class DeviceAdminActivity extends AppCompatActivity {
             mGoogleApiClient.disconnect();
     }
 
-    protected void checkLocationSettings() {
+    private void checkLocationSettings() {
         PendingResult<LocationSettingsResult> result =
                 LocationServices.SettingsApi.checkLocationSettings(
                         mGoogleApiClient,
@@ -219,7 +217,7 @@ public class DeviceAdminActivity extends AppCompatActivity {
     }
 
 
-    private CompoundButton.OnCheckedChangeListener onCheckedChangeListener = new CompoundButton.OnCheckedChangeListener() {
+    private final CompoundButton.OnCheckedChangeListener onCheckedChangeListener = new CompoundButton.OnCheckedChangeListener() {
 
         @Override
         public void onCheckedChanged(CompoundButton buttonView,
@@ -319,51 +317,11 @@ public class DeviceAdminActivity extends AppCompatActivity {
         return truitonDevicePolicyManager.isAdminActive(truitonDevicePolicyAdmin);
     }
 
-    private RestResponseShowFeedbackInterface restResponseShowFeedbackInterface = new RestResponseShowFeedbackInterface() {
-        @Override
-        public void onSuccessOfBackGroundOperation(RESTResponse reposeJson) {
-            Utility.appendLog("Response Logout API="+reposeJson.getText());
-            Utility.logError(DeviceAdminActivity.class.getSimpleName(),"Request Code>>"+reposeJson.status.getCode()+" Resposne Message>>"+reposeJson.getText());
-            Utility.clearPrefrences();
-        }
-
-        @Override
-        public void onErrorInBackgroundOperation(RESTResponse reposeJson) {
-            Utility.appendLog("Response Logout API="+reposeJson.getText());
-            Utility.logError(DeviceAdminActivity.class.getSimpleName(),"Request Code>>"+reposeJson.status.getCode()+" Resposne Message>>"+reposeJson.getText());
-            Utility.clearPrefrences();
-
-        }
-
-        @Override
-        public void onSuccessInForeGroundOperation(RESTResponse restResponse) {
 
 
 
-            Utility.cancelCurrentPendingIntent(DeviceAdminActivity.this);
-            Intent intent1 = new Intent(DeviceAdminActivity.this, LoginActivity.class);
-            intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            DeviceAdminActivity.this.startActivity(intent1);
 
-            finish();
-        }
-
-        @Override
-        public void onErrorInForeGroundOperation(RESTResponse restResponse) {
-
-
-            Utility.cancelCurrentPendingIntent(DeviceAdminActivity.this);
-            Intent intent1 = new Intent(DeviceAdminActivity.this, LoginActivity.class);
-            intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            DeviceAdminActivity.this.startActivity(intent1);
-
-            finish();
-        }
-    };
-
-
-
-    ResultCallback<LocationSettingsResult>  locationSettingsResultResultCallback=new ResultCallback<LocationSettingsResult>() {
+  private  final ResultCallback<LocationSettingsResult>  locationSettingsResultResultCallback=new ResultCallback<LocationSettingsResult>() {
         @Override
         public void onResult(@NonNull LocationSettingsResult locationSettingsResult) {
             final Status status = locationSettingsResult.getStatus();

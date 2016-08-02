@@ -18,7 +18,7 @@ import java.util.ArrayList;
 public class ReportsAdapter extends RecyclerView.Adapter<ReportsAdapter.ReportsRecyclerViewHolder>{
 
 
-    private ArrayList<DeviceReport> deviceReports;
+    private final ArrayList<DeviceReport> deviceReports;
     public ReportsAdapter(ArrayList<DeviceReport> deviceReports){
 
         this.deviceReports=deviceReports;
@@ -27,7 +27,7 @@ public class ReportsAdapter extends RecyclerView.Adapter<ReportsAdapter.ReportsR
 
     @Override
     public ReportsRecyclerViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View layout_view= LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_reports_item_screen,null);
+        View layout_view= LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_reports_item_screen,parent,false);
 
         return new ReportsRecyclerViewHolder(layout_view);
     }
@@ -50,7 +50,7 @@ public class ReportsAdapter extends RecyclerView.Adapter<ReportsAdapter.ReportsR
 
 
     protected class ReportsRecyclerViewHolder extends RecyclerView.ViewHolder{
-    public TextView userNameTv,intTimeTv,outTimeTv;
+    public final TextView userNameTv,intTimeTv,outTimeTv;
      public ReportsRecyclerViewHolder(View itemView) {
          super(itemView);
          userNameTv= (TextView) itemView.findViewById(R.id.userNameTv);

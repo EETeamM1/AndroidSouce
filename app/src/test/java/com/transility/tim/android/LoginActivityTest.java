@@ -28,8 +28,8 @@ import org.robolectric.util.ActivityController;
 
 public class LoginActivityTest {
 
-    ActivityController<LoginActivity> activityController;
-    Context context;
+    private ActivityController<LoginActivity> activityController;
+    private Context context;
     private LoginActivity mLoginActivity;
 
     @Before
@@ -49,7 +49,7 @@ public class LoginActivityTest {
     @Test
     public void testCheckUI() {
 
-        View activityView = mLoginActivity.attacheViewWithIdToWindow(R.layout.activity_login);
+        View activityView = mLoginActivity.attacheViewWithIdToWindow();
 
         String userNameEtText = mLoginActivity.getString(R.string.textUserName);
         EditText mUserNameEt = (EditText) activityView.findViewById(R.id.username);

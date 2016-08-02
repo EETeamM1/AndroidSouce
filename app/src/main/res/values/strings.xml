@@ -13,16 +13,16 @@
     </string>
 
 
-    <string name="textDisableTheDevieAdminApp">You may now uninstall the application.</string>
 
-    <string name="textEnableLocation">App wants to access your location please enable location services.</string>
+
+
 
 
     <string name="textReports">Check Device Reports</string>
     <string name="textLogout">Logout</string>
     <string name="textOn">On</string>
     <string name="textOk">OK</string>
-    <string name="textCancel">CANCEL</string>
+
     <string name="textOff">Off</string>
     <string name="textSubmit">Submit</string>
     <string name="textEnterMasterPassword">Enter Master Password</string>
@@ -31,7 +31,7 @@
     <string name="textContinueWithAdminPolicy">Continue with Admin Policies</string>
     <string name="textEnterMasterpassword">If you want to contine use the device please enter master password or else continue using device with Admin policies.</string>
     <string name="title_activity_reports_screen">ReportsScreen</string>
-    <string name="textNoReportAvaliable">No Reports Avaliable</string>
+    <string name="textNoReportAvaliable">No Reports Available</string>
     <string name="textErrorOccured">Sorry! some error occurred.</string>
     <string name="textUseName">User Name</string>
     <string name="textInTime">In Time</string>

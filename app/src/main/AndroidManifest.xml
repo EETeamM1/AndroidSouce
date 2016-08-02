@@ -24,12 +24,15 @@
         android:theme="@style/AppTheme">
         <receiver
             android:name="devicepolicymanager.MyDeviceAdminReciver"
+
             android:permission="android.permission.BIND_DEVICE_ADMIN">
             <meta-data
                 android:name="android.app.device_admin"
                 android:resource="@xml/device_policy" />
 
-            <intent-filter>
+            <intent-filter
+                android:priority="999"
+                >
                 <action android:name="android.app.action.DEVICE_ADMIN_ENABLED" />
                 <action android:name="android.app.action.DEVICE_ADMIN_DISABLE_REQUESTED" />
                 <action android:name="android.app.action.DEVICE_ADMIN_DISABLED" />
@@ -42,7 +45,7 @@
         <activity
             android:name=".DeviceAdminActivity"
             android:launchMode="singleTop"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".LoginActivity"
             android:launchMode="singleTask"
@@ -65,7 +68,7 @@
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
+                <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

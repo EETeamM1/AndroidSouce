@@ -28,7 +28,7 @@ public class RESTRequestTest {
         String uri = "http://test.example.com/Im/api/deviceIssue/deviceTimeLineReport?";
         RESTRequest restRequest = new RESTRequest(RESTRequest.Method.GET, uri, null, null);
 
-        final Map<String,Object> queryParams = new HashMap<String,Object>();
+        final Map<String,Object> queryParams = new HashMap<>();
         queryParams.put("deviceId", "12345655474255");
         queryParams.put("beginDate", "12072016");
         queryParams.put("endDate", "13072016");

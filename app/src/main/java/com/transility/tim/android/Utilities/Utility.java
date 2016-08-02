@@ -2,7 +2,7 @@ package com.transility.tim.android.Utilities;
 
 import android.app.Activity;
 import android.app.AlarmManager;
-import android.app.Dialog;
+
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -18,7 +18,8 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.common.GoogleApiAvailability;
+
 import com.transility.tim.android.InventoryManagment;
 
 import java.io.BufferedWriter;
@@ -35,8 +36,8 @@ import devicepolicymanager.SessionTimeOutReciever;
 public class Utility {
     /**
      * Utility function to log error on console
-     * @param tag
-     * @param log
+     * @param tag Descriptive tag form whier the log is printed
+     * @param log actual log message.
      */
     public static void logError(String tag,String log){
         Log.e(tag,log);
@@ -44,7 +45,7 @@ public class Utility {
 
     /**
      * Utility function to print exception.
-     * @param e
+     * @param e its the exception returned by Runtime.
      */
     public static void printHandledException(Exception e){
         e.printStackTrace();
@@ -52,22 +53,30 @@ public class Utility {
 
     /**
      * Chcek the internet connection is present or not.
-     * @param context
-     * @return
+     * @param context current context of the application.
+     * @return true if the internet is connected or else false.
      */
     public static boolean checkInternetConnection(Context context){
         ConnectivityManager conMgr = (ConnectivityManager) context.getSystemService (Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo=conMgr.getActiveNetworkInfo();
-        boolean isConnected=false;
+        boolean isConnected;
         isConnected = networkInfo != null && networkInfo.isConnected();
         return isConnected;
     }
 
+    /**
+     * Removed the keyboard from the screen.
+     * @param view current view on which keyboard is opened.
+     */
     public static void removeKeyboardfromScreen(View view){
         InputMethodManager imm = (InputMethodManager)view.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(view.getWindowToken(),0);
     }
 
+    /**
+     * Helper method to calcel the current Pending intent which is called when the user session is over.
+     * @param context current context of the application.
+     */
     public static void cancelCurrentPendingIntent(Context context) {
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(context, SessionTimeOutReciever.class);
@@ -84,7 +93,8 @@ public class Utility {
      * @return true if available, or false if not
      */
     public static boolean checkGooglePlayServicesAvailable(Activity context) {
-        final int status = GooglePlayServicesUtil.isGooglePlayServicesAvailable(context);
+        GoogleApiAvailability googleApiAvailability = GoogleApiAvailability.getInstance();
+        int status=googleApiAvailability.isGooglePlayServicesAvailable(context);
         if (status == ConnectionResult.SUCCESS) {
             return true;
         }
@@ -92,12 +102,7 @@ public class Utility {
             Toast.makeText(context,"Please install or update google play services",Toast.LENGTH_LONG).show();
         }
 
-//        if (GooglePlayServicesUtil.isUserRecoverableError(status)) {
-//            final Dialog errorDialog = GooglePlayServicesUtil.getErrorDialog(status, context, 1);
-//            if (errorDialog != null) {
-//                errorDialog.show();
-//            }
-//        }
+
 
 
         return false;
@@ -136,7 +141,7 @@ public class Utility {
         try {
             //BufferedWriter for performance, true to set append to file flag
             BufferedWriter buf = new BufferedWriter(new FileWriter(logFile, true));
-            buf.append(text+"\n");
+            buf.append(text).append("\n");
             buf.newLine();
             buf.close();
         } catch (IOException e) {
