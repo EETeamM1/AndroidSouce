@@ -12,6 +12,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 
 /**
+ * This class have require attribute of response.
  * @author Himanshu Bapna
  */
 public class RESTResponse {
@@ -41,6 +42,10 @@ public class RESTResponse {
         }
     }
 
+    /**
+     * Method convert response InputStream value into string.
+     * @return String
+     */
     public String getText() {
         StringBuilder sb = new StringBuilder();
         try {

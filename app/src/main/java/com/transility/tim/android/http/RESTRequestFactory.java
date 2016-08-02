@@ -10,28 +10,17 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * This class creates and dispatches REST requests and makes sure the correct RESTResponseHandlers are called
+ * back upon the server's response.
  * Created by Himanshu Bapna
  */
 public class RESTRequestFactory {
 
-    static boolean isInitialized = false;
     static RESTRequestFactory DISPATCHER_FACTORY = null;
     private Context appContext;
 
     protected RESTRequestFactory(android.content.Context context) {
         appContext = context.getApplicationContext();
-    }
-
-    /**
-     * Initializes the HTTP context.
-     * Set up 'global' communication settings.
-     */
-    static synchronized void initializeContexts(android.content.Context appContext) {
-        if (isInitialized) {
-            return;
-        }
-
-        isInitialized = true;
     }
 
     /**

@@ -8,18 +8,19 @@ import android.util.Log;
 import com.transility.tim.android.Constants;
 
 import java.util.Arrays;
-
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
- * @author Himanshu Bapna
+ * This implements an AsyncTask that issues REST requests
+ * and dispatches the REST responses to the correct response-handlers.
+ * This class should only be used by the RESTRequestFactory class.
+ * @auther Himanshu Bapna
  * */
 public class ResponseFetcher  extends AsyncTask<Void,RESTResponse,RESTResponse> {
     private static int ID_GENERATOR = 1;
-    private  static Map<String, ResponseFetcher> activeFetchers = new HashMap<>();
+    private static Map<String, ResponseFetcher> activeFetchers = new HashMap<String, ResponseFetcher>();
 
     private final String id;
     private final String originalUri;
@@ -31,7 +32,7 @@ public class ResponseFetcher  extends AsyncTask<Void,RESTResponse,RESTResponse> 
     private Bundle userData;
 
     ResponseFetcher(Context forContext, RESTRequest request, RESTResponseHandler httpRespHandler) {
-        this(forContext, request, Collections.singletonList(httpRespHandler), null);
+        this(forContext, request, Arrays.asList(httpRespHandler), null);
     }
 
     ResponseFetcher(Context forContext, RESTRequest request, List<? extends RESTResponseHandler> handlers,
@@ -64,7 +65,9 @@ public class ResponseFetcher  extends AsyncTask<Void,RESTResponse,RESTResponse> 
         Log.i(Constants.LOGTAG, "ResponseFetcher-" + id + " starts.");
         RESTResponse result = null;
 
-            
+            if (result != null) {
+                result.release();
+            }
 
             if (!isCancelled()) {
                 final long start = System.currentTimeMillis();

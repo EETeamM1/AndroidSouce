@@ -22,7 +22,7 @@ public interface RESTResponseHandler {
      * @param response       The RESTResponse of the request:
      *                       <p/>
      *                       response.status The actual status (HTTP-status) of the response. This could be different than the returned
-     *                       value of {@link #matchesExpectedStatus()}. This could be null, but that's very unlikely.
+     *                       value of status. This could be null, but that's very unlikely.
      *                       response.representation The response data/body. This could be null (e.g the response only contains headers).
      *                       response.method The HTTP method that was used to obtain the response.
      *                       response.uri The URI from which the response was obtained.
@@ -38,7 +38,7 @@ public interface RESTResponseHandler {
      * @param response       The RESTResponse of the request:
      *                       <p/>
      *                       response.status The actual status (HTTP-status) of the response. This could be different than the returned
-     *                       value of {@link #matchesExpectedStatus()}. This could be null, but that's very unlikely.
+     *                       value of status. This could be null, but that's very unlikely.
      *                       response.representation The response data/body. This could be null (e.g the response only contains headers).
      *                       response.method The HTTP method that was used to obtain the response.
      *                       response.uri The URI from which the response was obtained.
@@ -57,7 +57,7 @@ public interface RESTResponseHandler {
     /**
      * An implementing instance of this class must return a HTTP-Status code.
      * If a response's HTTP-status matches according to this method, this handler will
-     * be chosen to handle the response: The system will call its {@link #handleResponse(Status, Representation, Method, String)} method.
+     * be chosen to handle the response..
      *
      * @param status The status to match on. It will never be null.
      * @return True if the provided status matches the expected status.
