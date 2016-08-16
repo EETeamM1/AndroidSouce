@@ -76,11 +76,14 @@ public class Report implements Parcelable {
         return deviceReportList;
     }
 
-    protected Report(Parcel source) {
+    private Report(Parcel source) {
         final Object[] values = source.readArray(getClass().getClassLoader());
         int i = 0;
 
+
         deviceReportList = (ArrayList<DeviceReport>)values[i++];
+
+
     }
 
     @Override

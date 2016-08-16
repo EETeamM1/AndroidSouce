@@ -17,7 +17,7 @@ import org.robolectric.annotation.Config;
 public class LogoutTest {
 
     @Test
-    public void testwriteLogoutJson() {
+    public void testWriteLogoutJson() {
         String logoutJSON = Logout.writeLogoutJson("user21465885257421");
         Assert.assertEquals("Logon JSON is not created correct", getLogoutJSON(), logoutJSON);
 

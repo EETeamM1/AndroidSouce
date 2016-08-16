@@ -31,14 +31,14 @@ public class DeviceAdminActivityTest {
 
     private  ActivityController<DeviceAdminActivity> transilityDeviceAdminActivityActivityController;
     private DeviceAdminActivity deviceAdminActivity;
-    private InventoryManagment inventoryManagment;
+
     private Context context;
 
     @Before
     public void setUp() {
 
         context = RuntimeEnvironment.application.getBaseContext();
-         inventoryManagment= (InventoryManagment) RuntimeEnvironment.application;
+
 
 
         transilityDeviceAdminActivityActivityController = Robolectric.buildActivity(DeviceAdminActivity.class).create();
@@ -48,7 +48,7 @@ public class DeviceAdminActivityTest {
     @After
     public void tearDown() {
         context = null;
-        inventoryManagment = null;
+
         transilityDeviceAdminActivityActivityController = null;
         deviceAdminActivity = null;
     }
@@ -66,15 +66,15 @@ public class DeviceAdminActivityTest {
 
         TextView messageLineTv= (TextView) deviceAdminActivity.findViewById(R.id.messageLineTv);
 
-        Assert.assertTrue("Enable Admin app swith is not visisble",enableDeviceApp.getVisibility()==View.VISIBLE);
+        Assert.assertTrue("Enable Admin app switch is not visisble",enableDeviceApp.getVisibility()==View.VISIBLE);
         Assert.assertFalse("Enable Admin app should be disable by default",enableDeviceApp.isChecked());
-        Assert.assertTrue("Logut button should not be visible",logoutBtn.getVisibility()==View.GONE);
+        Assert.assertTrue("Logout button should not be visible",logoutBtn.getVisibility()==View.GONE);
         Assert.assertTrue("Reports button should not be visible",reportsBtn.getVisibility()==View.GONE);
         Assert.assertEquals("Message is incorrect",messageLineTv.getText(), deviceAdminActivity.getString(R.string.textAdminAppTextWhenDisabled));
 
     }
     @Test
-    public void test002CheckUiWhenUserHasPerfromedLogin(){
+    public void test002CheckUiWhenUserHasPerformedLogin(){
         deviceAdminActivity = transilityDeviceAdminActivityActivityController.start().resume().visible().get();
 
         TransiltiyInvntoryAppSharedPref.setMasterPasswordToSharedPref(context, "Test");
@@ -87,8 +87,8 @@ public class DeviceAdminActivityTest {
 
 
 
-        Assert.assertTrue("Enable Admin app swith is not visisble",enableDeviceApp.getVisibility()==View.VISIBLE);
-        Assert.assertTrue("Logut button should not be visible",logoutBtn.getVisibility()==View.GONE);
+        Assert.assertTrue("Enable Admin app switch is not visisble",enableDeviceApp.getVisibility()==View.VISIBLE);
+        Assert.assertTrue("Logout button should not be visible",logoutBtn.getVisibility()==View.GONE);
         Assert.assertTrue("Reports button should not be visible",reportsBtn.getVisibility()==View.GONE);
 
     }

@@ -20,7 +20,7 @@ public class RestRequestFactoryWrapper {
     /**
      * Handler called when the Resquest has executed Successfully.
      */
-    RESTResponseHandler okhandler = new RESTResponseHandler() {
+    private RESTResponseHandler okhandler = new RESTResponseHandler() {
         @Override
         public void handleResponseInBackground(Context context, Class<? extends Context> forContextType, RESTResponse response) {
             if (restResponseShowFeedbackInterface!=null)
@@ -50,7 +50,7 @@ public class RestRequestFactoryWrapper {
     /**
      * Handler called when the Resquest executed with errors.
      */
-    RESTResponseHandler errorHandler = new RESTResponseHandler() {
+    private RESTResponseHandler errorHandler = new RESTResponseHandler() {
         @Override
         public void handleResponseInBackground(Context context, Class<? extends Context> forContextType, RESTResponse response) {
             Utility.logError(this.getClass().getSimpleName(), "handleResponseInBackground");
@@ -97,19 +97,10 @@ public class RestRequestFactoryWrapper {
      * @param requestUrl Api Url
      * @param requestJson It is the Request json.
      */
-    public void callHttpRestRequest(String requestUrl, String requestJson, RESTRequest.Method method) {
+    public void callHttpRestRequest(String requestUrl,Map<String,Object> queryParmas, String requestJson, RESTRequest.Method method) {
         List<RESTResponseHandler> handlers = Arrays.asList(okhandler, errorHandler);
-        RESTRequestFactory.dispatch(context, method, requestUrl, requestJson, null, handlers, null);
+        RESTRequestFactory.dispatch(context, method, requestUrl, requestJson, queryParmas, handlers, null);
     }
 
-    /**
-     * Create and initate the Rest Request Passing the Query Params to it.
-     * @param requestUrl Api Url
-     * @param queryParmas Additional Query Params in case of GET request
-     * @param method Type of request Either GET or POST.
-     */
-    public void callHttpRestRequest(String requestUrl, Map<String,Object> queryParmas, RESTRequest.Method method){
-        List<RESTResponseHandler> handlers = Arrays.asList(okhandler, errorHandler);
-        RESTRequestFactory.dispatch(context, method, requestUrl, null, queryParmas, handlers, null);
-    }
+
 }

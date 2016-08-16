@@ -37,20 +37,20 @@ import com.transility.tim.android.http.RESTRequest;
 
 import com.transility.tim.android.http.RestRequestFactoryWrapper;
 
-import devicepolicymanager.MyDeviceAdminReciver;
+import devicepolicymanager.MyDeviceAdminReceiver;
 
 public class DeviceAdminActivity extends AppCompatActivity {
-    private final static String LOG_TAG = "DevicePolicyAdmin";
-   private DevicePolicyManager truitonDevicePolicyManager;
-   private ComponentName truitonDevicePolicyAdmin;
+
+   private DevicePolicyManager inventoryDevicePolicyManager;
+   private ComponentName inventoryDevicePolicyAdmin;
 
     private Switch enableDeviceApp;
     private Button logoutBtn, reportsBtn;
     private TextView messageLineTv;
-    private SingleButtonAlertDialog singleButtonAlertDialog;
+
     private RestRequestFactoryWrapper restRequestFactoryWrapper;
     private LocationSettingsRequest mLocationSettingsRequest;
-    private final int REQUEST_CHECK_SETTINGS=101;
+
     private static final int REQUEST_ENABLE = 1;
 
     private GoogleApiClient mGoogleApiClient;
@@ -90,7 +90,7 @@ public class DeviceAdminActivity extends AppCompatActivity {
                         if (!TextUtils.isEmpty(sessionToken)){
                             String json = Logout.writeLogoutJson(sessionToken);
                             String loginRequest = getResources().getString(R.string.baseUrl) + getResources().getString(R.string.api_logout);
-                            restRequestFactoryWrapper.callHttpRestRequest(loginRequest, json, RESTRequest.Method.POST);
+                            restRequestFactoryWrapper.callHttpRestRequest(loginRequest, null,json, RESTRequest.Method.POST);
                             Utility.appendLog("Logout API Request="+loginRequest+" json="+json+" Call Type="+RESTRequest.Method.POST);
                         }
                         clearPrefAndLogoutFromApp();
@@ -112,8 +112,8 @@ public class DeviceAdminActivity extends AppCompatActivity {
      * Clear the pref and logout from device.
      */
     private void clearPrefAndLogoutFromApp(){
-        Utility.clearPrefrences();
-        Utility.cancelCurrentPendingIntent(DeviceAdminActivity.this);
+        Utility.clearPreviousSessionToken();
+        Utility.cancelCurrentAlarmToLaunchTheLoginScreen(DeviceAdminActivity.this);
         Intent intent1 = new Intent(DeviceAdminActivity.this, LoginActivity.class);
         intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         DeviceAdminActivity.this.startActivity(intent1);
@@ -126,10 +126,13 @@ public class DeviceAdminActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_admin_app_home_page);
+        TextView deviceIdTv= (TextView) findViewById(R.id.deviceIdTv);
+        String deviceId=getString(R.string.textDeviceId)+Utility.getDeviceId(this);
 
-        truitonDevicePolicyManager = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
+        deviceIdTv.setText(deviceId);
+        inventoryDevicePolicyManager = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
         restRequestFactoryWrapper = new RestRequestFactoryWrapper(this, null);
-        truitonDevicePolicyAdmin = new ComponentName(this, MyDeviceAdminReciver.class);
+        inventoryDevicePolicyAdmin = new ComponentName(this, MyDeviceAdminReceiver.class);
         enableDeviceApp = (Switch) findViewById(R.id.enableDeviceApp);
         logoutBtn = (Button) findViewById(R.id.logoutBtn);
         reportsBtn = (Button) findViewById(R.id.reportsBtn);
@@ -140,7 +143,7 @@ public class DeviceAdminActivity extends AppCompatActivity {
 
 
 
-        intiateGooglePlayService();
+        initiateGooglePlayService();
 
     }
 
@@ -152,7 +155,7 @@ public class DeviceAdminActivity extends AppCompatActivity {
     }
 
 
-    private void intiateGooglePlayService() {
+    private void initiateGooglePlayService() {
 
         if (Utility.checkGooglePlayServicesAvailable(this)) {
 
@@ -234,7 +237,7 @@ public class DeviceAdminActivity extends AppCompatActivity {
                             enableDeviceAdminApp();
                         } else {
                             enableDeviceApp.setChecked(false);
-                            singleButtonAlertDialog = SingleButtonAlertDialog.newInstance(getString(R.string.textPleaseEnableNetwork));
+                            SingleButtonAlertDialog  singleButtonAlertDialog = SingleButtonAlertDialog.newInstance(getString(R.string.textPleaseEnableNetwork));
 
                             singleButtonAlertDialog.show(getFragmentManager(), SingleButtonAlertDialog.class.getSimpleName());
                         }
@@ -242,7 +245,7 @@ public class DeviceAdminActivity extends AppCompatActivity {
 
                 }
             } else {
-                truitonDevicePolicyManager.removeActiveAdmin(truitonDevicePolicyAdmin);
+                inventoryDevicePolicyManager.removeActiveAdmin(inventoryDevicePolicyAdmin);
 
             }
             enableDeviceApp.setOnCheckedChangeListener(onCheckedChangeListener);
@@ -253,14 +256,14 @@ public class DeviceAdminActivity extends AppCompatActivity {
 
 
     /**
-     * Function calls the activity that initates the enabling of the apllication as device admin app.
+     * Function calls the activity that initiates the enabling of the applications as device admin app.
      */
     private void enableDeviceAdminApp() {
         Intent intent = new Intent(
                 DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
         intent.putExtra(
                 DevicePolicyManager.EXTRA_DEVICE_ADMIN,
-                truitonDevicePolicyAdmin);
+                inventoryDevicePolicyAdmin);
         intent.putExtra(
                 DevicePolicyManager.EXTRA_ADD_EXPLANATION,
                 "");
@@ -309,12 +312,12 @@ public class DeviceAdminActivity extends AppCompatActivity {
     }
 
     /**
-     * Check whther device admin is active
+     * Check whether device admin is active
      *
      * @return is Device Admin active
      */
     private boolean isMyDevicePolicyReceiverActive() {
-        return truitonDevicePolicyManager.isAdminActive(truitonDevicePolicyAdmin);
+        return inventoryDevicePolicyManager.isAdminActive(inventoryDevicePolicyAdmin);
     }
 
 
@@ -337,6 +340,7 @@ public class DeviceAdminActivity extends AppCompatActivity {
                     try {
                         // Show the dialog by calling startResolutionForResult(), and check the result
                         // in onActivityResult().
+                        int REQUEST_CHECK_SETTINGS=101;
                         status.startResolutionForResult(DeviceAdminActivity.this, REQUEST_CHECK_SETTINGS);
                     } catch (IntentSender.SendIntentException e) {
                         Utility.logError(DeviceAdminActivity.class.getSimpleName(), "PendingIntent unable to execute request.");

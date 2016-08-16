@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">TranilityInventoryManagement</string>
+    <string name="app_name">Invento</string>
 
 
     <!-- Strings related to login -->
@@ -18,7 +18,7 @@
 
 
 
-    <string name="textReports">Check Device Reports</string>
+    <string name="textReports">Reports</string>
     <string name="textLogout">Logout</string>
     <string name="textOn">On</string>
     <string name="textOk">OK</string>
@@ -27,13 +27,13 @@
     <string name="textSubmit">Submit</string>
     <string name="textEnterMasterPassword">Enter Master Password</string>
     <string name="textDeviceId">Device Id:</string>
-    <string name="textReportScreen">Report Screen</string>
+
     <string name="textContinueWithAdminPolicy">Continue with Admin Policies</string>
-    <string name="textEnterMasterpassword">If you want to contine use the device please enter master password or else continue using device with Admin policies.</string>
+    <string name="textEnterMasterPasswordError">If you want to continue use the device please enter master password or else continue using device with Admin policies.</string>
     <string name="title_activity_reports_screen">ReportsScreen</string>
-    <string name="textNoReportAvaliable">No Reports Available</string>
-    <string name="textErrorOccured">Sorry! some error occurred.</string>
-    <string name="textUseName">User Name</string>
+    <string name="textNoReportAvailable">No Reports Available</string>
+    <string name="textErrorOccurred">Sorry! some error occurred.</string>
+
     <string name="textInTime">In Time</string>
     <string name="textOutTime">Out Time</string>
 </resources>

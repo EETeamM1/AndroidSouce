@@ -16,21 +16,21 @@ public interface RestResponseShowFeedbackInterface {
     void onSuccessOfBackGroundOperation(RESTResponse reposeJson);
 
     /***
-     * Perfrom action when the background operation was not successful.
+     * Perform action when the background operation was not successful.
      *
      * @param reposeJson is the response returned by the server.
      */
     void onErrorInBackgroundOperation(RESTResponse reposeJson);
 
     /**
-     * Perfrom action when the foreground operation was successful.
+     * Perform action when the foreground operation was successful.
      *
      * @param restResponse is the response returned by the server.
      */
     void onSuccessInForeGroundOperation(RESTResponse restResponse);
 
     /**
-     * Perfrom Action when the foreground operation was not successful
+     * Perform Action when the foreground operation was not successful
      *
      * @param restResponse is the response returned by the server.
      */

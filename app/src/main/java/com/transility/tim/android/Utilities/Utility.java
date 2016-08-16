@@ -1,6 +1,6 @@
 package com.transility.tim.android.Utilities;
 
-import android.app.Activity;
+
 import android.app.AlarmManager;
 
 import android.app.PendingIntent;
@@ -9,7 +9,7 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Environment;
-import android.provider.Settings;
+
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Log;
@@ -20,14 +20,15 @@ import android.widget.Toast;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
-import com.transility.tim.android.InventoryManagment;
+import com.transility.tim.android.InventoryManagement;
 
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import devicepolicymanager.SessionTimeOutReciever;
+import devicepolicymanager.MasterPasswordScreenLauncherBroadcast;
+import devicepolicymanager.SessionTimeOutReceiver;
 
 /**
  * Logger class to log application info and print handled exception.
@@ -52,7 +53,7 @@ public class Utility {
     }
 
     /**
-     * Chcek the internet connection is present or not.
+     * Check the internet connection is present or not.
      * @param context current context of the application.
      * @return true if the internet is connected or else false.
      */
@@ -68,23 +69,34 @@ public class Utility {
      * Removed the keyboard from the screen.
      * @param view current view on which keyboard is opened.
      */
-    public static void removeKeyboardfromScreen(View view){
+    public static boolean removeKeyboardFromScreen(View view){
         InputMethodManager imm = (InputMethodManager)view.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(view.getWindowToken(),0);
+     return  imm.hideSoftInputFromWindow(view.getWindowToken(),0);
     }
 
     /**
-     * Helper method to calcel the current Pending intent which is called when the user session is over.
+     * Helper method to cancel the current intent which is called when the user session is over.
      * @param context current context of the application.
      */
-    public static void cancelCurrentPendingIntent(Context context) {
+    public static void cancelCurrentAlarmToLaunchTheLoginScreen(Context context) {
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        Intent intent = new Intent(context, SessionTimeOutReciever.class);
+        Intent intent = new Intent(context, SessionTimeOutReceiver.class);
         PendingIntent alarmIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
         alarmManager.cancel(alarmIntent);
-        appendLog("Alarm cancelled");
+        appendLog("Login Screen Launcher Alarm cancelled");
     }
 
+    /**
+     * Helper method to cancel the pending intent to launch the Master Password Screen.
+     * @param context current context of the application
+     */
+    public static void cancelCurrentAlarmToLaunchTheMasterPasswordScreen(Context context){
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(context, MasterPasswordScreenLauncherBroadcast.class);
+        PendingIntent alarmIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
+        alarmManager.cancel(alarmIntent);
+        appendLog("Master Password Alarm cancelled");
+    }
     /**
      * Check whether Google Play Services are available.
      *
@@ -92,7 +104,7 @@ public class Utility {
      *
      * @return true if available, or false if not
      */
-    public static boolean checkGooglePlayServicesAvailable(Activity context) {
+    public static boolean checkGooglePlayServicesAvailable(Context context) {
         GoogleApiAvailability googleApiAvailability = GoogleApiAvailability.getInstance();
         int status=googleApiAvailability.isGooglePlayServicesAvailable(context);
         if (status == ConnectionResult.SUCCESS) {
@@ -113,8 +125,7 @@ public class Utility {
             TelephonyManager telephonyManager= (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
             String deviceID=telephonyManager.getDeviceId();
             if (TextUtils.isEmpty(deviceID)){
-                deviceID= Settings.Secure.getString(context.getContentResolver(),
-                        Settings.Secure.ANDROID_ID);
+                deviceID= android.os.Build.SERIAL;
             }
             TransiltiyInvntoryAppSharedPref.setDeviceId(deviceID,context);
             return deviceID;
@@ -125,6 +136,7 @@ public class Utility {
     }
 
     public static void appendLog(String text) {
+        logError(Utility.class.getSimpleName(),text);
         File extStore = Environment.getExternalStoragePublicDirectory("");
         File logFile=new File(extStore.getPath(),"logFile.txt");
         Utility.logError(Utility.class.getSimpleName(),logFile.getPath());
@@ -151,10 +163,10 @@ public class Utility {
     }
 
     /**
-     * Method call to clean the database
+     * Clears the previous session token form shared pref.
      */
-    public static void clearPrefrences(){
-        TransiltiyInvntoryAppSharedPref.setSessionTokenToSharedPref(InventoryManagment.getContext(),"");
+    public static void clearPreviousSessionToken(){
+        TransiltiyInvntoryAppSharedPref.setSessionTokenToSharedPref(InventoryManagement.getContext(),"");
     }
 
 }

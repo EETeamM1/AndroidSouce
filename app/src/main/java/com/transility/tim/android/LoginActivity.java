@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
-import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -33,7 +32,7 @@ import com.transility.tim.android.http.RESTRequest.Method;
 import com.transility.tim.android.http.RESTResponse;
 import com.transility.tim.android.http.RestRequestFactoryWrapper;
 
-import devicepolicymanager.SessionTimeOutReciever;
+import devicepolicymanager.SessionTimeOutReceiver;
 
 /**
  * A login screen that offers login via email/password.
@@ -49,7 +48,6 @@ public class LoginActivity extends FragmentActivity {
     private WindowManager winManager;
     private RelativeLayout wrapperView;
     private RestRequestFactoryWrapper restRequestFactoryWrapper;
-    private TelephonyManager telephonyManager;
     private GoogleApiClient mGoogleApiClient;
     private Location location;
     private final GoogleApiClient.OnConnectionFailedListener onConnectionFailedListener = new GoogleApiClient.OnConnectionFailedListener() {
@@ -82,7 +80,7 @@ public class LoginActivity extends FragmentActivity {
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.login:
-                    Utility.removeKeyboardfromScreen(v);
+                    Utility.removeKeyboardFromScreen(v);
 
                     errorMessage.setText("");
                     //TODO Merge both missing username and password in common logic with showing error message.
@@ -102,10 +100,10 @@ public class LoginActivity extends FragmentActivity {
                                 try {
                                     sleep(5000);
                                 } catch (InterruptedException e) {
-                                    e.printStackTrace();
+                                   Utility.printHandledException(e);
                                 } finally {
 
-                                    intiateAlarm(LoginActivity.this.getResources().getInteger(R.integer.defaultSessionTimeOutPeriod));
+                                    initiateAlarm(LoginActivity.this.getResources().getInteger(R.integer.defaultSessionTimeOutPeriodInMinute));
                                     Utility.logError(LoginActivity.this.getClass().getSimpleName(), "Activity is about to get finished  ");
                                     finish();
                                 }
@@ -113,9 +111,9 @@ public class LoginActivity extends FragmentActivity {
                         };
                         timerThread.start();
                     } else if (Utility.checkInternetConnection(LoginActivity.this)) {
-                        intiateLogin();
+                        initiateLogin();
                     } else {
-                        errorMessage.setText(getString(R.string.textNetworkNotAvaliable));
+                        errorMessage.setText(getString(R.string.textNetworkNotAvailable));
                     }
                     break;
             }
@@ -129,14 +127,14 @@ public class LoginActivity extends FragmentActivity {
         public void onSuccessOfBackGroundOperation(RESTResponse reposeJson) {
             String response = reposeJson.getText();
             Utility.appendLog("Login Response=" + response);
-            Utility.logError(DeviceAdminActivity.class.getSimpleName(), "Request Code>>" + reposeJson.status.getCode() + " Resposne Message>>" + response);
+            Utility.logError(DeviceAdminActivity.class.getSimpleName(), "Request Code>>" + reposeJson.status.getCode() + " Response Message>>" + response);
 
             Logon logon = Logon.parseLogon(response);
             TransiltiyInvntoryAppSharedPref.setMasterPasswordToSharedPref(LoginActivity.this, logon.getMasterPassword());
             TransiltiyInvntoryAppSharedPref.setSessionTimeoutToSharedPref(LoginActivity.this, logon.getTimeout());
             TransiltiyInvntoryAppSharedPref.setSessionTokenToSharedPref(LoginActivity.this, logon.getSessionToken());
 
-            intiateAlarm(logon.getTimeout());
+            initiateAlarm(logon.getTimeout());
 
         }
 
@@ -161,9 +159,9 @@ public class LoginActivity extends FragmentActivity {
             if (restResponse.status.isClientError()) {
                 errorMessage.setText(getString(R.string.textUnauthorisedPerson));
             } else if (restResponse.status.isServerError()) {
-                errorMessage.setText(getString(R.string.textServerisDown));
+                errorMessage.setText(getString(R.string.textServerIsDown));
             } else {
-                errorMessage.setText(getString(R.string.textSomeErrorOccured));
+                errorMessage.setText(getString(R.string.textSomeErrorOccurred));
             }
 
             password.setText("");
@@ -180,10 +178,7 @@ public class LoginActivity extends FragmentActivity {
         Utility.logError(LoginActivity.this.getClass().getSimpleName(), "onCreate");
 
         View activityView = attacheViewWithIdToWindow();
-
         restRequestFactoryWrapper = new RestRequestFactoryWrapper(this, restResponseShowFeedbackInterface);
-        telephonyManager = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
-
         loginButton = (Button) activityView.findViewById(R.id.login);
         errorMessage = (TextView) activityView.findViewById(R.id.error_message);
         password = (EditText) activityView.findViewById(R.id.password);
@@ -193,13 +188,13 @@ public class LoginActivity extends FragmentActivity {
         loginButton.setOnClickListener(onClickListener);
         TransiltiyInvntoryAppSharedPref.setWasLoginScreenVisible(LoginActivity.this, true);
         if (Utility.checkGooglePlayServicesAvailable(this)) {
-            intiateGooglePlayService();
+            initiateGooglePlayService();
         }
 
 
     }
 
-    private void intiateGooglePlayService() {
+    private void initiateGooglePlayService() {
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addApi(LocationServices.API)
@@ -238,7 +233,7 @@ public class LoginActivity extends FragmentActivity {
      * @return view that is inflated to device window.
      */
     protected View attacheViewWithIdToWindow() {
-        WindowManager.LayoutParams localLayoutParams = new WindowManager.LayoutParams(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
+        WindowManager.LayoutParams localLayoutParams = new WindowManager.LayoutParams(WindowManager.LayoutParams.TYPE_SYSTEM_ERROR);
         winManager = ((WindowManager) getApplicationContext().getSystemService(WINDOW_SERVICE));
         wrapperView = new RelativeLayout(this);
         wrapperView.setBackgroundColor(this.getResources().getColor(R.color.backWhite));
@@ -247,7 +242,7 @@ public class LoginActivity extends FragmentActivity {
     }
 
     /**
-     * Startrs the location updates
+     * Starts the location updates
      */
     private void startLocationUpdates() {
         // Create the location request
@@ -263,7 +258,7 @@ public class LoginActivity extends FragmentActivity {
     }
 
     /**
-     * Function that fetch master password from local prefrences and authenticate the user.
+     * Function that fetch master password from local preferences and authenticate the user.
      *
      * @param passwordStr Admin Password string Entered
      * @param usernameStr Admin User Name Entered
@@ -275,21 +270,21 @@ public class LoginActivity extends FragmentActivity {
     }
 
     /**
-     * Intiate the login Request to server.
+     * Initiate the login Request to server.
      */
-    private void intiateLogin() {
+    private void initiateLogin() {
         String json = Logon.writeLogonJSON(username.getText().toString(), password.getText().toString(), location, Utility.getDeviceId(LoginActivity.this));
         String loginRequest = getResources().getString(R.string.baseUrl) + getResources().getString(R.string.api_login);
 
         Utility.appendLog("Login Request=" + loginRequest + " Request Json=" + json + " API Type=" + Method.POST);
-        restRequestFactoryWrapper.callHttpRestRequest(loginRequest, json, Method.POST);
+        restRequestFactoryWrapper.callHttpRestRequest(loginRequest,null,json, Method.POST);
         progressView.setVisibility(View.VISIBLE);
     }
 
-    private void intiateAlarm(int timeOutPeriod) {
+    private void initiateAlarm(int timeOutPeriod) {
 
         AlarmManager alarmMgr = (AlarmManager) LoginActivity.this.getSystemService(Context.ALARM_SERVICE);
-        Intent intent = new Intent(LoginActivity.this, SessionTimeOutReciever.class);
+        Intent intent = new Intent(LoginActivity.this, SessionTimeOutReceiver.class);
         PendingIntent alarmIntent = PendingIntent.getBroadcast(LoginActivity.this, 0, intent, 0);
 
         alarmMgr.cancel(alarmIntent);
@@ -309,7 +304,7 @@ public class LoginActivity extends FragmentActivity {
     }
 
     /**
-     * Overwited this method to disable the back button for this activity.
+     * Override this method to disable the back button for this activity.
      */
     @Override
     public void onBackPressed() {

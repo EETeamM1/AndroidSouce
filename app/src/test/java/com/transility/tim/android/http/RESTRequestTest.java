@@ -12,7 +12,7 @@ import org.robolectric.annotation.Config;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.transility.tim.android.Constants;
+
 
 
 /**
@@ -33,7 +33,7 @@ public class RESTRequestTest {
         queryParams.put("beginDate", "12072016");
         queryParams.put("endDate", "13072016");
 
-        String actualValue = restRequest.fillOutParameters(uri+ Constants.NAME_QUERY_PARAMS, queryParams);
+        String actualValue = restRequest.fillOutParameters(uri, queryParams);
         String expectedVaue = uri+"endDate=13072016&beginDate=12072016&deviceId=12345655474255";
 
         Assert.assertEquals("URI is not correct", expectedVaue, actualValue );

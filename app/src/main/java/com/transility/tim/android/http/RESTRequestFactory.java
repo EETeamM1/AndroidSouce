@@ -3,7 +3,7 @@ package com.transility.tim.android.http;
 import android.content.Context;
 import android.os.Bundle;
 
-import com.transility.tim.android.Constants;
+
 import com.transility.tim.android.http.RESTRequest.Method;
 
 import java.util.List;
@@ -16,7 +16,10 @@ import java.util.Map;
  */
 public class RESTRequestFactory {
 
-    static RESTRequestFactory DISPATCHER_FACTORY = null;
+   private static RESTRequestFactory DISPATCHER_FACTORY = null;
+    /**
+     * Kept for future use
+     */
     private Context appContext;
 
     protected RESTRequestFactory(android.content.Context context) {
@@ -33,16 +36,7 @@ public class RESTRequestFactory {
         return DISPATCHER_FACTORY;
     }
 
-    /**
-     * Replaces the {@link Constants#NAME_URI_PATH} with the specified path-string.
-     */
-    public static String appendPath(String uri, String path) {
-        if (uri == null || uri.length() == 0) {
-            return uri;
-        }
 
-        return uri.replaceFirst(Constants.REGEX_URI_PATH, path);
-    }
 
     /**
      * Dispatch a HTTP request to one of the given response handlers.

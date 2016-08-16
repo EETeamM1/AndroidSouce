@@ -25,7 +25,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="@dimen/metrics_40"
-                android:src="@drawable/transility_logo"
+                android:src="@drawable/invento_logo"
 
                 />
 
@@ -36,7 +36,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/metrics_50"
                 android:layout_marginTop="@dimen/metric_90"
-                android:background="@drawable/textboxbackground"
+                android:background="@drawable/textboxmarronbackground"
 
                 android:gravity="center_vertical"
                 android:hint="@string/textUserName"
@@ -53,7 +53,7 @@
                 android:layout_height="@dimen/metrics_50"
 
                 android:layout_marginTop="@dimen/metrics_20"
-                android:background="@drawable/textboxbackground"
+                android:background="@drawable/textboxmarronbackground"
                 android:gravity="center_vertical"
                 android:hint="@string/textPassword"
                 android:imeOptions="actionDone"

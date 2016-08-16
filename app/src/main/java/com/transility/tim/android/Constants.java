@@ -1,12 +1,10 @@
 package com.transility.tim.android;
 
 /**
+ * Constants file to keep the constants need by Rest Api
  * Created by impadmin on 24/05/16.
  */
 public class Constants {
     public static final String LOGTAG = "InventoryManagement";
-    public static final String NAME_QUERY_PARAMS = "{_queryParams_}";
-    public static final String REGEG_QUERY_PARAMS = "\\{_queryParams_\\}";
-    public static final String REGEX_URI_PATH = "\\{_path_\\}";
-    static final String NAME_URI_PATH = "{_path_}";
+
 }

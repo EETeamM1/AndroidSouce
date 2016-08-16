@@ -9,14 +9,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
 
-import android.widget.Toast;
-
 import com.transility.tim.android.LoginActivity;
 import com.transility.tim.android.MasterPasswordActivity;
 import com.transility.tim.android.Utilities.TransiltiyInvntoryAppSharedPref;
 import com.transility.tim.android.Utilities.Utility;
 
-public class MyDeviceAdminReciver extends DeviceAdminReceiver {
+public class MyDeviceAdminReceiver extends DeviceAdminReceiver {
 
 
 
@@ -39,37 +37,37 @@ public class MyDeviceAdminReciver extends DeviceAdminReceiver {
 
     @Override
     public void onPasswordChanged(Context context, Intent intent) {
-        // Overwrided method
+        // Override method
     }
 
 
     @Override
     public void onPasswordExpiring(Context context, Intent intent) {
         // This would require API 11 an above
-        //Over writted method
+        //Override method
     }
 
     @Override
     public void onPasswordFailed(Context context, Intent intent) {
-        // Overwritted methods
+        // Override methods
     }
 
     @Override
     public void onPasswordSucceeded(Context context, Intent intent) {
-        //Overwritted methods
+        //Override methods
     }
 
     @Override
     public void onReceive(Context context, Intent intent) {
 
         super.onReceive(context, intent);
-        Utility.logError(MyDeviceAdminReciver.class.getSimpleName(), "onReceive");
+        Utility.logError(MyDeviceAdminReceiver.class.getSimpleName(), "onReceive");
 
         if (intent.getAction() != null && intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED)) {
-            Toast.makeText(context, "My Device Boot Completed", Toast.LENGTH_LONG).show();
-            DevicePolicyManager truitonDevicePolicyManager = (DevicePolicyManager) context.getSystemService(Context.DEVICE_POLICY_SERVICE);
+//            Toast.makeText(context, "My Device Boot Completed", Toast.LENGTH_LONG).show();
+            DevicePolicyManager inventoDevicePolicyManager = (DevicePolicyManager) context.getSystemService(Context.DEVICE_POLICY_SERVICE);
 
-            if (truitonDevicePolicyManager.isAdminActive(new ComponentName(context, MyDeviceAdminReciver.class))) {
+            if (inventoDevicePolicyManager.isAdminActive(new ComponentName(context, MyDeviceAdminReceiver.class))) {
                 if (TextUtils.isEmpty(TransiltiyInvntoryAppSharedPref.getSessionToken(context))) {
 
                     openLoginActivity(context);
@@ -80,7 +78,7 @@ public class MyDeviceAdminReciver extends DeviceAdminReceiver {
 
                     } else {
                         Utility.appendLog("Boot Got Completed and in previous shut down User was having a valid session. ");
-                        Utility.logError(MyDeviceAdminReciver.class.getSimpleName(), "Inside Login Screen invisible loop");
+                        Utility.logError(MyDeviceAdminReceiver.class.getSimpleName(), "Inside Login Screen invisible loop");
                         TransiltiyInvntoryAppSharedPref.setWasLoginScreenVisible(context, false);
                         reEnableAlarm(context);
                     }
@@ -93,12 +91,12 @@ public class MyDeviceAdminReciver extends DeviceAdminReceiver {
 
             if (!TransiltiyInvntoryAppSharedPref.getWasLoginScreenVisible(context)) {
                 Utility.appendLog("Device Got Shut down and this time user might be having valid login session.");
-                Utility.logError(MyDeviceAdminReciver.class.getSimpleName(), "Inside Action Shut Donw Screen invisible loop");
+                Utility.logError(MyDeviceAdminReceiver.class.getSimpleName(), "Inside Action Shut Down Screen invisible loop");
 
                 TransiltiyInvntoryAppSharedPref.setDeviceLastShutdownTime(context, System.currentTimeMillis());
             } else {
                 Utility.appendLog("Device Got Shut down and this time user was on login screen.");
-                Utility.logError(MyDeviceAdminReciver.class.getSimpleName(), "Inside Action Shut Donw Screen Visible loop");
+                Utility.logError(MyDeviceAdminReceiver.class.getSimpleName(), "Inside Action Shut Down Screen Visible loop");
                 TransiltiyInvntoryAppSharedPref.setDeviceLastShutdownTime(context, 0);
             }
 
@@ -114,10 +112,10 @@ public class MyDeviceAdminReciver extends DeviceAdminReceiver {
     private void reEnableAlarm(Context context) {
         int timeoutPeriod = TransiltiyInvntoryAppSharedPref.getSessionTimeout(context);
         if (TransiltiyInvntoryAppSharedPref.getDeviceLastShutdownTime(context) == 0) {
-            reintialiseAlramWithGivenTimePeriod(context,System.currentTimeMillis(),timeoutPeriod*60*1000);
+            reInitializeAlarmWithGivenTimePeriod(context,System.currentTimeMillis(),timeoutPeriod*60*1000);
         } else {
             long elapsedTime = System.currentTimeMillis() - TransiltiyInvntoryAppSharedPref.getDeviceLastShutdownTime(context);
-            reintialiseAlramWithGivenTimePeriod(context,System.currentTimeMillis() + elapsedTime,timeoutPeriod*60*1000);
+            reInitializeAlarmWithGivenTimePeriod(context,System.currentTimeMillis() + elapsedTime,timeoutPeriod*60*1000);
         }
     }
 
@@ -125,19 +123,19 @@ public class MyDeviceAdminReciver extends DeviceAdminReceiver {
      * Reinitialize the alarm with given time period.
      * @param context Existing context of the application.
      * @param timeForFirstCall Device Time at which Alarm should first go On
-     * @param timeForSubiquentCall Interval in which Alarm should be called.
+     * @param timeForSubsiquentCall Interval in which Alarm should be called.
      */
-    private void reintialiseAlramWithGivenTimePeriod(Context context,long timeForFirstCall,long timeForSubiquentCall){
+    private void reInitializeAlarmWithGivenTimePeriod(Context context, long timeForFirstCall, long timeForSubsiquentCall){
         AlarmManager alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        Intent intent = new Intent(context, SessionTimeOutReciever.class);
+        Intent intent = new Intent(context, SessionTimeOutReceiver.class);
         PendingIntent alarmIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
 
         alarmMgr.cancel(alarmIntent);
-        Toast.makeText(context, "Inside Last Shut Down Time loop " +timeForFirstCall, Toast.LENGTH_LONG).show();
+//        Toast.makeText(context, "Inside Last Shut Down Time loop " +timeForFirstCall, Toast.LENGTH_LONG).show();
         alarmMgr.setInexactRepeating(AlarmManager.RTC_WAKEUP, timeForFirstCall
-                , timeForSubiquentCall, alarmIntent);
-        Utility.appendLog("Boot Got Completed the device will show login screen after " + timeForSubiquentCall + " min");
-        Utility.logError(context.getClass().getSimpleName(), "Alarm Time>>>>" + System.currentTimeMillis() + (timeForSubiquentCall));
+                , timeForSubsiquentCall, alarmIntent);
+        Utility.appendLog("Boot Got Completed the device will show login screen after " + timeForSubsiquentCall + " min");
+        Utility.logError(context.getClass().getSimpleName(), "Alarm Time>>>>" + System.currentTimeMillis() + (timeForSubsiquentCall));
 
     }
     /**
@@ -145,8 +143,8 @@ public class MyDeviceAdminReciver extends DeviceAdminReceiver {
      */
     private void openLoginActivity(Context context){
         Utility.appendLog("Boot Got Completed and in previous shut down Login Mode was enabled.");
-        Utility.logError(MyDeviceAdminReciver.class.getSimpleName(), "Inside data base check loop");
-        Utility.cancelCurrentPendingIntent(context);
+        Utility.logError(MyDeviceAdminReceiver.class.getSimpleName(), "Inside data base check loop");
+        Utility.cancelCurrentAlarmToLaunchTheLoginScreen(context);
         Intent loginIntent = new Intent(context, LoginActivity.class);
         loginIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(loginIntent);
@@ -157,8 +155,8 @@ public class MyDeviceAdminReciver extends DeviceAdminReceiver {
      * @param context Pass the current context of the application.
      */
     private void openMasterPasswordScreen(Context context){
-        Utility.cancelCurrentPendingIntent(context);
-        Utility.clearPrefrences();
+        Utility.cancelCurrentAlarmToLaunchTheLoginScreen(context);
+        Utility.clearPreviousSessionToken();
         Intent masterPasswordIntent = new Intent(context, MasterPasswordActivity.class);
         masterPasswordIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(masterPasswordIntent);

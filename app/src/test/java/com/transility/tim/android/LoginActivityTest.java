@@ -70,7 +70,7 @@ public class LoginActivityTest {
         String errorTvText = "";
         Assert.assertEquals("No text should be shown on error response text view.", errorTvText, mErrorTv.getText());
 
-        Assert.assertTrue("Login scren visbile prefrence is not correct", TransiltiyInvntoryAppSharedPref.getWasLoginScreenVisible(mLoginActivity));
+        Assert.assertTrue("Login screen visible preference is not correct", TransiltiyInvntoryAppSharedPref.getWasLoginScreenVisible(mLoginActivity));
 
     }
 

@@ -1,8 +1,11 @@
 package com.transility.tim.android;
 
 import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -23,33 +26,34 @@ import java.util.Calendar;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import devicepolicymanager.MyDeviceAdminReciver;
+import devicepolicymanager.MasterPasswordScreenLauncherBroadcast;
+import devicepolicymanager.MyDeviceAdminReceiver;
 
 public class MasterPasswordActivity extends Activity {
 
     public final static int REQUESTCODE_FROMAPP=501;
-    protected Button masterpasswordEntredBtn,continueWithAdminPolicy;
+    protected Button masterPasswordEntredBtn,continueWithAdminPolicy;
     protected EditText passwordFieldEt;
-    private ComponentName truitonDevicePolicyAdmin;
+    private ComponentName inventoDevicePolicyAdmin;
     protected static final int REQUEST_ENABLE = 1;
 
     private WindowManager winManager;
     private ViewGroup wrapperView;
     private TextView error_message;
-    private TextView deviceIdTv;
+
 
 
     private final View.OnClickListener onClickListener=new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            Utility.removeKeyboardfromScreen(v);
+            Utility.removeKeyboardFromScreen(v);
         switch (v.getId()){
             case R.id.continueWithAdminPolicy:
                 winManager.removeView(wrapperView);
                 enableDeviceAdminApp();
                 setResult(RESULT_CANCELED);
                 break;
-            case R.id.masterpasswordEntredBtn:
+            case R.id.masterPasswordEnteredBtn:
                 error_message.setText("");
                 if (TextUtils.isEmpty(passwordFieldEt.getText())){
                     passwordFieldEt.setError(getString(R.string.textEmptyPassword));
@@ -59,7 +63,7 @@ public class MasterPasswordActivity extends Activity {
                     passwordFieldEt.setError(getString(R.string.textMaterPasswordExceedDigit));
                     return;
                 }
-                if (calclualteMasterPassword().equals(passwordFieldEt.getText().toString())){
+                if (calculateMasterPassword().equals(passwordFieldEt.getText().toString())){
                  setResult(RESULT_OK);
                  finish();
                 } else{
@@ -74,17 +78,29 @@ public class MasterPasswordActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-       attacheViewWithIdToWindowAndIntialiseViews();
+       attacheViewWithIdToWindowAndInitializeViews();
 
+
+
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
         TransiltiyInvntoryAppSharedPref.setIsMasterPasswordScreenVisible(this, true);
+    }
 
-
+    @Override
+    protected void onStop() {
+        super.onStop();
+        TransiltiyInvntoryAppSharedPref.setIsMasterPasswordScreenVisible(this, false);
     }
 
     /**
      * Attach the current device window with view of Master Password
      */
-    protected View attacheViewWithIdToWindowAndIntialiseViews() {
+    protected View attacheViewWithIdToWindowAndInitializeViews() {
 
         WindowManager.LayoutParams localLayoutParams = new WindowManager.LayoutParams(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
         winManager = ((WindowManager) getApplicationContext().getSystemService(WINDOW_SERVICE));
@@ -92,15 +108,18 @@ public class MasterPasswordActivity extends Activity {
         wrapperView.setBackgroundColor(this.getResources().getColor(R.color.backWhite));
         this.winManager.addView(wrapperView, localLayoutParams);
         View activityView= View.inflate(this, R.layout.layout_master_password_screen, wrapperView);
-        masterpasswordEntredBtn = (Button) activityView.findViewById(R.id.masterpasswordEntredBtn);
+        masterPasswordEntredBtn = (Button) activityView.findViewById(R.id.masterPasswordEnteredBtn);
         continueWithAdminPolicy = (Button) activityView.findViewById(R.id.continueWithAdminPolicy);
         passwordFieldEt = (EditText) activityView.findViewById(R.id.passwordFieldEt);
         error_message = (TextView) activityView.findViewById(R.id.error_message);
-        truitonDevicePolicyAdmin = new ComponentName(this,
-                MyDeviceAdminReciver.class);
+        inventoDevicePolicyAdmin = new ComponentName(this,
+                MyDeviceAdminReceiver.class);
+        TextView deviceIdTv;
         deviceIdTv = (TextView) activityView.findViewById(R.id.deviceIdTv);
-        deviceIdTv.setText(getString(R.string.textDeviceId) + Utility.getDeviceId(this));
-        masterpasswordEntredBtn.setOnClickListener(onClickListener);
+        String deviceId=getString(R.string.textDeviceId)+Utility.getDeviceId(this);
+
+        deviceIdTv.setText(deviceId);
+        masterPasswordEntredBtn.setOnClickListener(onClickListener);
         continueWithAdminPolicy.setOnClickListener(onClickListener);
 
         return activityView;
@@ -110,12 +129,16 @@ public class MasterPasswordActivity extends Activity {
     @Override
     public void onBackPressed() {}
 
-    private String calclualteMasterPassword(){
-        String masterPasswordString=  applyLamPortAlgoRithmUsingDateOnImei(Utility.getDeviceId(MasterPasswordActivity.this), Calendar.getInstance());
-        return masterPasswordString;
+    /**
+     * Calculate the Master Password of the device.
+     * @return deviceId of the device.
+     */
+    private String calculateMasterPassword(){
+        return applyLamPortAlgorithmUsingDateOnImei(Utility.getDeviceId(MasterPasswordActivity.this), Calendar.getInstance());
+
     }
 
-    protected String applyLamPortAlgoRithmUsingDateOnImei(String imeiNumber, Calendar calendar){
+    protected String applyLamPortAlgorithmUsingDateOnImei(String imeiNumber, Calendar calendar){
         int dayOfMonth= calendar.get(Calendar.DAY_OF_MONTH);
         int monthNumber=calendar.get(Calendar.MONTH);
         int year=calendar.get(Calendar.YEAR);
@@ -155,9 +178,13 @@ public class MasterPasswordActivity extends Activity {
 
     }
 
+
+
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        Utility.logError("Master Password Activity",resultCode+"");
         if (resultCode == RESULT_OK) {
             switch (requestCode) {
 
@@ -171,7 +198,7 @@ public class MasterPasswordActivity extends Activity {
             switch (requestCode) {
 
                 case REQUEST_ENABLE:
-                   attacheViewWithIdToWindowAndIntialiseViews();
+                   attacheViewWithIdToWindowAndInitializeViews();
 
                     break;
 
@@ -183,24 +210,38 @@ public class MasterPasswordActivity extends Activity {
     }
 
     /**
-     * Function calls the activity that initates the enabling of the apllication as device admin app.
+     * Function calls the activity that initiates the enabling of the application as device admin app.
      */
     private void enableDeviceAdminApp(){
+        startAlarmToLaunchMasterPasswordScreen();
         Intent intent = new Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
-        intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, truitonDevicePolicyAdmin);
+        intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, inventoDevicePolicyAdmin);
         intent.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION, "");
+
         startActivityForResult(intent, REQUEST_ENABLE);
+    }
+
+    /**
+     * Start the Alarm which Lunches master password screen  Master Password Screen .
+     */
+    private void startAlarmToLaunchMasterPasswordScreen() {
+        Utility.cancelCurrentAlarmToLaunchTheMasterPasswordScreen(this);
+        PendingIntent masterPasswordScreenPi=PendingIntent.getBroadcast(this,0,new Intent(this, MasterPasswordScreenLauncherBroadcast.class),PendingIntent.FLAG_ONE_SHOT);
+        AlarmManager alarmManager = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis()+ (this.getResources().getInteger(R.integer.defaultTimeOutPeriodForMasterPasswordInSeconds)*1000)
+                , (this.getResources().getInteger(R.integer.defaultTimeOutPeriodForMasterPasswordInSeconds)*1000), masterPasswordScreenPi);
+
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        TransiltiyInvntoryAppSharedPref.setIsMasterPasswordScreenVisible(this, false);
+
         try{
             winManager.removeView(wrapperView);
         }
         catch (RuntimeException w){
-        w.printStackTrace();
+           Utility.printHandledException(w);
         }
 
     }

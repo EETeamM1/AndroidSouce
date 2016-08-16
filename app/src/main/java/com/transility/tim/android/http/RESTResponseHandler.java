@@ -10,9 +10,6 @@ import com.transility.tim.android.http.RESTResponse.Status;
 public interface RESTResponseHandler {
 
     String NULL_URI = "/null";
-    Status STATUS_HOST_NOT_FOUND = Status.CAN_NOT_FOUND_HOST;
-    Status STATUS_USER_CANCELLED_AUTH = Status.USER_CANCELLED_AUTH;
-
     /**
      * This method will be called when a successful response is being returned from the server.
      * This method will be called on a background thread, the thread that issues the actual REST/HTTP request.

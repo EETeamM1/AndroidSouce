@@ -21,7 +21,7 @@ import java.util.Map;
  */
 public class RESTRequest {
 
-    static final int CONNECTION_TIMEOUT = 10000;
+    private static final int CONNECTION_TIMEOUT = 10000;
 
     public enum Method{
         POST,
@@ -41,10 +41,10 @@ public class RESTRequest {
         }
     }
 
-    public Method method;
+    private Method method;
     public String uri;
-    public Object body;
-    public Map<String,Object> queryParams;
+    private Object body;
+    private Map<String,Object> queryParams;
 
     /**
      * Creates a new request for a HTTP call.
@@ -125,6 +125,7 @@ public class RESTRequest {
                 response = new RESTResponse(status, inputStream, this);
             }
             catch (IOException re) {
+                Utility.printHandledException(re);
                 response = new RESTResponse(Status.CONNECTOR_ERROR_INTERNAL, null, this);
                 String text = response.getText();
                 if (text != null && text.length() > 0){
@@ -153,7 +154,7 @@ public class RESTRequest {
         return newUri;
     }
 
-    public String queryParams(Map<String,Object> queryParamsMap) {
+    private String queryParams(Map<String,Object> queryParamsMap) {
         StringBuffer strBufQP = new StringBuffer();
         if (queryParamsMap != null && queryParamsMap.size() > 0) {
             for (String queryParamName : queryParamsMap.keySet()) {

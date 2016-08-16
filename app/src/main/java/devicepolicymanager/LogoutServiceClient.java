@@ -18,7 +18,6 @@ import com.transility.tim.android.http.RestRequestFactoryWrapper;
 public class LogoutServiceClient extends IntentService {
 
 
-    private boolean isOperationCompleted = false;
 
     /**
      * Creates an IntentService.  Invoked by your subclass's constructor.
@@ -44,14 +43,14 @@ public class LogoutServiceClient extends IntentService {
         Utility.appendLog("Logout Request=" + logoutRequest + " Json=" + json + " Request Type=" + RESTRequest.Method.POST);
 
         RestRequestFactoryWrapper restRequestFactoryWrapper = new RestRequestFactoryWrapper(this, null);
-        restRequestFactoryWrapper.callHttpRestRequest(logoutRequest, json, RESTRequest.Method.POST);
+        restRequestFactoryWrapper.callHttpRestRequest(logoutRequest,null ,json, RESTRequest.Method.POST);
 
-        Utility.cancelCurrentPendingIntent(LogoutServiceClient.this);
-        Utility.clearPrefrences();
+        Utility.cancelCurrentAlarmToLaunchTheLoginScreen(LogoutServiceClient.this);
+        Utility.clearPreviousSessionToken();
 
-        Intent intent1 = new Intent(this, LoginActivity.class);
-        intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent1);
+        Intent loginActivityIntent = new Intent(this, LoginActivity.class);
+        loginActivityIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(loginActivityIntent);
     }
 
 

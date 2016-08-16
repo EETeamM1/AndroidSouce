@@ -16,16 +16,16 @@ import java.net.HttpURLConnection;
  * @author Himanshu Bapna
  */
 public class RESTResponse {
-    public final RESTRequest originatingRequest;
+    private final RESTRequest originatingRequest;
     public Status status;
     public InputStream value;
     public Bundle userData;
-    public RESTRequest.MediaType contentType;
+
     public RESTResponse(Status status, InputStream value, RESTRequest originatingRequest) {
         this.status = status;
         this.value = value;
         this.originatingRequest = originatingRequest;
-        contentType = RESTRequest.MediaType.APPLICATION_JSON;// hard code
+
     }
 
     public boolean isEmpty() {
@@ -51,7 +51,7 @@ public class RESTResponse {
         try {
             BufferedReader reader = new BufferedReader(new InputStreamReader(value, "utf-8"));
 
-            String nextLine = "";
+            String nextLine ;
             while ((nextLine = reader.readLine()) != null) {
                 sb.append(nextLine);
             }

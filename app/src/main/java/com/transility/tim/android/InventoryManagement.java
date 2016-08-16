@@ -1,18 +1,18 @@
 package com.transility.tim.android;
 
 import android.app.Application;
-import android.content.Context;
+import android.text.TextUtils;
 
 import com.transility.tim.android.Utilities.TransiltiyInvntoryAppSharedPref;
 import com.transility.tim.android.Utilities.Utility;
 
 /**
- * Added Comment Ambesh Kurkeja: This application file is created to keep all the reources that shwould be avaliable in application scope.
+ * Added Comment Ambesh Kurkeja: This application file is created to keep all the resources that should be available in application scope.
  * Created by Himanshu Bapna.
  */
-public class InventoryManagment extends Application {
+public class InventoryManagement extends Application {
 
-    private static Context mContext;
+
 
     @Override
     public void onCreate() {
@@ -27,7 +27,9 @@ public class InventoryManagment extends Application {
      */
     private void setDefaultMasterCredential() {
         TransiltiyInvntoryAppSharedPref.setUserNameToSharedPref(this, getString(R.string.masterUserName));
-        TransiltiyInvntoryAppSharedPref.setMasterPasswordToSharedPref(this, getString(R.string.masterPassword));
+        if(TextUtils.isEmpty(TransiltiyInvntoryAppSharedPref.getMasterPassword(this))){
+            TransiltiyInvntoryAppSharedPref.setMasterPasswordToSharedPref(this, getString(R.string.masterPassword));
+        }
         Utility.appendLog("Default Admin Password =" + TransiltiyInvntoryAppSharedPref.getMasterPassword(this)
                 + "" + "and UserName=" + TransiltiyInvntoryAppSharedPref.getUserName(this));
     }
@@ -37,9 +39,9 @@ public class InventoryManagment extends Application {
 // Section - Context access
 //==================================================================
 
-    private static InventoryManagment appContext = null;
+    private static InventoryManagement appContext = null;
 
-    public InventoryManagment() {
+    public InventoryManagement() {
         appContext = this;
     }
 
@@ -52,7 +54,7 @@ public class InventoryManagment extends Application {
      *   (2) When outside of an Activity, use this.
      * @return - The current application context
      */
-    public static InventoryManagment getContext() {
+    public static InventoryManagement getContext() {
         return appContext;
     }
 }

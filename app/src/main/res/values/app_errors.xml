@@ -2,9 +2,9 @@
 <resources>
 
     <string name="textUnauthorisedPerson">Username or Password is incorrect.</string>
-    <string name="textServerisDown">Server is down please contact your inventory manager.</string>
-    <string name="textSomeErrorOccured">Some error occurred please contact your inventory manager.</string>
-    <string name="textNetworkNotAvaliable">Network Not Available please contact your inventory manager.</string>
+    <string name="textServerIsDown">Server is down please contact your inventory manager.</string>
+    <string name="textSomeErrorOccurred">Some error occurred please contact your inventory manager.</string>
+    <string name="textNetworkNotAvailable">Network Not Available please contact your inventory manager.</string>
     <string name="textEmptyUserName">UserName cannot be empty.</string>
     <string name="textEmptyPassword">Password cannot be empty.</string>
     <string name="textMaterPasswordExceedDigit">Master Password cannot be more than 15 characters of length.</string>
@@ -14,5 +14,5 @@
     <string name="textWindowWarning">Device is to get unlocked in few seconds . You will be given window of 30 min to enable network and logout from Inventory app home screen.
         \n After 30 min device will automatically get locked.</string>
     <string name="textPleaseEnableNetwork">Please enable your network connection.</string>
-    <string name="deviceIdNotFoundIndicator">-1</string>
+
 </resources>

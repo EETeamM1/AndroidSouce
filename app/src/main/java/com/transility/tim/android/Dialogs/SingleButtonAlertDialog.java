@@ -17,7 +17,6 @@ public class SingleButtonAlertDialog extends DialogFragment {
 
 
     private final static String TITLE = "title";
-    private SingleButtonAlertDialogInterface singleButtonAlertDialogInterface;
 
     public static SingleButtonAlertDialog newInstance(String title) {
 
@@ -29,9 +28,7 @@ public class SingleButtonAlertDialog extends DialogFragment {
         return frag;
     }
 
-    public void setSingleButtonAlertDialogInterface(SingleButtonAlertDialogInterface singleButtonAlertDialogInterface) {
-        this.singleButtonAlertDialogInterface = singleButtonAlertDialogInterface;
-    }
+
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -42,10 +39,7 @@ public class SingleButtonAlertDialog extends DialogFragment {
                 .setPositiveButton(R.string.textOk,
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
-
-                                if (singleButtonAlertDialogInterface != null)
-                                    singleButtonAlertDialogInterface.onOkButtonClick();
-                                dismiss();
+                          dismiss();
 
                             }
                         }
@@ -53,7 +47,4 @@ public class SingleButtonAlertDialog extends DialogFragment {
                 .create();
     }
 
-    public interface SingleButtonAlertDialogInterface {
-        void onOkButtonClick();
-    }
 }

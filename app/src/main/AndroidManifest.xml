@@ -16,14 +16,14 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
-        android:name=".InventoryManagment"
+        android:name=".InventoryManagement"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <receiver
-            android:name="devicepolicymanager.MyDeviceAdminReciver"
+            android:name="devicepolicymanager.MyDeviceAdminReceiver"
 
             android:permission="android.permission.BIND_DEVICE_ADMIN">
             <meta-data
@@ -36,7 +36,6 @@
                 <action android:name="android.app.action.DEVICE_ADMIN_ENABLED" />
                 <action android:name="android.app.action.DEVICE_ADMIN_DISABLE_REQUESTED" />
                 <action android:name="android.app.action.DEVICE_ADMIN_DISABLED" />
-                <action android:name="android.app.action.DEVICE_ADMIN_DISABLE_REQUESTED" />
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.ACTION_SHUTDOWN" />
             </intent-filter>
@@ -57,10 +56,14 @@
             android:theme="@style/AppTheme.NoActionBar" />
 
         <receiver
-            android:name="devicepolicymanager.SessionTimeOutReciever"
+            android:name="devicepolicymanager.SessionTimeOutReceiver"
             android:enabled="true"
-            android:exported="true" />
+             />
 
+        <receiver
+            android:name="devicepolicymanager.MasterPasswordScreenLauncherBroadcast"
+            android:enabled="true"
+            />
         <service android:name="devicepolicymanager.LogoutServiceClient" />
 
         <activity
@@ -76,7 +79,9 @@
             android:name=".ReportsActivity"
             android:label="@string/title_activity_reports_screen"
             android:parentActivityName=".DeviceAdminActivity"
-            android:theme="@style/AppTheme">
+            android:theme="@style/AppTheme"
+            android:screenOrientation="portrait"
+            >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".DeviceAdminActivity" />

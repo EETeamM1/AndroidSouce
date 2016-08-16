@@ -21,7 +21,7 @@ import org.robolectric.annotation.Config;
 @Config(constants = BuildConfig.class)
 public class TransiltiyInvntoryAppSharedPrefTest {
 
-    Context context;
+    private Context context;
 
     @Before
     public void setUp() {
@@ -42,16 +42,16 @@ public class TransiltiyInvntoryAppSharedPrefTest {
     @Test
     public void testGetUserNameToSharedPref() {
         TransiltiyInvntoryAppSharedPref.setUserNameToSharedPref(context, "impetus");
-        Assert.assertEquals("Username is incorrect store in prefrences", "impetus", TransiltiyInvntoryAppSharedPref.getUserName(context));
+        Assert.assertEquals("Username is incorrect store in preference", "impetus", TransiltiyInvntoryAppSharedPref.getUserName(context));
     }
 
     @Test
     public void testGetWasLoginScreenVisible() {
         TransiltiyInvntoryAppSharedPref.setWasLoginScreenVisible(context, true);
-        Assert.assertTrue("Incorrect value store in prefrences", TransiltiyInvntoryAppSharedPref.getWasLoginScreenVisible(context));
+        Assert.assertTrue("Incorrect value store in preference", TransiltiyInvntoryAppSharedPref.getWasLoginScreenVisible(context));
 
         TransiltiyInvntoryAppSharedPref.setWasLoginScreenVisible(context, false);
-        Assert.assertFalse("Incorrect value store in prefrences", TransiltiyInvntoryAppSharedPref.getWasLoginScreenVisible(context));
+        Assert.assertFalse("Incorrect value store in preference", TransiltiyInvntoryAppSharedPref.getWasLoginScreenVisible(context));
     }
 
     @Test
@@ -63,7 +63,7 @@ public class TransiltiyInvntoryAppSharedPrefTest {
     @Test
     public void testGetDeviceId() {
         TransiltiyInvntoryAppSharedPref.setDeviceId("1234567890", context);
-        Assert.assertEquals("Device id is incorrect store in prefrences", "1234567890", TransiltiyInvntoryAppSharedPref.getDeviceId(context));
+        Assert.assertEquals("Device id is incorrect store in preference", "1234567890", TransiltiyInvntoryAppSharedPref.getDeviceId(context));
     }
 
     @Test

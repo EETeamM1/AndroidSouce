@@ -38,9 +38,10 @@ public class ReportsActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         ActionBar actionBar=getSupportActionBar();
         if (actionBar!=null){
-            actionBar.setTitle(R.string.textReportScreen);
+            actionBar.setTitle(R.string.textReports);
+
             actionBar.setDisplayHomeAsUpEnabled(true);
-            toolbar.setTitleTextColor(getResources().getColor(R.color.textColorMaron));
+            toolbar.setTitleTextColor(getResources().getColor(R.color.textColorMaroon));
         }
 
 
@@ -63,12 +64,12 @@ public class ReportsActivity extends AppCompatActivity {
             parentContainerLv.setVisibility(View.GONE);
             Map<String,Object> queryParams=new HashMap<>();
             queryParams.put("deviceId",Utility.getDeviceId(this));
-            restRequestFactoryWrapper.callHttpRestRequest(getString(R.string.baseUrl)+getString(R.string.deviceReports),queryParams, RESTRequest.Method.GET);
+            restRequestFactoryWrapper.callHttpRestRequest(getString(R.string.baseUrl)+getString(R.string.deviceReports),queryParams,null, RESTRequest.Method.GET);
             reportPb.setVisibility(View.VISIBLE);
         }
         else
         {
-            updateUiOnFailure(getString(R.string.textNetworkNotAvaliable));
+            updateUiOnFailure(getString(R.string.textNetworkNotAvailable));
         }
     }
 
@@ -107,7 +108,7 @@ public class ReportsActivity extends AppCompatActivity {
 
             } else {
 
-                updateUiOnFailure(getString(R.string.textNoReportAvaliable));
+                updateUiOnFailure(getString(R.string.textNoReportAvailable));
 
             }
 
@@ -116,7 +117,7 @@ public class ReportsActivity extends AppCompatActivity {
 
         @Override
         public void onErrorInForeGroundOperation(RESTResponse restResponse) {
-           updateUiOnFailure(getString(R.string.textErrorOccured));
+           updateUiOnFailure(getString(R.string.textErrorOccurred));
         }
     };
 

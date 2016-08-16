@@ -44,7 +44,7 @@ public class LogonTest {
     }
 
     @Test
-    public void testwriteLogonJSON() {
+    public void testWriteLogonJSON() {
         Location location = new Location(LocationManager.GPS_PROVIDER);
         location.setLatitude(22.68);
         location.setLongitude(75.87);
