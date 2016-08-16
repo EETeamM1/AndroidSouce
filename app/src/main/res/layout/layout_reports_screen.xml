@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_height="match_parent">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/reportScreenTb"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:layout_gravity="top"
+
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar" />
+
+    <LinearLayout
+        android:id="@+id/parentContainerLv"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="@dimen/metrics_10"
+        android:orientation="vertical">
+
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/metrics_1"
+            android:background="@color/backMaroon" />
+
+
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/reportHeaderTv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+                      android:background="@color/backWhite"
+            android:weightSum="8">
+
+            <TextView
+                android:id="@+id/userNameTv"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"
+                android:background="@drawable/drawable_reports"
+                android:gravity="center"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:padding="@dimen/metrics_5"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@string/textUserName"
+                android:textColor="@color/textColorMaroon"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/intTimeTv"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2.5"
+                android:background="@drawable/drawable_reports"
+                android:gravity="center"
+                android:maxLines="1"
+                android:padding="@dimen/metrics_5"
+                android:textColor="@color/textColorMaroon"
+                android:ellipsize="end"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@string/textInTime"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/outTimeTv"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2.5"
+                android:background="@drawable/drawable_reports"
+                android:gravity="center"
+                android:ellipsize="end"
+                android:padding="@dimen/metrics_5"
+                android:textColor="@color/textColorMaroon"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:maxLines="1"
+                android:text="@string/textOutTime"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+        <ProgressBar
+            android:id="@+id/reportPb"
+            android:layout_marginTop="@dimen/metrics_10"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="gone"
+
+            />
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/reportsScreenRv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/backWhite"
+
+            />
+
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/errorMessageTv"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="@color/textColorMaroon"
+        android:visibility="gone" />
+</LinearLayout>
